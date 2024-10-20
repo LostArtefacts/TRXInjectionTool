@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRXInjectionTool", "src\TRXInjectionTool.csproj", "{2DFCF9CD-E844-4CA9-BC88-232ADB0102E8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DFCF9CD-E844-4CA9-BC88-232ADB0102E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DFCF9CD-E844-4CA9-BC88-232ADB0102E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DFCF9CD-E844-4CA9-BC88-232ADB0102E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DFCF9CD-E844-4CA9-BC88-232ADB0102E8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2DC99F9C-89A7-4251-8857-7ED1220F38AD}
+	EndGlobalSection
+EndGlobal

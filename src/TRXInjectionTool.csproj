@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RectanglePacker">
+      <HintPath>IO\RectanglePacker.dll</HintPath>
+    </Reference>
+    <Reference Include="TRDataControl">
+      <HintPath>IO\TRDataControl.dll</HintPath>
+    </Reference>
+    <Reference Include="TRImageControl">
+      <HintPath>IO\TRImageControl.dll</HintPath>
+    </Reference>
+    <Reference Include="TRLevelControl">
+      <HintPath>IO\TRLevelControl.dll</HintPath>
+    </Reference>
+    <Reference Include="TRLevelReader">
+      <HintPath>IO\TRLevelReader.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
