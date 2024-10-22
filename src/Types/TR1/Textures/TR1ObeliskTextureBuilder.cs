@@ -9,7 +9,7 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level obelisk = _control1.Read($@"Resources\{TR1LevelNames.OBELISK}");
+        TR1Level obelisk = _control1.Read($"Resources/{TR1LevelNames.OBELISK}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "obelisk_textures");
 
         data.RoomEdits.AddRange(CreateRefacings());

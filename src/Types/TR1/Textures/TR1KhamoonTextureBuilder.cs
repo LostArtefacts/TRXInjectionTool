@@ -9,7 +9,7 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level khamoon = _control1.Read($@"Resources\{TR1LevelNames.KHAMOON}");
+        TR1Level khamoon = _control1.Read($"Resources/{TR1LevelNames.KHAMOON}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "khamoon_textures");
 
         data.RoomEdits.AddRange(CreateFillers(khamoon));
@@ -36,7 +36,7 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
                     khamoon.Rooms[58].Mesh.Rectangles[21].Vertices[3],
                     khamoon.Rooms[58].Mesh.Rectangles[21].Vertices[2],
                 }
-            },            
+            },
         };
     }
 

@@ -15,7 +15,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         List<InjectionData> dataGroup = new();
 
         {
-            TR1Level caves = _control1.Read($@"Resources\{TR1LevelNames.CAVES}");
+            TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
             ImportBraid(caves);
 
             InjectionData data = InjectionData.Create(caves, InjectionType.Braid, "braid");
@@ -32,7 +32,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         }
 
         {
-            TR1Level caves = _control1.Read($@"Resources\{TR1LevelNames.CAVES}");
+            TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
             ImportBraid(caves);
 
             InjectionData data = InjectionData.Create(caves, InjectionType.Braid, "braid_cut1");
@@ -42,7 +42,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         }
 
         {
-            TR1Level caves = _control1.Read($@"Resources\{TR1LevelNames.CAVES}");
+            TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
             ImportBraid(caves);
 
             InjectionData data = InjectionData.Create(caves, InjectionType.Braid, "braid_cut2_cut4");
@@ -71,7 +71,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder
 
     private static void ImportBraid(TR1Level caves)
     {
-        TR2Level wall = _control2.Read($@"Resources\{TR2LevelNames.GW}");
+        TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
 
         ResetLevel(caves, 1);
 
@@ -80,7 +80,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder
 
         // This adds a band around the first mesh.
         TRImage tile = new(256, 256);
-        TRImage extraHair = new(@"Resources\TR1\Lara\hair1.png");
+        TRImage extraHair = new("Resources/TR1/Lara/hair1.png");
         tile.Import(extraHair, new(0, 0));
         wall.Images16.Add(new() { Pixels = tile.ToRGB555() });
 

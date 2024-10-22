@@ -9,7 +9,7 @@ public class TR1MinesTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level mines = _control1.Read($@"Resources\{TR1LevelNames.MINES}");
+        TR1Level mines = _control1.Read($"Resources/{TR1LevelNames.MINES}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "mines_textures");
 
         data.RoomEdits.AddRange(CreateFillers(mines));

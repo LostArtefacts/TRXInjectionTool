@@ -23,8 +23,8 @@ public class TR1EnemyTextureBuilder : TextureBuilder
     {
         // Larson's gun is silver in Sanctuary and the ToQ cutscene, but in ToQ itself
         // it's gold. We take the mesh from Sanctuary and replace it in ToQ.
-        TR1Level qualopec = _control1.Read($@"Resources\{TR1LevelNames.QUALOPEC}");
-        TR1Level sanctuary = _control1.Read($@"Resources\{TR1LevelNames.SANCTUARY}");
+        TR1Level qualopec = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
+        TR1Level sanctuary = _control1.Read($"Resources/{TR1LevelNames.SANCTUARY}");
 
         CreateModelLevel(sanctuary, TR1Type.Larson);
 

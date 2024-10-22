@@ -9,7 +9,7 @@ public class TR1TihocanItemBuilder : ItemBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level tihocan = _control1.Read($@"Resources\{TR1LevelNames.TIHOCAN}");
+        TR1Level tihocan = _control1.Read($"Resources/{TR1LevelNames.TIHOCAN}");
         InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "tihocan_itemrots");
 
         tihocan.Entities[12].Z -= TRConsts.Step4;

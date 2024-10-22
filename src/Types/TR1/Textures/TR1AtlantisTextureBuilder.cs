@@ -9,7 +9,7 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level atlantis = _control1.Read($@"Resources\{TR1LevelNames.ATLANTIS}");
+        TR1Level atlantis = _control1.Read($"Resources/{TR1LevelNames.ATLANTIS}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "atlantis_textures");
 
         data.RoomEdits.AddRange(CreateFillers(atlantis));

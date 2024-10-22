@@ -8,7 +8,7 @@ public class TR1MinesPushblockBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level mines = _control1.Read($@"Resources\{TR1LevelNames.MINES}");
+        TR1Level mines = _control1.Read($"Resources/{TR1LevelNames.MINES}");
         TRDictionary<TR1Type, TRModel> pushblocks = new();
         foreach (TR1Type blockType in TR1TypeUtilities.GetPushblockTypes())
         {
@@ -16,7 +16,7 @@ public class TR1MinesPushblockBuilder : InjectionBuilder
         }
 
         ResetLevel(mines);
-        
+
         TRModel basePushblock = pushblocks[TR1Type.PushBlock1];
         pushblocks.Remove(TR1Type.PushBlock1);
         mines.Models = pushblocks;

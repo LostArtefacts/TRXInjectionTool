@@ -47,8 +47,8 @@ public class TR1StrongholdFDBuilder : FDBuilder
         // Fix the z-fighting on textures around the portal too.
         ushort[] vertices = new ushort[]
         {
-            582, 583, 584, 585, 
-            592, 593, 594, 595, 
+            582, 583, 584, 585,
+            592, 593, 594, 595,
             702, 703, 704, 705,
         };
         foreach (ushort vertex in vertices)

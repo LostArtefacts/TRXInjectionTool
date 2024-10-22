@@ -9,7 +9,7 @@ public class TR1PyramidTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level pyramid = _control1.Read($@"Resources\{TR1LevelNames.PYRAMID}");
+        TR1Level pyramid = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "pyramid_textures");
 
         data.RoomEdits.AddRange(CreateFillers(pyramid));

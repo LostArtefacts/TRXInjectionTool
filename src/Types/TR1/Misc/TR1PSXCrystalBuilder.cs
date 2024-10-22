@@ -8,7 +8,7 @@ public class TR1PSXCrystalBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level caves = _control1.Read($@"Resources\{TR1LevelNames.CAVES}");
+        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         TRModel crystal = caves.Models[TR1Type.SavegameCrystal_P];
         ResetLevel(caves);
 

@@ -8,8 +8,8 @@ public class TR1ObeliskSkyboxBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level caves = _control1.Read($@"Resources\{TR1LevelNames.CAVES}");
-        TR3Level chamber = _control3.Read($@"Resources\{TR3LevelNames.WILLIE}");
+        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        TR3Level chamber = _control3.Read($"Resources/{TR3LevelNames.WILLIE}");
 
         ResetLevel(caves);
 

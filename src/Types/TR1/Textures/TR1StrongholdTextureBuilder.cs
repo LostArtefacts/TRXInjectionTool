@@ -9,7 +9,7 @@ public class TR1StrongholdTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level stronghold = _control1.Read($@"Resources\{TR1LevelNames.STRONGHOLD}");
+        TR1Level stronghold = _control1.Read($"Resources/{TR1LevelNames.STRONGHOLD}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "stronghold_textures");
 
         data.RoomEdits.AddRange(CreateFillers(stronghold));

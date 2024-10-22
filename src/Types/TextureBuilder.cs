@@ -21,7 +21,7 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
-    protected static TRRoomTextureReface Reface(TR1Level level, short roomIndex, TRMeshFaceType targetType, 
+    protected static TRRoomTextureReface Reface(TR1Level level, short roomIndex, TRMeshFaceType targetType,
         TRMeshFaceType sourceType, ushort texture, short targetIndex)
     {
         TextureSource source = GetSource(level, sourceType, texture);

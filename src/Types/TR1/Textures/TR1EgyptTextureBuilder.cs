@@ -9,7 +9,7 @@ public class TR1EgyptTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level egypt = _control1.Read($@"Resources\{TR1LevelNames.EGYPT}");
+        TR1Level egypt = _control1.Read($"Resources/{TR1LevelNames.EGYPT}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "egypt_textures");
 
         data.RoomEdits.AddRange(CreateRefacings());

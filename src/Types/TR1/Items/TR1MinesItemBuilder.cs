@@ -8,7 +8,7 @@ public class TR1MinesItemBuilder : ItemBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level mines = _control1.Read($@"Resources\{TR1LevelNames.MINES}");
+        TR1Level mines = _control1.Read($"Resources/{TR1LevelNames.MINES}");
         InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "mines_itemrots");
 
         data.ItemEdits = new()

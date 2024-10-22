@@ -11,7 +11,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level colosseum = _control1.Read($@"Resources\{TR1LevelNames.COLOSSEUM}");
+        TR1Level colosseum = _control1.Read($"Resources/{TR1LevelNames.COLOSSEUM}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "colosseum_textures");
 
         data.RoomEdits.AddRange(CreateVertices(colosseum));
@@ -126,7 +126,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
     {
         // Replace the Midas textures used on the roof of Colosseum with
         // those from the beta.
-        TRImage betaRoof = new(@"Resources\TR1\Colosseum\roof.png");
+        TRImage betaRoof = new("Resources/TR1/Colosseum/roof.png");
         List<Color> palette = new()
         {
             Color.FromArgb(0),

@@ -11,7 +11,7 @@ public class TR1CisternPlantsBuilder : InjectionBuilder
     {
         // This disables the animation on the underwater plant, by resetting it to
         // only have one texture.
-        TR1Level cistern = _control1.Read($@"Resources\{TR1LevelNames.CISTERN}");
+        TR1Level cistern = _control1.Read($"Resources/{TR1LevelNames.CISTERN}");
         TRSpriteSequence plant = cistern.Sprites[TR1Type.Plant2];
         plant.Textures = new() { plant.Textures[0] };
 

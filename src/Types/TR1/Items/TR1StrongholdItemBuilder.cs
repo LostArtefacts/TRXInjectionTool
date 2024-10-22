@@ -8,7 +8,7 @@ public class TR1StrongholdItemBuilder : ItemBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level cat = _control1.Read($@"Resources\{TR1LevelNames.STRONGHOLD}");
+        TR1Level cat = _control1.Read($"Resources/{TR1LevelNames.STRONGHOLD}");
         InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "stronghold_itemrots");
 
         data.ItemEdits = new()

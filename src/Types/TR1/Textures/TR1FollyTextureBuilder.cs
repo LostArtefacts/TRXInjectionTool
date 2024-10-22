@@ -9,7 +9,7 @@ public class TR1FollyTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level folly = _control1.Read($@"Resources\{TR1LevelNames.FOLLY}");
+        TR1Level folly = _control1.Read($"Resources/{TR1LevelNames.FOLLY}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "folly_textures");
 
         data.RoomEdits.AddRange(CreateFillers(folly));

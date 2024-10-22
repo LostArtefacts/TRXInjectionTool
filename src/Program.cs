@@ -58,7 +58,7 @@ internal class Program
 
                     foreach (InjectionData data in dataGroup)
                     {
-                        InjectionIO.Export(data, $@"Output\{data.Name}.bin");
+                        InjectionIO.Export(data, $"Output/{data.Name}.bin");
                         if (!usedNames.Add(data.Name))
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;

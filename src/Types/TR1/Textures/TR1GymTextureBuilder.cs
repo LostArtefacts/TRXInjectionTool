@@ -9,7 +9,7 @@ public class TR1GymTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level gym = _control1.Read($@"Resources\{TR1LevelNames.ASSAULT}");
+        TR1Level gym = _control1.Read($"Resources/{TR1LevelNames.ASSAULT}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "gym_textures");
 
         data.RoomEdits.AddRange(CreateRefacings(gym));

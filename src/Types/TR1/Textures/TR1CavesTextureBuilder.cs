@@ -9,7 +9,7 @@ public class TR1CavesTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level caves = _control1.Read($@"Resources\{TR1LevelNames.CAVES}");
+        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "caves_textures");
 
         data.RoomEdits.AddRange(CreateFillers(caves));

@@ -8,7 +8,7 @@ public class TR1ToQItemBuilder : ItemBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level qualopec = _control1.Read($@"Resources\{TR1LevelNames.QUALOPEC}");
+        TR1Level qualopec = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
         InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "qualopec_itemrots");
 
         data.ItemEdits = new()

@@ -9,7 +9,7 @@ public class TR1TihocanTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level tihocan = _control1.Read($@"Resources\{TR1LevelNames.TIHOCAN}");
+        TR1Level tihocan = _control1.Read($"Resources/{TR1LevelNames.TIHOCAN}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "tihocan_textures");
 
         data.RoomEdits.AddRange(CreateRefacings());

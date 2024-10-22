@@ -9,7 +9,7 @@ public class TR1ValleyTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level valley = _control1.Read($@"Resources\{TR1LevelNames.VALLEY}");
+        TR1Level valley = _control1.Read($"Resources/{TR1LevelNames.VALLEY}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "valley_textures");
 
         data.RoomEdits.AddRange(CreateFillers(valley));

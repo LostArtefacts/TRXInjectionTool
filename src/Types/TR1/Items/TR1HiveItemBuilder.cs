@@ -8,7 +8,7 @@ public class TR1HiveItemBuilder : ItemBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level hive = _control1.Read($@"Resources\{TR1LevelNames.HIVE}");
+        TR1Level hive = _control1.Read($"Resources/{TR1LevelNames.HIVE}");
         InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "hive_itemrots");
 
         data.ItemEdits = new()

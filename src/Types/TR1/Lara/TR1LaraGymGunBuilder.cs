@@ -10,7 +10,7 @@ public class TR1LaraGymGunBuilder : InjectionBuilder
     public override List<InjectionData> Build()
     {
         TR1Level gym = CreateEnhancedGymLevel();
-        gym = OrganiseModels(gym);        
+        gym = OrganiseModels(gym);
 
         InjectionData data = InjectionData.Create(gym, InjectionType.General, "lara_gym_guns");
         return new() { data };
@@ -18,7 +18,7 @@ public class TR1LaraGymGunBuilder : InjectionBuilder
 
     private static TR1Level CreateEnhancedGymLevel()
     {
-        TR1Level level = _control1.Read($@"Resources\{TR1LevelNames.ASSAULT}");
+        TR1Level level = _control1.Read($"Resources/{TR1LevelNames.ASSAULT}");
 
         List<TRMesh> lara = level.Models[TR1Type.Lara].Meshes;
         List<TRMesh> laraPistol = level.Models[TR1Type.LaraPistolAnim_H]?.Meshes;
@@ -105,7 +105,7 @@ public class TR1LaraGymGunBuilder : InjectionBuilder
         // We need to export and reimport the models so to get rid of the other data we
         // don't need and to maintain efficient texture packing.
         // This will also import the gunflare and shotgun and magnum SFX from Caves.
-        TR1Level caves = _control1.Read($@"Resources\{TR1LevelNames.CAVES}");
+        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         _control1.Write(gym, "temp.phd");
 
         TR1DataExporter exporter = new();

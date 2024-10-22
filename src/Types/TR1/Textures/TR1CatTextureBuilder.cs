@@ -9,7 +9,7 @@ public class TR1CatTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level cat = _control1.Read($@"Resources\{TR1LevelNames.CAT}");
+        TR1Level cat = _control1.Read($"Resources/{TR1LevelNames.CAT}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "cat_textures");
 
         data.RoomEdits.AddRange(CreateFillers(cat));

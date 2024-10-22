@@ -9,7 +9,7 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level vilcabamba = _control1.Read($@"Resources\{TR1LevelNames.VILCABAMBA}");
+        TR1Level vilcabamba = _control1.Read($"Resources/{TR1LevelNames.VILCABAMBA}");
         InjectionData data = InjectionData.Create(InjectionType.TextureFix, "vilcabamba_textures");
 
         data.RoomEdits.AddRange(CreateFillers(vilcabamba));

@@ -8,7 +8,7 @@ public class TR1ColosseumDoorBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level colosseum = _control1.Read($@"Resources\{TR1LevelNames.COLOSSEUM}");
+        TR1Level colosseum = _control1.Read($"Resources/{TR1LevelNames.COLOSSEUM}");
         TRModel door = colosseum.Models[TR1Type.Door2];
 
         ResetLevel(colosseum);

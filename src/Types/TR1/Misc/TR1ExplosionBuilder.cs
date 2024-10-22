@@ -9,7 +9,7 @@ public class TR1ExplosionBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level atlantis = _control1.Read($@"Resources\{TR1LevelNames.ATLANTIS}");
+        TR1Level atlantis = _control1.Read($"Resources/{TR1LevelNames.ATLANTIS}");
         TRSpriteSequence explosion = atlantis.Sprites[TR1Type.Explosion1_S_H];
         TR1SoundEffect sfx = atlantis.SoundEffects[TR1SFX.AtlanteanExplode];
 

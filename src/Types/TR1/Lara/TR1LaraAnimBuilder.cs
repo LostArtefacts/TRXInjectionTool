@@ -43,8 +43,8 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         List<InjectionData> dataGroup = new();
 
         {
-            TR1Level caves = _control1.Read($@"Resources\{TR1LevelNames.CAVES}");
-            TR2Level wall = _control2.Read($@"Resources\{TR2LevelNames.GW}");
+            TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+            TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
             ResetLevel(caves);
 
             TRModel tr1Lara = caves.Models[TR1Type.Lara];
@@ -55,7 +55,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
             ImportWetFeet(tr1Lara, caves);
 
             // This can be opened in WADTool for debugging what ends up in the game itself.
-            _control1.Write(caves, @"Output\ExtendedLaraAnims.phd");
+            _control1.Write(caves, "Output/ExtendedLaraAnims.phd");
 
             InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
             dataGroup.Add(data);
@@ -183,7 +183,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
     {
         // This is a trimmed down anim set, only the two we're interested in are present.
         // See PR 1272/1276
-        TR1Level animLevel = _control1.Read(@"Resources\TR1\Lara\uw_roll.phd"); 
+        TR1Level animLevel = _control1.Read("Resources/TR1/Lara/uw_roll.phd");
         TRModel tr2Lara = animLevel.Models[TR1Type.Lara];
 
         TRAnimation uwRollStart = tr2Lara.Animations[0];
@@ -356,7 +356,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
 
     static void ImportWetFeet(TRModel tr1Lara, TR1Level level)
     {
-        TR2Level animLevel = _control2.Read($@"Resources\{TR2LevelNames.GW}");
+        TR2Level animLevel = _control2.Read($"Resources/{TR2LevelNames.GW}");
         TR2SoundEffect wetFeet2 = animLevel.SoundEffects[TR2SFX.LaraWetFeet];
         TR2SoundEffect wade2 = animLevel.SoundEffects[TR2SFX.LaraWade];
 
@@ -373,7 +373,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
 
         for (int i = 0; i < wetFeet2.SampleCount; i++)
         {
-            wetFeet1.Samples.Add(File.ReadAllBytes($@"Resources\TR1\WetFeet\{i}.wav"));
+            wetFeet1.Samples.Add(File.ReadAllBytes($"Resources/TR1/WetFeet/{i}.wav"));
         }
 
         TR1SoundEffect wade1 = new()
@@ -386,7 +386,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
             Volume = wade2.Volume,
             Samples = new()
             {
-                File.ReadAllBytes(@"Resources\TR1\Wade\0.wav"),
+                File.ReadAllBytes("Resources/TR1/Wade/0.wav"),
             },
         };
 
