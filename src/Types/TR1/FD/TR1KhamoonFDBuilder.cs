@@ -27,9 +27,9 @@ public class TR1KhamoonFDBuilder : InjectionBuilder
 
     private static List<TRFloorDataEdit> CreateTrapdoorTriggers()
     {
-        // Convert the triggers in rooms 31 and 34 to dummy type.
         List<TRFloorDataEdit> edits = new()
         {
+            // Convert the triggers in rooms 31 and 34 to dummy type.
             new()
             {
                 RoomIndex = 31,
@@ -187,6 +187,57 @@ public class TR1KhamoonFDBuilder : InjectionBuilder
                                 Actions = new()
                                 {
                                     new() { Parameter = 41 },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+
+            // Add dummy triggers in rooms 10/18 in case the player reaches
+            // room 26 before the flipmap below.
+            new()
+            {
+                RoomIndex = 10,
+                X = 5,
+                Z = 5,
+                Fixes = new()
+                {
+                    new FDTrigCreateFix
+                    {
+                        Entries = new()
+                        {
+                            new FDTriggerEntry
+                            {
+                                TrigType = FDTrigType.Dummy,
+                                Mask = 31,
+                                Actions = new()
+                                {
+                                    new() { Parameter = 33 },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            new()
+            {
+                RoomIndex = 18,
+                X = 6,
+                Z = 5,
+                Fixes = new()
+                {
+                    new FDTrigCreateFix
+                    {
+                        Entries = new()
+                        {
+                            new FDTriggerEntry
+                            {
+                                TrigType = FDTrigType.Dummy,
+                                Mask = 31,
+                                Actions = new()
+                                {
+                                    new() { Parameter = 34 },
                                 },
                             },
                         },
