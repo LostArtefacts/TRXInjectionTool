@@ -1,47 +1,31 @@
-﻿using TRLevelControl.Model;
+﻿using System.Diagnostics;
+using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.FD;
 
-public class TR1TihocanFDBuilder : InjectionBuilder
+public class TR1TihocanFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
+        TR1Level tihocan = _control1.Read($"Resources/{TR1LevelNames.TIHOCAN}");
         InjectionData data = InjectionData.Create(InjectionType.FDFix, "tihocan_fd");
         data.FloorEdits = new()
         {
-            MakeRatTrigger(),
+            MakeRatTrigger(tihocan),
         };
 
         return new() { data };
     }
 
-    private static TRFloorDataEdit MakeRatTrigger()
+    private static TRFloorDataEdit MakeRatTrigger(TR1Level tihocan)
     {
         // Extend the rat trigger in room 62.
-        return new()
-        {
-            RoomIndex = 62,
-            X = 2,
-            Z = 7,
-            Fixes = new()
-            {
-                new FDTrigCreateFix
-                {
-                    Entries = new()
-                    {
-                        new FDTriggerEntry
-                        {
-                            Mask = 31,
-                            Actions = new()
-                            {
-                                new() { Parameter = 34 },
-                            },
-                        },
-                    },
-                },
-            },
-        };
+        FDTriggerEntry trigger = GetTrigger(tihocan, 47, 2, 7);
+        Debug.Assert(trigger != null);
+
+        return MakeTrigger(tihocan, 62, 2, 7, trigger.Clone() as FDTriggerEntry);
     }
 }

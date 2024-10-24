@@ -1,4 +1,7 @@
-﻿using TRLevelControl.Model;
+﻿using System.Diagnostics;
+using TRLevelControl;
+using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -8,50 +11,36 @@ public class TR1FollyFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
+        TR1Level folly = _control1.Read($"Resources/{TR1LevelNames.FOLLY}");
         InjectionData data = InjectionData.Create(InjectionType.FDFix, "folly_fd");
         data.FloorEdits = new()
         {
             MakeMusicOneShot(18, 1, 6),
-            CreateKeyMusic(),
+            CreateKeyMusic(folly),
             ShiftBoulderRoom(),
         };
-        data.FloorEdits.AddRange(ShiftNeptuneMusic());
+        data.FloorEdits.AddRange(ShiftNeptuneMusic(folly));
 
         return new() { data };
     }
 
-    private static TRFloorDataEdit CreateKeyMusic()
+    private static TRFloorDataEdit CreateKeyMusic(TR1Level folly)
     {
         // Play track 15 after the keys are all used.
-        return new()
+        return MakeTrigger(folly, 54, 1, 3, new()
         {
-            RoomIndex = 54,
-            X = 1,
-            Z = 3,
-            Fixes = new()
+            TrigType = FDTrigType.HeavyTrigger,
+            Mask = TRConsts.FullMask,
+            OneShot = true,
+            Actions = new()
             {
-                new FDTrigCreateFix
+                new()
                 {
-                    Entries = new()
-                    {
-                        new FDTriggerEntry
-                        {
-                            TrigType = FDTrigType.HeavyTrigger,
-                            Mask = 31,
-                            OneShot = true,
-                            Actions = new()
-                            {
-                                new()
-                                {
-                                    Action = FDTrigAction.PlaySoundtrack,
-                                    Parameter = 15
-                                },
-                            },
-                        },
-                    },
+                    Action = FDTrigAction.PlaySoundtrack,
+                    Parameter = 15
                 },
             },
-        };
+        });
     }
 
     private static TRFloorDataEdit ShiftBoulderRoom()
@@ -71,69 +60,23 @@ public class TR1FollyFDBuilder : FDBuilder
         };
     }
 
-    private static List<TRFloorDataEdit> ShiftNeptuneMusic()
+    private static List<TRFloorDataEdit> ShiftNeptuneMusic(TR1Level folly)
     {
         // Shift Neptune music trigger into the room itself. Added to two sectors in case the corner is clipped.
+        FDTriggerEntry musicTrig = GetTrigger(folly, 4, 4, 1);
+        Debug.Assert(musicTrig != null);
+
         List<TRFloorDataEdit> edits = new()
         {
-            new()
-            {
-                RoomIndex = 4,
-                X = 4,
-                Z = 1,
-                Fixes = new()
-                {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDSlantEntry
-                            {
-                                Type = FDSlantType.Ceiling,
-                                ZSlant = 1
-                            },
-                        },
-                    },
-                },
-            },
-        };
-
-
-        FDTrigCreateFix music = new()
-        {
-            Entries = new()
-            {
-                new FDTriggerEntry
-                {
-                    TrigType = FDTrigType.Trigger,
-                    Mask = 31,
-                    OneShot = true,
-                    Actions = new()
-                    {
-                        new()
-                        {
-                            Action = FDTrigAction.FlipOn,
-                            Parameter = 1
-                        },
-                        new()
-                        {
-                            Action = FDTrigAction.PlaySoundtrack,
-                            Parameter = 3
-                        },
-                    },
-                },
-            },
+            RemoveTrigger(folly, 4, 4, 1),
         };
 
         for (ushort x = 3; x < 5; x++)
         {
-            edits.Add(new()
-            {
-                RoomIndex = 4,
-                X = x,
-                Z = 3,
-                Fixes = new() { music },
-            });
+            FDTriggerEntry trig = GetTrigger(folly, 4, x, 3);
+            trig.Actions.AddRange(musicTrig.Actions);
+            trig.OneShot = true;
+            edits.Add(MakeTrigger(folly, 4, x, 3, trig));
         }
 
         return edits;
