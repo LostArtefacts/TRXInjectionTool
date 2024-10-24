@@ -1,257 +1,134 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl;
+using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.FD;
 
-public class TR1KhamoonFDBuilder : InjectionBuilder
+public class TR1KhamoonFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
+        TR1Level khamoon = _control1.Read($"Resources/{TR1LevelNames.KHAMOON}");
         List<InjectionData> dataGroup = new();
 
         {
             InjectionData data = InjectionData.Create(InjectionType.FDFix, "khamoon_fd");
-            data.FloorEdits = CreateTrapdoorTriggers();
+            data.FloorEdits = CreateTrapdoorTriggers(khamoon);
             dataGroup.Add(data);
         }
 
         {
             InjectionData data = InjectionData.Create(InjectionType.Item, "khamoon_mummy");
-            data.FloorEdits = CreatePsxMummy();
+            data.FloorEdits = CreatePsxMummy(khamoon);
             dataGroup.Add(data);
         }
 
         return dataGroup;
     }
 
-    private static List<TRFloorDataEdit> CreateTrapdoorTriggers()
+    private static List<TRFloorDataEdit> CreateTrapdoorTriggers(TR1Level khamoon)
     {
         List<TRFloorDataEdit> edits = new()
         {
             // Convert the triggers in rooms 31 and 34 to dummy type.
-            new()
+            MakeTrigger(khamoon, 31, 2, 5, new()
             {
-                RoomIndex = 31,
-                X = 2,
-                Z = 5,
-                Fixes = new()
+                TrigType = FDTrigType.Dummy,
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDTriggerEntry
-                            {
-                                TrigType = FDTrigType.Dummy,
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 33 },
-                                },
-                            },
-                        },
-                    },
+                    new() { Parameter = 33 },
                 },
-            },
-            new()
+            }),
+            MakeTrigger(khamoon, 31, 3, 5, new()
             {
-                RoomIndex = 31,
-                X = 3,
-                Z = 5,
-                Fixes = new()
+                TrigType = FDTrigType.Dummy,
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDTriggerEntry
-                            {
-                                TrigType = FDTrigType.Dummy,
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 34 },
-                                },
-                            },
-                        },
-                    },
+                    new() { Parameter = 34 },
                 },
-            },
+            }),
 
-            new()
+            MakeTrigger(khamoon, 34, 1, 7, new()
             {
-                RoomIndex = 34,
-                X = 1,
-                Z = 7,
-                Fixes = new()
+                TrigType = FDTrigType.Dummy,
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDSlantEntry
-                            {
-                                Type = FDSlantType.Floor,
-                                XSlant = -2,
-                                ZSlant = 2,
-                            },
-                            new FDTriggerEntry
-                            {
-                                TrigType = FDTrigType.Dummy,
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 40 },
-                                },
-                            },
-                        },
-                    },
+                    new() { Parameter = 40 },
                 },
-            },
-            new()
+            }),
+            MakeTrigger(khamoon, 34, 2, 7, new()
             {
-                RoomIndex = 34,
-                X = 2,
-                Z = 7,
-                Fixes = new()
+                TrigType = FDTrigType.Dummy,
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDTriggerEntry
-                            {
-                                TrigType = FDTrigType.Dummy,
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 42 },
-                                },
-                            },
-                        },
-                    },
+                    new() { Parameter = 42 },
                 },
-            },
-            new()
+            }),
+            MakeTrigger(khamoon, 34, 1, 8, new()
             {
-                RoomIndex = 34,
-                X = 1,
-                Z = 8,
-                Fixes = new()
+                TrigType = FDTrigType.Dummy,
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDSlantEntry
-                            {
-                                Type = FDSlantType.Floor,
-                                XSlant = -2,
-                                ZSlant = 2,
-                            },
-                            new FDTriggerEntry
-                            {
-                                TrigType = FDTrigType.Dummy,
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 39 },
-                                },
-                            },
-                        },
-                    },
+                    new() { Parameter = 39 },
                 },
-            },
-            new()
+            }),
+            MakeTrigger(khamoon, 34, 2, 8, new()
             {
-                RoomIndex = 34,
-                X = 2,
-                Z = 8,
-                Fixes = new()
+                TrigType = FDTrigType.Dummy,
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDSlantEntry
-                            {
-                                Type = FDSlantType.Floor,
-                                XSlant = -2,
-                                ZSlant = 2,
-                            },
-                            new FDTriggerEntry
-                            {
-                                TrigType = FDTrigType.Dummy,
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 41 },
-                                },
-                            },
-                        },
-                    },
+                    new() { Parameter = 41 },
                 },
-            },
+            }),
 
             // Add dummy triggers in rooms 10/18 in case the player reaches
             // room 26 before the flipmap below.
-            new()
+            MakeTrigger(khamoon, 10, 5, 5, new()
             {
-                RoomIndex = 10,
-                X = 5,
-                Z = 5,
-                Fixes = new()
+                TrigType = FDTrigType.Dummy,
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDTriggerEntry
-                            {
-                                TrigType = FDTrigType.Dummy,
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 33 },
-                                },
-                            },
-                        },
-                    },
+                    new() { Parameter = 33 },
                 },
-            },
-            new()
+            }),
+            MakeTrigger(khamoon, 18, 6, 5, new()
             {
-                RoomIndex = 18,
-                X = 6,
-                Z = 5,
-                Fixes = new()
+                TrigType = FDTrigType.Dummy,
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDTriggerEntry
-                            {
-                                TrigType = FDTrigType.Dummy,
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 34 },
-                                },
-                            },
-                        },
-                    },
+                    new() { Parameter = 34 },
                 },
-            },
+            }),
         };
 
         return edits;
     }
 
-    private static List<TRFloorDataEdit> CreatePsxMummy()
+    private static List<TRFloorDataEdit> CreatePsxMummy(TR1Level khamoon)
     {
         // Add the mummy from the PS version and trigger it.
+        TR1Entity mummy = new()
+        {
+            TypeID = TR1Type.NonShootingAtlantean_N,
+            Room = 25,
+            X = 43520,
+            Y = -4096,
+            Z = 34304,
+            Intensity = -1,
+            Flags = 256,
+        };
+        khamoon.Entities.Add(mummy);
+
         List<TRFloorDataEdit> edits = new()
         {
             new()
@@ -261,16 +138,7 @@ public class TR1KhamoonFDBuilder : InjectionBuilder
                 {
                     new FDTrigItem
                     {
-                        Item = new()
-                        {
-                            TypeID = TR1Type.NonShootingAtlantean_N,
-                            Room = 25,
-                            X = 43520,
-                            Y = -4096,
-                            Z = 34304,
-                            Intensity = -1,
-                            Flags = 256,
-                        }
+                        Item = mummy,
                     }
                 },
             }
@@ -279,29 +147,14 @@ public class TR1KhamoonFDBuilder : InjectionBuilder
         short[] trigRooms = new short[] { 20, 29 };
         foreach (short room in trigRooms)
         {
-            edits.Add(new()
+            edits.Add(MakeTrigger(khamoon, room, 3, 8, new()
             {
-                RoomIndex = room,
-                X = 3,
-                Z = 8,
-                Fixes = new()
+                Mask = TRConsts.FullMask,
+                Actions = new()
                 {
-                    new FDTrigCreateFix
-                    {
-                        Entries = new()
-                        {
-                            new FDTriggerEntry
-                            {
-                                Mask = 31,
-                                Actions = new()
-                                {
-                                    new() { Parameter = 93 },
-                                }
-                            }
-                        }
-                    }
+                    new() { Parameter = (short)(khamoon.Entities.Count - 1) },
                 }
-            });
+            }));
         }
 
         return edits;
