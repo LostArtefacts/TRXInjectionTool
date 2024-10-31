@@ -31,8 +31,12 @@ public class TR1FontBuilder : InjectionBuilder
         }
 
         TRImage image = _imageCache[path];
-        Rectangle bounds = new(glyph.x, glyph.y, glyph.w, glyph.h);
+        if (!_imageCache.ContainsKey(glyph.filename))
+        {
+            _imageCache[glyph.filename] = new(glyph.filename);
+        }
 
+        Rectangle bounds = new(glyph.x, glyph.y, glyph.w, glyph.h);
         return image.Export(bounds);
     }
 
@@ -84,6 +88,7 @@ public class TR1FontBuilder : InjectionBuilder
         _control1.Write(caves, MakeOutputPath(TRGameVersion.TR1, $"Debug/{ID}.phd"));
 
         InjectionData data = InjectionData.Create(caves, InjectionType.General, ID);
+
         return new() { data };
     }
 }
