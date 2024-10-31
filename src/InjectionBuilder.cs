@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Newtonsoft.Json;
+using System.Drawing;
 using TRDataControl;
 using TRImageControl;
 using TRImageControl.Packing;
@@ -125,6 +126,16 @@ public abstract class InjectionBuilder
         }
 
         return new(palette.Select(c => c.ToTRColour()));
+    }
+
+    protected static T DeserializeFile<T>(string path)
+    {
+        return Deserialize<T>(File.ReadAllText(path));
+    }
+
+    protected static T Deserialize<T>(string data)
+    {
+        return JsonConvert.DeserializeObject<T>(data);
     }
 
     public static string MakeOutputPath(InjectionData data)
