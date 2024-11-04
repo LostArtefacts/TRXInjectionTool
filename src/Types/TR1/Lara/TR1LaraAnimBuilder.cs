@@ -29,6 +29,9 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         SurfToWade = 178,
         SurfToWadeLow = 179,
         UWToStand = 180,
+        SwimToHuddle = 181,
+        SwimToSprawl = 182,
+        SwimToMedium = 183,
     };
 
     enum InjState : int
@@ -54,6 +57,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         ImportUWRoll(tr1Lara);
         ImportWading(tr1Lara, tr2Lara);
         ImportWetFeet(tr1Lara, caves);
+        ImportTR2Gliding(tr1Lara, tr2Lara);
 
         // This can be opened in WADTool for debugging what ends up in the game itself.
         _control1.Write(caves, "Output/ExtendedLaraAnims.phd");
@@ -619,6 +623,49 @@ public class TR1LaraAnimBuilder : InjectionBuilder
             copy.StateID = (ushort)InjState.Responsive;
             tr1Lara.Animations[0].Changes.Add(copy);
         }
+    }
+
+    private static void ImportTR2Gliding(TRModel tr1Lara, TRModel tr2Lara)
+    {
+        Dictionary<int, InjAnim> map = new()
+        {
+            [198] = InjAnim.SwimToHuddle,
+            [199] = InjAnim.SwimToSprawl,
+            [200] = InjAnim.SwimToMedium,
+        };
+
+        foreach (int tr2Idx in map.Keys)
+        {
+            TRAnimation anim = tr2Lara.Animations[tr2Idx];
+            tr1Lara.Animations.Add(anim);
+        }
+
+        TRAnimation swimAnim = tr1Lara.Animations[86];
+        TRStateChange glideChange = swimAnim.Changes.Find(c => c.StateID == 18);
+        TRStateChange responsiveGlideChange = new()
+        {
+            StateID = (ushort)InjState.Responsive,
+            Dispatches = new(),
+        };
+        int index = swimAnim.Changes.IndexOf(glideChange);
+        swimAnim.Changes.Insert(index + 1, responsiveGlideChange);
+
+        // Duplicate the original dispatches, but the lowest frame range needs incresing by 3.
+        TRAnimDispatch ogDispatch = glideChange.Dispatches.Find(d => d.Low == 0).Clone();
+        ogDispatch.High = 5;
+        responsiveGlideChange.Dispatches.Add(ogDispatch);
+        responsiveGlideChange.Dispatches.Add(glideChange.Dispatches.Find(d => d.Low != 0).Clone());
+
+        List<TRAnimDispatch> extraDispatches = tr2Lara.Animations[86].Changes.Find(c => c.StateID == 18)
+            .Dispatches.FindAll(d => d.NextAnimation != 87);
+        foreach (TRAnimDispatch dispatch in extraDispatches.Select(d => d.Clone()))
+        {
+            dispatch.NextAnimation = (short)map[dispatch.NextAnimation];
+            responsiveGlideChange.Dispatches.Add(dispatch);
+        }
+
+        // Not essential, but easier to read in WADTool
+        responsiveGlideChange.Dispatches.Sort((d1, d2) => d1.Low.CompareTo(d2.Low));
     }
 
     static void ResetLevel(TR1Level level)
