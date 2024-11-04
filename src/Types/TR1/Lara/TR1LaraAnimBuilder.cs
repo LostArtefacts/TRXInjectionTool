@@ -36,38 +36,30 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         Twist = 57,
         UWRoll = 58,
         Wade = 59,
+        Responsive = 60,
     };
 
     public override List<InjectionData> Build()
     {
         List<InjectionData> dataGroup = new();
 
-        {
-            TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
-            TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
-            ResetLevel(caves);
+        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        ResetLevel(caves);
 
-            TRModel tr1Lara = caves.Models[TR1Type.Lara];
-            TRModel tr2Lara = wall.Models[TR2Type.Lara];
-            ImportJumpTwist(tr1Lara, tr2Lara);
-            ImportUWRoll(tr1Lara);
-            ImportWading(tr1Lara, tr2Lara);
-            ImportWetFeet(tr1Lara, caves);
+        TRModel tr1Lara = caves.Models[TR1Type.Lara];
+        TRModel tr2Lara = wall.Models[TR2Type.Lara];
+        ImportTR2Jumping(tr1Lara, tr2Lara);
+        ImportJumpTwist(tr1Lara, tr2Lara);
+        ImportUWRoll(tr1Lara);
+        ImportWading(tr1Lara, tr2Lara);
+        ImportWetFeet(tr1Lara, caves);
 
-            // This can be opened in WADTool for debugging what ends up in the game itself.
-            _control1.Write(caves, "Output/ExtendedLaraAnims.phd");
+        // This can be opened in WADTool for debugging what ends up in the game itself.
+        _control1.Write(caves, "Output/ExtendedLaraAnims.phd");
 
-            InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
-            dataGroup.Add(data);
-        }
-
-        {
-            // TR2-style jumping is separate as the anim ranges are replaced in this case,
-            // and we have to respect the config option for OG jumping.
-            InjectionData data = InjectionData.Create(InjectionType.LaraJumps, "lara_jumping");
-            ImportTR2Jumping(data);
-            dataGroup.Add(data);
-        }
+        InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
+        dataGroup.Add(data);
 
         return dataGroup;
     }
@@ -612,31 +604,21 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         }
     }
 
-    private static void ImportTR2Jumping(InjectionData data)
+    private static void ImportTR2Jumping(TRModel tr1Lara, TRModel tr2Lara)
     {
-        // Replace the ranges in which Lara is permitted to jump.
-        data.AnimRangeEdits.Add(new()
+        // Replicate TR2's responsive jumping state change ranges. The engine will
+        // handle the new responsive state based on the player's setting, picking
+        // either TR2's ranges or OG delayed jumping. Target state becomes "jump"
+        // when the animation is reached, so responsive state is just a placeholder.
+        IEnumerable<TRStateChange> runToJumpChanges = tr2Lara.Animations[0].Changes
+            .Where(s => s.StateID == 3);
+
+        foreach (TRStateChange change in runToJumpChanges)
         {
-            ModelID = (uint)TR1Type.Lara,
-            AnimIndex = 0,
-            Ranges = new()
-            {
-                new()
-                {
-                    ChangeOffset = 2,
-                    RangeOffset = 0,
-                    Low = 11,
-                    High = 22,
-                },
-                new()
-                {
-                    ChangeOffset = 2,
-                    RangeOffset = 1,
-                    Low = 0,
-                    High = 11,
-                }
-            }
-        });
+            TRStateChange copy = change.Clone();
+            copy.StateID = (ushort)InjState.Responsive;
+            tr1Lara.Animations[0].Changes.Add(copy);
+        }
     }
 
     static void ResetLevel(TR1Level level)
