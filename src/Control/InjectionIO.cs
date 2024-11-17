@@ -15,6 +15,11 @@ public static class InjectionIO
             Magic = MakeTag('T', '1', 'M', 'J'),
             Iteration = 8,
         },
+        [LC.Model.TRGameVersion.TR2] = new()
+        {
+            Magic = MakeTag('T', '2', 'X', 'J'),
+            Iteration = 1,
+        },
     };
 
     public static void Export(InjectionData data, string file)
@@ -43,6 +48,9 @@ public static class InjectionIO
             case LC.Model.TRGameVersion.TR1:
                 WriteTR1Data(data, writer);
                 break;
+            case LC.Model.TRGameVersion.TR2:
+                WriteTR2Data(data, writer);
+                break;
         }
 
         return stream.ToArray();
@@ -56,8 +64,7 @@ public static class InjectionIO
 
         {
             // Header
-            WriteVersion(data, writer);
-            writer.Write((uint)data.InjectionType);
+            WriteVersionAndType(data, writer);
             writer.Write((uint)data.Images8.Count);
             writer.Write((uint)data.ObjectTextures.Count);
             writer.Write((uint)data.SpriteTextures.Count);
@@ -125,11 +132,26 @@ public static class InjectionIO
         }
     }
 
-    private static void WriteVersion(InjectionData data, TRLevelWriter writer)
+    private static void WriteTR2Data(InjectionData data, TRLevelWriter writer)
+    {
+        {
+            // Header
+            WriteVersionAndType(data, writer);
+            writer.Write((uint)data.FloorEdits.Count);
+        }
+
+        {
+            // Injection edits
+            data.FloorEdits.ForEach(f => f.Serialize(writer));
+        }
+    }
+
+    private static void WriteVersionAndType(InjectionData data, TRLevelWriter writer)
     {
         InjectionVersion version = _versions[data.GameVersion];
         writer.Write(version.Magic);
         writer.Write(version.Iteration);
+        writer.Write((uint)data.InjectionType);
     }
 
     private static TRColour SquashColour(TRColour colour)
