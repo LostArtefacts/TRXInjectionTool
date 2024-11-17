@@ -126,4 +126,16 @@ public abstract class InjectionBuilder
 
         return new(palette.Select(c => c.ToTRColour()));
     }
+
+    public static string MakeOutputPath(InjectionData data)
+    {
+        return MakeOutputPath(data.GameVersion, $"{data.Name}.bin");
+    }
+
+    public static string MakeOutputPath(TRGameVersion version, string path)
+    {
+        string fullPath = $"Output/{version}/{path}";
+        Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+        return fullPath;
+    }
 }

@@ -60,7 +60,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         ImportTR2Gliding(tr1Lara, tr2Lara);
 
         // This can be opened in WADTool for debugging what ends up in the game itself.
-        _control1.Write(caves, "Output/ExtendedLaraAnims.phd");
+        _control1.Write(caves, MakeOutputPath(TRGameVersion.TR1, "Debug/ExtendedLaraAnims.phd"));
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);

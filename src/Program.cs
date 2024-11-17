@@ -58,11 +58,12 @@ internal class Program
 
                     foreach (InjectionData data in dataGroup)
                     {
-                        InjectionIO.Export(data, $"Output/{data.Name}.bin");
-                        if (!usedNames.Add(data.Name))
+                        string path = InjectionBuilder.MakeOutputPath(data);
+                        InjectionIO.Export(data, path);
+                        if (!usedNames.Add(path))
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine($"\t\tWARNING: {data.Name} is already defined");
+                            Console.WriteLine($"\t\tWARNING: {path} is already defined");
                             Console.ResetColor();
                         }
                     }
