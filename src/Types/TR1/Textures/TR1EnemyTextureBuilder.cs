@@ -51,7 +51,7 @@ public class TR1EnemyTextureBuilder : TextureBuilder
 
     private static InjectionData FixSkateboardKid()
     {
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "skateboardkid_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "skateboardkid_textures");
 
         // Fix the yellow patches on this model with skin tone.
         data.Palette[1] = new()
@@ -85,7 +85,7 @@ public class TR1EnemyTextureBuilder : TextureBuilder
 
     private static InjectionData FixCowboy()
     {
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "cowboy_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "cowboy_textures");
 
         // Fix the yellow patches on this model with skin tone.
         data.Palette[1] = new()
@@ -119,7 +119,7 @@ public class TR1EnemyTextureBuilder : TextureBuilder
 
     private static InjectionData FixKold()
     {
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "kold_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "kold_textures");
 
         // Fix the orange patches on this model with skin tone.
         data.Palette[1] = new()

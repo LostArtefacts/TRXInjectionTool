@@ -8,7 +8,7 @@ public class TR1ToQFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "qualopec_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "qualopec_fd");
         data.FloorEdits = new()
         {
             // We make the track in this corridor one shot and "nullify" the

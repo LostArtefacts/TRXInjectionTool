@@ -10,7 +10,7 @@ public class TR1SanctuaryTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR1Level sanctuary = _control1.Read($"Resources/{TR1LevelNames.SANCTUARY}");
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "sanctuary_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "sanctuary_textures");
 
         data.RoomEdits.AddRange(CreateFillers(sanctuary));
         data.RoomEdits.AddRange(CreateRefacings());

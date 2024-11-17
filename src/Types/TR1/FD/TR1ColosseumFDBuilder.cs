@@ -8,7 +8,7 @@ public class TR1ColosseumFDBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "colosseum_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "colosseum_fd");
         data.FloorEdits = CreateBatTriggerFixes();
 
         return new() { data };

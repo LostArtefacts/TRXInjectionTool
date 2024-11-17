@@ -11,7 +11,7 @@ public class TR1CisternFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         TR1Level cistern = _control1.Read($"Resources/{TR1LevelNames.CISTERN}");
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "cistern_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "cistern_fd");
         data.FloorEdits = new()
         {
             MakeKeyTrigger(cistern),

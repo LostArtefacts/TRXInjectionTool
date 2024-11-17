@@ -14,13 +14,13 @@ public class TR1KhamoonFDBuilder : FDBuilder
         List<InjectionData> dataGroup = new();
 
         {
-            InjectionData data = InjectionData.Create(InjectionType.FDFix, "khamoon_fd");
+            InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "khamoon_fd");
             data.FloorEdits = CreateTrapdoorTriggers(khamoon);
             dataGroup.Add(data);
         }
 
         {
-            InjectionData data = InjectionData.Create(InjectionType.Item, "khamoon_mummy");
+            InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.Item, "khamoon_mummy");
             data.FloorEdits = CreatePsxMummy(khamoon);
             dataGroup.Add(data);
         }

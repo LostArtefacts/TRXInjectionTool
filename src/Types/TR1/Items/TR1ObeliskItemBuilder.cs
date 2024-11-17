@@ -9,7 +9,7 @@ public class TR1ObeliskItemBuilder : ItemBuilder
     public override List<InjectionData> Build()
     {
         TR1Level obelisk = _control1.Read($"Resources/{TR1LevelNames.OBELISK}");
-        InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "obelisk_itemrots");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "obelisk_itemrots");
 
         data.ItemEdits = new()
         {

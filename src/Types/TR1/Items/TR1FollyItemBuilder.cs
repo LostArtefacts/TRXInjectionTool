@@ -9,7 +9,7 @@ public class TR1FollyItemBuilder : ItemBuilder
     public override List<InjectionData> Build()
     {
         TR1Level folly = _control1.Read($"Resources/{TR1LevelNames.FOLLY}");
-        InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "folly_itemrots");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "folly_itemrots");
 
         data.ItemEdits = new()
         {

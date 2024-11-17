@@ -10,7 +10,7 @@ public class TR1MidasTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR1Level midas = _control1.Read($"Resources/{TR1LevelNames.MIDAS}");
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "midas_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "midas_textures");
 
         data.RoomEdits.AddRange(CreateFillers(midas));
         data.RoomEdits.AddRange(CreateRefacings());

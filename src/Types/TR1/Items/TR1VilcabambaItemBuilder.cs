@@ -9,7 +9,7 @@ public class TR1VilcabambaItemBuilder : ItemBuilder
     public override List<InjectionData> Build()
     {
         TR1Level vilcabamba = _control1.Read($"Resources/{TR1LevelNames.VILCABAMBA}");
-        InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "vilcabamba_itemrots");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "vilcabamba_itemrots");
 
         data.ItemEdits = new()
         {

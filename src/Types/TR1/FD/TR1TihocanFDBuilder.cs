@@ -11,7 +11,7 @@ public class TR1TihocanFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         TR1Level tihocan = _control1.Read($"Resources/{TR1LevelNames.TIHOCAN}");
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "tihocan_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "tihocan_fd");
         data.FloorEdits = new()
         {
             MakeRatTrigger(tihocan),

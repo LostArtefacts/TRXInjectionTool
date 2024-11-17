@@ -8,7 +8,7 @@ public class TR1MinesFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "mines_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "mines_fd");
         data.FloorEdits = new()
         {
             MakeMusicOneShot(86, 1, 5),

@@ -2,12 +2,20 @@
 using TRLevelReader.Model;
 using TRXInjectionTool.Actions;
 
+using LC = TRLevelControl;
+
 namespace TRXInjectionTool.Control;
 
 public static class InjectionIO
 {
-    public static readonly uint Magic = MakeTag('T', '1', 'M', 'J');
-    public static readonly uint CurrentVersion = 8;
+    private static readonly Dictionary<LC.Model.TRGameVersion, InjectionVersion> _versions = new()
+    {
+        [LC.Model.TRGameVersion.TR1] = new()
+        {
+            Magic = MakeTag('T', '1', 'M', 'J'),
+            Iteration = 8,
+        },
+    };
 
     public static void Export(InjectionData data, string file)
     {
@@ -22,17 +30,33 @@ public static class InjectionIO
 
     public static byte[] Serialize(InjectionData data)
     {
+        if (!_versions.ContainsKey(data.GameVersion))
+        {
+            throw new NotSupportedException();
+        }
+
         using MemoryStream stream = new();
         using TRLevelWriter writer = new(stream);
 
+        switch (data.GameVersion)
+        {
+            case LC.Model.TRGameVersion.TR1:
+                WriteTR1Data(data, writer);
+                break;
+        }
+
+        return stream.ToArray();
+    }
+
+    private static void WriteTR1Data(InjectionData data, TRLevelWriter writer)
+    {
         List<byte> meshData = new();
         foreach (TRMesh mesh in data.Meshes)
             meshData.AddRange(mesh.Serialize());
 
         {
             // Header
-            writer.Write(Magic);
-            writer.Write(CurrentVersion);
+            WriteVersion(data, writer);
             writer.Write((uint)data.InjectionType);
             writer.Write((uint)data.Images8.Count);
             writer.Write((uint)data.ObjectTextures.Count);
@@ -99,8 +123,13 @@ public static class InjectionIO
             data.AnimRangeEdits.ForEach(a => a.Serialize(writer));
             data.ItemEdits.ForEach(i => i.Serialize(writer));
         }
+    }
 
-        return stream.ToArray();
+    private static void WriteVersion(InjectionData data, TRLevelWriter writer)
+    {
+        InjectionVersion version = _versions[data.GameVersion];
+        writer.Write(version.Magic);
+        writer.Write(version.Iteration);
     }
 
     private static TRColour SquashColour(TRColour colour)
@@ -135,4 +164,10 @@ public static class InjectionIO
             writer.Write(sizes[room]);
         }
     }
+}
+
+public class InjectionVersion
+{
+    public uint Magic { get; set; }
+    public uint Iteration { get; set; }
 }

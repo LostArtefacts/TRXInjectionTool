@@ -1,4 +1,5 @@
-﻿using TRXInjectionTool.Actions;
+﻿using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Textures;
@@ -7,7 +8,7 @@ public class TR1Cut4TextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "cut4_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "cut4_textures");
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());

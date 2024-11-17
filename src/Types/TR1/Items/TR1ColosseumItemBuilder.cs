@@ -9,7 +9,7 @@ public class TR1ColosseumItemBuilder : ItemBuilder
     public override List<InjectionData> Build()
     {
         TR1Level colosseum = _control1.Read($"Resources/{TR1LevelNames.COLOSSEUM}");
-        InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "colosseum_itemrots");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "colosseum_itemrots");
 
         data.ItemEdits = new()
         {

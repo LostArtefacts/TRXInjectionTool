@@ -1,4 +1,5 @@
-﻿using TRXInjectionTool.Control;
+﻿using TRLevelControl.Model;
+using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.FD;
 
@@ -6,7 +7,7 @@ public class TR1EgyptFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "egypt_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "egypt_fd");
         data.FloorEdits = new()
         {
             MakeMusicOneShot(0, 3, 3),

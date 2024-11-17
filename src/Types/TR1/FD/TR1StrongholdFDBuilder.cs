@@ -9,7 +9,7 @@ public class TR1StrongholdFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "stronghold_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "stronghold_fd");
         data.FloorEdits = new()
         {
             MakeMusicOneShot(4, 17, 6),

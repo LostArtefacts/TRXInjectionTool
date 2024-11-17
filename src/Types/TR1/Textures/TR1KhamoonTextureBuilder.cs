@@ -10,7 +10,7 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR1Level khamoon = _control1.Read($"Resources/{TR1LevelNames.KHAMOON}");
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "khamoon_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "khamoon_textures");
 
         data.RoomEdits.AddRange(CreateFillers(khamoon));
         data.RoomEdits.AddRange(CreateRefacings());

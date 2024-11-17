@@ -12,7 +12,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR1Level colosseum = _control1.Read($"Resources/{TR1LevelNames.COLOSSEUM}");
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "colosseum_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "colosseum_textures");
 
         data.RoomEdits.AddRange(CreateVertices(colosseum));
         data.RoomEdits.AddRange(CreateFillers(colosseum));

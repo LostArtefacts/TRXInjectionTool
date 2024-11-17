@@ -8,7 +8,7 @@ public class TR1PyramidFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "pyramid_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "pyramid_fd");
         data.FloorEdits = new()
         {
             MakeMusicOneShot(36, 4, 5),

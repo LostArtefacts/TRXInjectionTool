@@ -10,7 +10,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR1Level toq = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
-        InjectionData data = InjectionData.Create(InjectionType.TextureFix, "qualopec_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "qualopec_textures");
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());

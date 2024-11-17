@@ -9,7 +9,7 @@ public class TR1CatItemBuilder : ItemBuilder
     public override List<InjectionData> Build()
     {
         TR1Level cat = _control1.Read($"Resources/{TR1LevelNames.CAT}");
-        InjectionData data = InjectionData.Create(InjectionType.ItemRotation, "cat_itemrots");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "cat_itemrots");
 
         data.ItemEdits = new()
         {

@@ -12,7 +12,7 @@ public class TR1FollyFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         TR1Level folly = _control1.Read($"Resources/{TR1LevelNames.FOLLY}");
-        InjectionData data = InjectionData.Create(InjectionType.FDFix, "folly_fd");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "folly_fd");
         data.FloorEdits = new()
         {
             MakeMusicOneShot(18, 1, 6),

@@ -25,7 +25,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         }
 
         {
-            InjectionData data = InjectionData.Create(InjectionType.Braid, "braid_valley");
+            InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.Braid, "braid_valley");
             AddValleyHeadEdits(data);
 
             dataGroup.Add(data);
@@ -52,14 +52,14 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         }
 
         {
-            InjectionData data = InjectionData.Create(InjectionType.Braid, "backpack");
+            InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.Braid, "backpack");
             AddDefaultBackpackEdits(data);
 
             dataGroup.Add(data);
         }
 
         {
-            InjectionData data = InjectionData.Create(InjectionType.Braid, "backpack_cut");
+            InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.Braid, "backpack_cut");
             AddCutsceneBackpackEdits(data);
 
             dataGroup.Add(data);

@@ -9,7 +9,7 @@ public class InjectionData
 {
     public string Name { get; set; }
     public InjectionType InjectionType { get; set; }
-    public uint Version { get; set; }
+    public LC.Model.TRGameVersion GameVersion { get; set; }
     public List<TRTexImage8> Images8 { get; set; } = new();
     public List<TRObjectTexture> ObjectTextures { get; set; } = new();
     public List<TRSpriteSequence> SpriteSequences { get; set; } = new();
@@ -35,12 +35,13 @@ public class InjectionData
 
     private InjectionData() { }
 
-    public static InjectionData Create(InjectionType type, string name)
+    public static InjectionData Create(LC.Model.TRGameVersion version, InjectionType type, string name)
     {
         InjectionData data = new()
         {
             InjectionType = type,
             Name = name,
+            GameVersion = version,
         };
 
         // Palette is always required.
