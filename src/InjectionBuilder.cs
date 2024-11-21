@@ -15,6 +15,8 @@ public abstract class InjectionBuilder
     protected static readonly TR2LevelControl _control2 = new();
     protected static readonly TR3LevelControl _control3 = new();
 
+    public virtual string ID { get; } = string.Empty;
+
     public abstract List<InjectionData> Build();
 
     protected static void ResetLevel(TR1Level level, uint texturePageCount = 0)

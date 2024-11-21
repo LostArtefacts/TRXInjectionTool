@@ -13,6 +13,8 @@ public class TR1FontBuilder : InjectionBuilder
     private readonly List<GlyphDef> _glyphDefs;
     private readonly Dictionary<string, TRImage> _imageCache;
 
+    public override string ID => "font";
+
     public TR1FontBuilder()
     {
         _glyphDefs = DeserializeFile<List<GlyphDef>>("Resources/TR1/Font/glyph_info.json");
@@ -78,9 +80,9 @@ public class TR1FontBuilder : InjectionBuilder
 
         caves.Sprites[TR1Type.FontGraphics_S_H] = font;
 
-        _control1.Write(caves, "Output/font.phd");
+        _control1.Write(caves, MakeOutputPath(TRGameVersion.TR1, $"Debug/{ID}.phd"));
 
-        InjectionData data = InjectionData.Create(caves, InjectionType.General, "font");
+        InjectionData data = InjectionData.Create(caves, InjectionType.General, ID);
         return new() { data };
     }
 }
