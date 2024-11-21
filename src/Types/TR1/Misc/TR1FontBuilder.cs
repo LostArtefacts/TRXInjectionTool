@@ -88,7 +88,6 @@ public class TR1FontBuilder : InjectionBuilder
         _control1.Write(caves, MakeOutputPath(TRGameVersion.TR1, $"Debug/{ID}.phd"));
 
         InjectionData data = InjectionData.Create(caves, InjectionType.General, ID);
-
         return new() { data };
     }
 }
