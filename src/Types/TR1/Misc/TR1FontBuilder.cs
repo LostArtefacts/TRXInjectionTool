@@ -46,9 +46,11 @@ public class TR1FontBuilder : InjectionBuilder
             {
                 Bounds = new(glyph.x, glyph.y, glyph.w, glyph.h),
                 Alignment = new()
-                {
-                    Top = (short)(-glyph.h),
-                    Right = (short)(glyph.w),
+                {                    
+                    Left = glyph.l,
+                    Top = glyph.t,
+                    Right = glyph.r,
+                    Bottom = glyph.b,
                 },
             };
 
@@ -92,4 +94,8 @@ public class GlyphDef
     public int y { get; set; }
     public int w { get; set; }
     public int h { get; set; }
+    public short l { get; set; }
+    public short t { get; set; }
+    public short r { get; set; }
+    public short b { get; set; }
 }
