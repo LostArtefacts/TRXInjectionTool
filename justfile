@@ -6,5 +6,5 @@ restore:
 publish: restore
     dotnet publish -c Release -o out
 
-test:
-    out/TRXInjectionTool
+test *args:
+    out/TRXInjectionTool {{args}}

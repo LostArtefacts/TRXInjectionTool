@@ -24,12 +24,13 @@ public class TR1FontBuilder : InjectionBuilder
 
     public TRImage GetImage(GlyphDef glyph)
     {
-        if (!_imageCache.ContainsKey(glyph.filename))
+        string path = Path.Combine("Resources/TR1/Font", glyph.filename);
+        if (!_imageCache.ContainsKey(path))
         {
-            _imageCache[glyph.filename] = new(glyph.filename);
+            _imageCache[path] = new(path);
         }
 
-        TRImage image = _imageCache[glyph.filename];
+        TRImage image = _imageCache[path];
         Rectangle bounds = new(glyph.x, glyph.y, glyph.w, glyph.h);
 
         return image.Export(bounds);
@@ -48,7 +49,7 @@ public class TR1FontBuilder : InjectionBuilder
             {
                 Bounds = new(glyph.x, glyph.y, glyph.w, glyph.h),
                 Alignment = new()
-                {                    
+                {
                     Left = glyph.l,
                     Top = glyph.t,
                     Right = glyph.r,
