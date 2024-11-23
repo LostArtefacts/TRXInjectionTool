@@ -13,12 +13,13 @@ public abstract class TRRoomTextureEdit
         RotateFace,
         AddFace,
         AddVertex,
+        AddSprite,
     }
 
     public abstract TRRoomTextureFixType FixType { get; }
     public short RoomIndex { get; set; }
     public TRMeshFaceType FaceType { get; set; }
-    public abstract uint AdditionalMeshLength { get; }
+    public virtual ExtraMeshMeta Meta { get; } = ExtraMeshMeta.None;
 
     public void Serialize(TRLevelWriter writer)
     {
@@ -31,14 +32,20 @@ public abstract class TRRoomTextureEdit
     protected abstract void SerializeImpl(TRLevelWriter writer);
 }
 
+public enum ExtraMeshMeta
+{
+    None,
+    Vertex,
+    Quad,
+    Triangle,
+    Sprite,
+}
+
 public class TRRoomTextureReface : TRRoomTextureEdit
 {
     // Take the texture on level.Rooms[RoomIndex].{Rectangles|Triangles}[SourceIndex}
     // and apply it to level.Rooms[RoomIndex].{Rectangles|Triangles}[TargetIndex}
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.Reface;
-
-    public override uint AdditionalMeshLength => 0;
-
     public short SourceRoom { get; set; }
     public TRMeshFaceType SourceFaceType { get; set; }
     public short SourceIndex { get; set; }
@@ -56,7 +63,6 @@ public class TRRoomTextureReface : TRRoomTextureEdit
 public class TRRoomTextureMove : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.MoveFace;
-    public override uint AdditionalMeshLength => 0;
     public short TargetIndex { get; set; }
     public List<TRRoomVertexRemap> VertexRemap { get; set; }
 
@@ -71,7 +77,6 @@ public class TRRoomTextureMove : TRRoomTextureEdit
 public class TRRoomVertexMove : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.MoveVertex;
-    public override uint AdditionalMeshLength => 0;
     public ushort VertexIndex { get; set; }
     public TRVertex VertexChange { get; set; }
     public short ShadeChange { get; set; }
@@ -101,7 +106,8 @@ public class TRRoomVertexRemap
 public class TRRoomTextureCreate : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddFace;
-    public override uint AdditionalMeshLength => (uint)(Vertices.Count + 1);
+    public override ExtraMeshMeta Meta => Vertices.Count == 4 ? ExtraMeshMeta.Quad : ExtraMeshMeta.Triangle;
+
     public short SourceRoom { get; set; }
     public short SourceIndex { get; set; }
     public List<ushort> Vertices { get; set; }
@@ -117,7 +123,7 @@ public class TRRoomTextureCreate : TRRoomTextureEdit
 public class TRRoomVertexCreate : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddVertex;
-    public override uint AdditionalMeshLength => 4u;
+    public override ExtraMeshMeta Meta => ExtraMeshMeta.Vertex;
     public TR1RoomVertex Vertex { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer)
@@ -129,10 +135,23 @@ public class TRRoomVertexCreate : TRRoomTextureEdit
     }
 }
 
+public class TRRoomSpriteCreate : TRRoomTextureEdit
+{
+    public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddSprite;
+    public override ExtraMeshMeta Meta => ExtraMeshMeta.Sprite;
+    public ushort Vertex { get; set; }
+    public ushort Texture { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer)
+    {
+        writer.Write(Vertex);
+        writer.Write(Texture);
+    }
+}
+
 public class TRRoomTextureRotate : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.RotateFace;
-    public override uint AdditionalMeshLength => 0;
     public short TargetIndex { get; set; }
     public byte Rotations { get; set; }
 

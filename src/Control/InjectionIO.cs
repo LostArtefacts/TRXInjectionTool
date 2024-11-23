@@ -13,7 +13,7 @@ public static class InjectionIO
         [LC.Model.TRGameVersion.TR1] = new()
         {
             Magic = MakeTag('T', '1', 'M', 'J'),
-            Iteration = 8,
+            Iteration = 9,
         },
         [LC.Model.TRGameVersion.TR2] = new()
         {
@@ -166,25 +166,55 @@ public static class InjectionIO
 
     private static void WriteRoomMeshData(BinaryWriter writer, InjectionData data)
     {
-        Dictionary<short, uint> sizes = new();
+        // This is added to the header so the game knows in advance how much extra space
+        // to allocate to each room mesh we are manipulating.
+        Dictionary<short, RoomMeshMeta> meta = new();
         foreach (TRRoomTextureEdit edit in data.RoomEdits)
         {
-            uint size = edit.AdditionalMeshLength;
-            if (size == 0)
+            if (edit.Meta == ExtraMeshMeta.None)
+            {
                 continue;
+            }
 
-            if (!sizes.ContainsKey(edit.RoomIndex))
-                sizes[edit.RoomIndex] = size;
-            else
-                sizes[edit.RoomIndex] += size;
+            if (!meta.ContainsKey(edit.RoomIndex))
+            {
+                meta[edit.RoomIndex] = new();
+            }
+
+            switch (edit.Meta)
+            {
+                case ExtraMeshMeta.Vertex:
+                    meta[edit.RoomIndex].NumVertices++;
+                    break;
+                case ExtraMeshMeta.Quad:
+                    meta[edit.RoomIndex].NumQuads++;
+                    break;
+                case ExtraMeshMeta.Triangle:
+                    meta[edit.RoomIndex].NumTriangles++;
+                    break;
+                case ExtraMeshMeta.Sprite:
+                    meta[edit.RoomIndex].NumSprites++;
+                    break;
+            }
         }
 
-        writer.Write((uint)sizes.Count);
-        foreach (short room in sizes.Keys)
+        writer.Write((uint)meta.Count);
+        foreach (short room in meta.Keys)
         {
             writer.Write(room);
-            writer.Write(sizes[room]);
+            writer.Write(meta[room].NumVertices);
+            writer.Write(meta[room].NumQuads);
+            writer.Write(meta[room].NumTriangles);
+            writer.Write(meta[room].NumSprites);
         }
+    }
+
+    private class RoomMeshMeta
+    {
+        public short NumVertices { get; set; }
+        public short NumQuads { get; set; }
+        public short NumTriangles { get; set; }
+        public short NumSprites { get; set; }
     }
 }
 
