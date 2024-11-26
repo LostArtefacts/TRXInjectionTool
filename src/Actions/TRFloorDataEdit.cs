@@ -11,13 +11,13 @@ public class TRFloorDataEdit
     public ushort Z { get; set; }
     public List<FDFix> Fixes { get; set; }
 
-    public void Serialize(TRLevelWriter writer)
+    public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write(RoomIndex);
         writer.Write(X);
         writer.Write(Z);
         writer.Write((uint)Fixes.Count);
-        Fixes.ForEach(f => f.Serialize(writer));
+        Fixes.ForEach(f => f.Serialize(writer, version));
     }
 }
 
@@ -34,13 +34,13 @@ public abstract class FDFix
 {
     public abstract FDFixType FixType { get; }
 
-    public void Serialize(TRLevelWriter writer)
+    public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write((uint)FixType);
-        SerializeImpl(writer);
+        SerializeImpl(writer, version);
     }
 
-    protected abstract void SerializeImpl(TRLevelWriter writer);
+    protected abstract void SerializeImpl(TRLevelWriter writer, TRGameVersion version);
 }
 
 public class FDTrigItem : FDFix
@@ -48,7 +48,7 @@ public class FDTrigItem : FDFix
     public override FDFixType FixType => FDFixType.TrigItem;
     public TR1Entity Item { get; set; }
 
-    protected override void SerializeImpl(TRLevelWriter writer)
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write(Item);
     }
@@ -61,7 +61,7 @@ public class FDTrigParamFix : FDFix
     public short OldParam { get; set; }
     public short NewParam { get; set; }
 
-    protected override void SerializeImpl(TRLevelWriter writer)
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write((byte)ActionType);
         writer.Write(OldParam);
@@ -74,15 +74,15 @@ public class FDTrigCreateFix : FDFix
     public override FDFixType FixType => FDFixType.TrigCreate;
     public List<FDEntry> Entries { get; set; }
 
-    private List<ushort> Flatten()
+    private List<ushort> Flatten(TRGameVersion version)
     {
-        TRFDBuilder builder = new(TRGameVersion.TR1);
+        TRFDBuilder builder = new(version);
         return builder.Flatten(Entries);
     }
 
-    protected override void SerializeImpl(TRLevelWriter writer)
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
-        List<ushort> data = Flatten();
+        List<ushort> data = Flatten(version);
         writer.Write((uint)data.Count);
         writer.Write(data);
     }
@@ -92,7 +92,7 @@ public class FDMusicOneShot : FDFix
 {
     public override FDFixType FixType => FDFixType.MusicOneShot;
 
-    protected override void SerializeImpl(TRLevelWriter writer) { }
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version) { }
 }
 
 public class FDRoomShift : FDFix
@@ -102,7 +102,7 @@ public class FDRoomShift : FDFix
     public uint ZShift { get; set; }
     public int YShift { get; set; }
 
-    protected override void SerializeImpl(TRLevelWriter writer)
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write(XShift);
         writer.Write(ZShift);

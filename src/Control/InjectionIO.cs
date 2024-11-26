@@ -124,7 +124,7 @@ public static class InjectionIO
             data.SFX.ForEach(s => s.Serialize(writer));
             data.MeshEdits.ForEach(m => m.Serialize(writer));
             data.TextureOverwrites.ForEach(t => t.Serialize(writer));
-            data.FloorEdits.ForEach(f => f.Serialize(writer));
+            data.FloorEdits.ForEach(f => f.Serialize(writer, data.GameVersion));
             data.RoomEdits.ForEach(r => r.Serialize(writer));
             data.VisPortalEdits.ForEach(v => v.Serialize(writer));
             data.AnimRangeEdits.ForEach(a => a.Serialize(writer));
@@ -142,7 +142,7 @@ public static class InjectionIO
 
         {
             // Injection edits
-            data.FloorEdits.ForEach(f => f.Serialize(writer));
+            data.FloorEdits.ForEach(f => f.Serialize(writer, data.GameVersion));
         }
     }
 
