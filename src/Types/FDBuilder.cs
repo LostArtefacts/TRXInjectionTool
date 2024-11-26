@@ -88,12 +88,12 @@ public abstract class FDBuilder : InjectionBuilder
 
     protected static FDTrigCreateFix MakeTrigFix(TR1Level level, short room, ushort x, ushort z)
     {
-        return MakeTrigFix(level.Rooms[room].GetSector(x, z), level.FloorData);
+        return MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
     }
 
     protected static FDTrigCreateFix MakeTrigFix(TR2Level level, short room, ushort x, ushort z)
     {
-        return MakeTrigFix(level.Rooms[room].GetSector(x, z), level.FloorData);
+        return MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
     }
 
     protected static FDTrigCreateFix MakeTrigFix(TRRoomSector sector, FDControl floorData)
