@@ -17,6 +17,10 @@ public class TR2IcePalaceFDBuilder : FDBuilder
         palace.Entities[143].X += TRConsts.Step4;
         data.ItemEdits.Add(ItemBuilder.SetAngle(palace, 143, 16384));
 
+        // Duplicate the gong hammer pickup trigger into the adjacent tile.
+        FDTriggerEntry hammerTrigger = GetTrigger(palace, 29, 4, 6);
+        data.FloorEdits.Add(MakeTrigger(palace, 29, 3, 6, hammerTrigger));
+
         return new() { data };
     }
 }
