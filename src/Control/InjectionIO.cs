@@ -25,6 +25,7 @@ public static class InjectionIO
     private enum BlockType
     {
         FloorEdits = 0,
+        ItemEdits = 1,
     };
 
     public static void Export(InjectionData data, string file)
@@ -147,6 +148,8 @@ public static class InjectionIO
             // Injection edits
             totalBlocks += WriteBlock(BlockType.FloorEdits, data.FloorEdits.Count, blockWriter,
                 s => data.FloorEdits.ForEach(f => f.Serialize(s, data.GameVersion)));
+            totalBlocks += WriteBlock(BlockType.ItemEdits, data.ItemEdits.Count, blockWriter,
+                s => data.ItemEdits.ForEach(i => i.Serialize(s)));
         }
 
         WriteVersionAndType(data, writer);
