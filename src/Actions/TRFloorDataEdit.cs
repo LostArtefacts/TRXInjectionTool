@@ -28,6 +28,7 @@ public enum FDFixType
     TrigCreate,
     RoomShift,
     TrigItem,
+    RoomProperties,
 }
 
 public abstract class FDFix
@@ -107,5 +108,16 @@ public class FDRoomShift : FDFix
         writer.Write(XShift);
         writer.Write(ZShift);
         writer.Write(YShift);
+    }
+}
+
+public class FDRoomProperties : FDFix
+{
+    public override FDFixType FixType => FDFixType.RoomProperties;
+    public TRRoomFlag Flags { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write((ushort)Flags);
     }
 }
