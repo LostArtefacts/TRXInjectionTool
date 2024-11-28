@@ -22,6 +22,11 @@ public static class InjectionIO
         },
     };
 
+    private enum BlockType
+    {
+        FloorEdits = 0,
+    };
+
     public static void Export(InjectionData data, string file)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(file)));
@@ -134,16 +139,19 @@ public static class InjectionIO
 
     private static void WriteTR2Data(InjectionData data, TRLevelWriter writer)
     {
-        {
-            // Header
-            WriteVersionAndType(data, writer);
-            writer.Write((uint)data.FloorEdits.Count);
-        }
+        using MemoryStream ms = new();
+        using TRLevelWriter blockWriter = new(ms);
+        int totalBlocks = 0;
 
         {
             // Injection edits
-            data.FloorEdits.ForEach(f => f.Serialize(writer, data.GameVersion));
+            totalBlocks += WriteBlock(BlockType.FloorEdits, data.FloorEdits.Count, blockWriter,
+                s => data.FloorEdits.ForEach(f => f.Serialize(s, data.GameVersion)));
         }
+
+        WriteVersionAndType(data, writer);
+        writer.Write(totalBlocks);
+        writer.Write(ms.ToArray());
     }
 
     private static void WriteVersionAndType(InjectionData data, TRLevelWriter writer)
@@ -152,6 +160,28 @@ public static class InjectionIO
         writer.Write(version.Magic);
         writer.Write(version.Iteration);
         writer.Write((uint)data.InjectionType);
+    }
+
+    private static int WriteBlock(BlockType type, int count, TRLevelWriter writer, Action<TRLevelWriter> subCallback)
+    {
+        if (count == 0)
+        {
+            return 0;
+        }
+
+        writer.Write((int)type);
+        writer.Write(count);
+
+        using MemoryStream ms = new();
+        using TRLevelWriter subWriter = new(ms);
+        subCallback(subWriter);
+        subWriter.Flush();
+
+        byte[] data = ms.ToArray();
+        writer.Write(data.Length);
+        writer.Write(data);
+
+        return 1;
     }
 
     private static TRColour SquashColour(TRColour colour)
