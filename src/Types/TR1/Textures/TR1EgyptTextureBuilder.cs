@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Drawing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -15,6 +16,8 @@ public class TR1EgyptTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(egypt));
+
+        FixTransparentTextures(egypt, data);
 
         return new() { data };
     }
@@ -76,5 +79,13 @@ public class TR1EgyptTextureBuilder : TextureBuilder
                 }
             }
         };
+    }
+
+    private static void FixTransparentTextures(TR1Level egypt, InjectionData data)
+    {
+        TR1CommonTextureBuilder.FixTransparentPixels(egypt, data,
+            egypt.Rooms[25].Mesh.Rectangles[32], Color.FromArgb(188, 140, 64));
+        TR1CommonTextureBuilder.FixTransparentPixels(egypt, data,
+            egypt.Rooms[39].Mesh.Rectangles[125], Color.FromArgb(188, 140, 64));
     }
 }

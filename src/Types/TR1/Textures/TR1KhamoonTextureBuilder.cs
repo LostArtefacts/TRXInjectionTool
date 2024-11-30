@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Drawing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -16,6 +17,8 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateVertexShifts(khamoon));
+
+        FixTransparentTextures(khamoon, data);
 
         return new() { data };
     }
@@ -101,5 +104,13 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
                 VertexChange = new() { Y = -768 }
             }
         };
+    }
+
+    private static void FixTransparentTextures(TR1Level khamoon, InjectionData data)
+    {
+        TR1CommonTextureBuilder.FixTransparentPixels(khamoon, data,
+            khamoon.Rooms[20].Mesh.Rectangles[77], Color.FromArgb(188, 140, 64));
+        TR1CommonTextureBuilder.FixTransparentPixels(khamoon, data,
+            khamoon.Rooms[20].Mesh.Rectangles[78], Color.FromArgb(188, 140, 64));
     }
 }

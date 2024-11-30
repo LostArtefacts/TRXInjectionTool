@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Drawing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -16,6 +17,7 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
 
         FixCityGaps(obelisk, data);
+        FixTransparentTextures(obelisk, data);
 
         return new() { data };
     }
@@ -241,5 +243,19 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
                 });
             }
         }
+    }
+
+    private static void FixTransparentTextures(TR1Level obelisk, InjectionData data)
+    {
+        TR1CommonTextureBuilder.FixTransparentPixels(obelisk, data,
+            obelisk.Rooms[31].Mesh.Rectangles[30], Color.FromArgb(188, 140, 64));
+        TR1CommonTextureBuilder.FixTransparentPixels(obelisk, data,
+            obelisk.Rooms[37].Mesh.Rectangles[79], Color.FromArgb(188, 140, 64));
+
+        List<ushort> verts = new() { 2, 6, 8, 11 };
+        TRMeshFace face = obelisk.StaticMeshes[TR1Type.Furniture1].Mesh
+            .TexturedRectangles.Find(t => t.Vertices.All(verts.Contains));
+
+        TR1CommonTextureBuilder.FixTransparentPixels(obelisk, data, face, Color.FromArgb(200, 144, 88));
     }
 }

@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Drawing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -15,6 +16,8 @@ public class TR1CatTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(cat));
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
+
+        FixTransparentTextures(cat, data);
 
         return new() { data };
     }
@@ -85,5 +88,13 @@ public class TR1CatTextureBuilder : TextureBuilder
             Rotate(96, TRMeshFaceType.TexturedQuad, 73, 3),
             Rotate(96, TRMeshFaceType.TexturedQuad, 27, 1),
         };
+    }
+
+    private static void FixTransparentTextures(TR1Level cat, InjectionData data)
+    {
+        TR1CommonTextureBuilder.FixTransparentPixels(cat, data,
+            cat.Rooms[2].Mesh.Rectangles[128], Color.FromArgb(188, 140, 64));
+        TR1CommonTextureBuilder.FixTransparentPixels(cat, data,
+            cat.Rooms[7].Mesh.Rectangles[19], Color.FromArgb(188, 140, 64));
     }
 }
