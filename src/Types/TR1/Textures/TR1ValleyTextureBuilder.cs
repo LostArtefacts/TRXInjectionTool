@@ -18,6 +18,8 @@ public class TR1ValleyTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateShifts(valley));
         data.RoomEdits.AddRange(CreateVertexShifts(valley));
 
+        TR1CommonTextureBuilder.FixWolfTransparency(valley, data);
+
         return new() { data };
     }
 

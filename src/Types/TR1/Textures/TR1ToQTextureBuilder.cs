@@ -16,6 +16,8 @@ public class TR1ToQTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(toq));
 
+        TR1CommonTextureBuilder.FixWolfTransparency(toq, data);
+
         return new() { data };
     }
 

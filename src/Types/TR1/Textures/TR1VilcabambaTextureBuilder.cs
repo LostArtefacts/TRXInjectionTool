@@ -16,6 +16,9 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
 
+        TR1CommonTextureBuilder.FixBatTransparency(vilcabamba, data);
+        TR1CommonTextureBuilder.FixWolfTransparency(vilcabamba, data);
+
         return new() { data };
     }
 
