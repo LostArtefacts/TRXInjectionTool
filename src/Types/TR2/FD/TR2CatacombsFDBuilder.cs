@@ -13,6 +13,7 @@ public class TR2CatacombsFDBuilder : FDBuilder
 
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "catacombs_fd");
         data.FloorEdits.AddRange(FixMaskRoomFlipmap(catacombs));
+        data.FloorEdits.AddRange(FixStartMusicTriggers(catacombs));
 
         return new() { data };
     }
@@ -56,5 +57,20 @@ public class TR2CatacombsFDBuilder : FDBuilder
         }
 
         return edits;
+    }
+
+    private static List<TRFloorDataEdit> FixStartMusicTriggers(TR2Level catacombs)
+    {
+        // Avoid triggering dramatic music when shimmying to the stone secret, or using
+        // the ladder to reach the bottom.
+        return new()
+        {
+            ConvertTrigger(catacombs, 6, 2, 1, FDTrigType.Pad),
+            ConvertTrigger(catacombs, 6, 2, 2, FDTrigType.Pad),
+            ConvertTrigger(catacombs, 6, 3, 3, FDTrigType.Pad),
+            ConvertTrigger(catacombs, 6, 3, 4, FDTrigType.Pad),
+            ConvertTrigger(catacombs, 74, 2, 1, FDTrigType.Pad),
+            ConvertTrigger(catacombs, 74, 2, 2, FDTrigType.Pad),
+        };
     }
 }
