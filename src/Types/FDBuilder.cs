@@ -111,4 +111,33 @@ public abstract class FDBuilder : InjectionBuilder
 
         return fd;
     }
+
+    protected static TRFloorDataEdit ConvertTrigger(TR1Level level, short room, ushort x, ushort z, FDTrigType newType)
+    {
+        return ConvertTrigger(GetTrigger(level, room, x, z), room, x, z, newType);
+    }
+
+    protected static TRFloorDataEdit ConvertTrigger(TR2Level level, short room, ushort x, ushort z, FDTrigType newType)
+    {
+        return ConvertTrigger(GetTrigger(level, room, x, z), room, x, z, newType);
+    }
+
+    protected static TRFloorDataEdit ConvertTrigger(FDTriggerEntry existingTrigger, short room, ushort x, ushort z, FDTrigType newType)
+    {
+        if (existingTrigger == null)
+        {
+            throw new Exception("A base trigger must exist for a type conversion.");
+        }
+
+        return new()
+        {
+            RoomIndex = room,
+            X = x,
+            Z = z,
+            Fixes = new()
+            {
+                new FDTrigTypeFix() { NewType = newType }
+            }
+        };
+    }
 }

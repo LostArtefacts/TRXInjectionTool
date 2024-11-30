@@ -29,6 +29,7 @@ public enum FDFixType
     RoomShift,
     TrigItem,
     RoomProperties,
+    TrigType,
 }
 
 public abstract class FDFix
@@ -52,6 +53,17 @@ public class FDTrigItem : FDFix
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write(Item);
+    }
+}
+
+public class FDTrigTypeFix : FDFix
+{
+    public override FDFixType FixType => FDFixType.TrigType;
+    public FDTrigType NewType { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write((byte)NewType);
     }
 }
 
