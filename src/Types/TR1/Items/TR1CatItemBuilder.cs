@@ -9,6 +9,16 @@ public class TR1CatItemBuilder : ItemBuilder
     public override List<InjectionData> Build()
     {
         TR1Level cat = _control1.Read($"Resources/{TR1LevelNames.CAT}");
+
+        return new()
+        {
+            CreateItemRots(cat),
+            FixMeshPositions(cat),
+        };
+    }
+
+    private static InjectionData CreateItemRots(TR1Level cat)
+    {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "cat_itemrots");
 
         data.ItemEdits = new()
@@ -18,6 +28,15 @@ public class TR1CatItemBuilder : ItemBuilder
             SetAngle(cat, 171, -32768),
         };
 
-        return new() { data };
+        return data;
+    }
+
+    private static InjectionData FixMeshPositions(TR1Level cat)
+    {
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "cat_meshfixes");
+
+        data.MeshEdits.Add(FixEgyptToppledChair(TR1Type.Architecture7, cat));
+
+        return data;
     }
 }

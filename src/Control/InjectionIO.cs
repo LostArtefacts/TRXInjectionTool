@@ -13,7 +13,7 @@ public static class InjectionIO
         [LC.Model.TRGameVersion.TR1] = new()
         {
             Magic = MakeTag('T', '1', 'M', 'J'),
-            Iteration = 9,
+            Iteration = 10,
         },
         [LC.Model.TRGameVersion.TR2] = new()
         {
@@ -103,6 +103,7 @@ public static class InjectionIO
             writer.Write((uint)data.VisPortalEdits.Count);
             writer.Write((uint)data.AnimRangeEdits.Count);
             writer.Write((uint)data.ItemEdits.Count);
+            writer.Write((uint)data.FrameRots.Count);
         }
 
         {
@@ -135,6 +136,7 @@ public static class InjectionIO
             data.VisPortalEdits.ForEach(v => v.Serialize(writer));
             data.AnimRangeEdits.ForEach(a => a.Serialize(writer));
             data.ItemEdits.ForEach(i => i.Serialize(writer));
+            data.FrameRots.ForEach(f => f.Serialize(writer));
         }
     }
 
