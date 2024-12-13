@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRLevelControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
@@ -27,6 +28,10 @@ public class TR1CatItemBuilder : ItemBuilder
             SetAngle(cat, 153, -16384),
             SetAngle(cat, 171, -32768),
         };
+
+        // Rotate and shift door 180 to put the invisible wall on the other side of it.
+        cat.Entities[180].X += TRConsts.Step4;
+        data.ItemEdits.Add(SetAngle(cat, 180, 16384));
 
         return data;
     }
