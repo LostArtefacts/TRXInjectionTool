@@ -33,6 +33,7 @@ public class InjectionData
     public List<TRAnimRangeEdit> AnimRangeEdits { get; set; } = new();
     public List<TRItemEdit> ItemEdits { get; set; } = new();
     public List<TRFrameRotEdit> FrameRots { get; set; } = new();
+    public List<TRCameraEdit> CameraEdits { get; set; } = new();
 
     private InjectionData() { }
 
