@@ -59,4 +59,18 @@ public abstract class ItemBuilder : InjectionBuilder
 
         return edit;
     }
+
+    public static TRVertexEdit CreateVertexShift(short index, short x = 0, short y = 0, short z = 0)
+    {
+        return new()
+        {
+            Index = index,
+            Change = new()
+            {
+                X = x,
+                Y = y,
+                Z = z,
+            }
+        };
+    }
 }
