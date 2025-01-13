@@ -15,7 +15,7 @@ public static class TR1CommonTextureBuilder
             .Meshes[3]
             .TexturedRectangles.Find(t => t.Vertices.All(eyeVerts.Contains));
 
-        FixTransparentPixels(level, data, eyeFace, Color.FromArgb(228, 228, 228));
+        FixTransparentPixels(level, data, eyeFace, Color.Black);
     }
 
     public static void FixBatTransparency(TR1Level level, InjectionData data)
