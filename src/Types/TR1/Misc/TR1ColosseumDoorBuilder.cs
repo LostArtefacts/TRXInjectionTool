@@ -1,5 +1,4 @@
-﻿using TRLevelControl.Helpers;
-using TRLevelControl.Model;
+﻿using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Misc;
@@ -8,15 +7,16 @@ public class TR1ColosseumDoorBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level colosseum = _control1.Read($"Resources/{TR1LevelNames.COLOSSEUM}");
-        TRModel door = colosseum.Models[TR1Type.Door2];
+        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "colosseum_door");
 
-        ResetLevel(colosseum);
+        // The first frame in OG has the door closed when it should be fully open.
+        data.FrameRots.Add(new()
+        {
+            ModelID = (uint)TR1Type.Door2,
+            AnimIndex = 1,
+            Rotation = new() { Y = 768 },
+        });
 
-        colosseum.Models[TR1Type.Door2] = door;
-        door.Animations[1].Frames[0].Rotations[0].Y = door.Animations[1].Frames[1].Rotations[0].Y;
-
-        InjectionData data = InjectionData.Create(colosseum, InjectionType.General, "colosseum_door", true);
         return new() { data };
     }
 }
