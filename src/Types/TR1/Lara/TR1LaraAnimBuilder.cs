@@ -348,6 +348,9 @@ public class TR1LaraAnimBuilder : InjectionBuilder
                 }
             });
         }
+
+        // Change Lara's underwater lever animation to match TR2.
+        tr1Lara.Animations[129].Commands.Add(new TREmptyHandsCommand());
     }
 
     static void ImportWetFeet(TRModel tr1Lara, TR1Level level)
