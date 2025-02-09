@@ -1,4 +1,5 @@
 ﻿using TRDataControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -97,6 +98,67 @@ public class TR1LaraGymGunBuilder : InjectionBuilder
             });
         }
 
+        // Replace gloves with normal hands
+        Dictionary<ushort, ushort> map = new()
+        {
+            [343] = 586,
+            [393] = 586,
+            [347] = 590,
+            [342] = 585,
+            [346] = 589,
+            [341] = 584,
+            [348] = 591,
+            [344] = 587,
+            [345] = 588,
+            [340] = 583,
+        };
+        foreach (TRMeshFace face in level.DistinctMeshes.SelectMany(m => m.TexturedFaces))
+        {
+            if (map.ContainsKey(face.Texture))
+            {
+                face.Texture = map[face.Texture];
+            }
+        }
+
+        // Replace the flat quads on Lara's hands with the right colour, and rotate some faces.
+        TRMesh normalHandR = level.Models[TR1Type.Lara].Meshes[10];
+        TRMesh normalHandL = level.Models[TR1Type.Lara].Meshes[13];
+        TRMesh pistolsHandR = level.Models[TR1Type.LaraPistolAnim_H].Meshes[10];
+        TRMesh pistolsHandL = level.Models[TR1Type.LaraPistolAnim_H].Meshes[13];
+        TRMesh shotgunHandR = level.Models[TR1Type.LaraShotgunAnim_H].Meshes[10];
+        TRMesh shotgunHandL = level.Models[TR1Type.LaraShotgunAnim_H].Meshes[13];
+        TRMesh magnumsHandR = level.Models[TR1Type.LaraMagnumAnim_H].Meshes[10];
+        TRMesh magnumsHandL = level.Models[TR1Type.LaraMagnumAnim_H].Meshes[13];
+        TRMesh uzisHandR = level.Models[TR1Type.LaraUziAnimation_H].Meshes[10];
+        TRMesh uzisHandL = level.Models[TR1Type.LaraUziAnimation_H].Meshes[13];
+        TRMesh miscHandR = level.Models[TR1Type.LaraMiscAnim_H].Meshes[10];
+
+        normalHandR.ColouredRectangles[0].Texture = miscHandR.ColouredRectangles[0].Texture;
+        normalHandL.ColouredRectangles[0].Texture = miscHandR.ColouredRectangles[0].Texture;
+
+        shotgunHandR.ColouredRectangles[0].Texture = miscHandR.ColouredRectangles[0].Texture;
+        shotgunHandL.ColouredRectangles[0].Texture = miscHandR.ColouredRectangles[0].Texture;
+
+        shotgunHandR.TexturedRectangles.Add(shotgunHandR.ColouredRectangles[1]);
+        shotgunHandR.ColouredRectangles.RemoveAt(1);
+        shotgunHandR.TexturedRectangles[^1].Texture = 586;
+
+        shotgunHandR.TexturedRectangles[^1].SwapVertices(0, 2);
+        shotgunHandR.TexturedRectangles[^1].SwapVertices(1, 3);
+        pistolsHandR.TexturedRectangles[3].SwapVertices(0, 2);
+        pistolsHandR.TexturedRectangles[3].SwapVertices(1, 3);
+        pistolsHandL.TexturedRectangles[3].SwapVertices(0, 2);
+        pistolsHandL.TexturedRectangles[3].SwapVertices(1, 3);
+
+        magnumsHandR.TexturedRectangles[3].SwapVertices(0, 2);
+        magnumsHandR.TexturedRectangles[3].SwapVertices(1, 3);
+        magnumsHandL.TexturedRectangles[3].Vertices = new() { 3, 7, 4, 0 };
+
+        pistolsHandR.ColouredRectangles[0].Texture = miscHandR.ColouredRectangles[0].Texture;
+        pistolsHandL.ColouredRectangles[0].Texture = miscHandR.ColouredRectangles[0].Texture;
+        uzisHandR.ColouredRectangles[0].Texture = miscHandR.ColouredRectangles[0].Texture;
+        uzisHandL.ColouredRectangles[0].Texture = miscHandR.ColouredRectangles[0].Texture;
+
         return level;
     }
 
@@ -146,8 +208,27 @@ public class TR1LaraGymGunBuilder : InjectionBuilder
 
         gym.SoundEffects[TR1SFX.LaraShotgun] = caves.SoundEffects[TR1SFX.LaraShotgun];
         gym.SoundEffects[TR1SFX.LaraMagnums] = caves.SoundEffects[TR1SFX.LaraMagnums];
+        gym.SoundEffects[TR1SFX.LaraUziFire] = caves.SoundEffects[TR1SFX.LaraUziFire];
 
+        AddRicochet(gym);
         return gym;
+    }
+
+    private static void AddRicochet(TR1Level gym)
+    {
+        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        TRSpriteSequence ricochet = caves.Sprites[TR1Type.Ricochet_S_H];
+
+        TR1TexturePacker packer = new(caves);
+        List<TRTextileRegion> regions = packer.GetSpriteRegions(ricochet)
+            .Values.SelectMany(r => r)
+            .ToList();
+
+        packer = new(gym);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        gym.Sprites[TR1Type.Ricochet_S_H] = ricochet;
     }
 
     private static void CopyMeshParts(MeshCopyData data)
