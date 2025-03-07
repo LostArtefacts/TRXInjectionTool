@@ -66,11 +66,15 @@ public static class TR1CommonTextureBuilder
         List<TRColour> trPalette = new(palette.Select(c => c.ToTRColour()));
         byte[] pixels = img.ToRGB(trPalette);
 
-        for (int i = 0; i < data.Palette.Count; i++)
+        data.Palette.Clear();
+        for (int i = 0; i < trPalette.Count; i++)
         {
-            data.Palette[i].Red = trPalette[i].Red;
-            data.Palette[i].Green = trPalette[i].Green;
-            data.Palette[i].Blue = trPalette[i].Blue;
+            data.Palette.Add(new()
+            {
+                Red = trPalette[i].Red,
+                Green = trPalette[i].Green,
+                Blue = trPalette[i].Blue,
+            });
         }
 
         data.TextureOverwrites.Add(new()

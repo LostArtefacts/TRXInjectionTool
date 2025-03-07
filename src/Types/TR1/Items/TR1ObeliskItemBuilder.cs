@@ -69,7 +69,7 @@ public class TR1ObeliskItemBuilder : ItemBuilder
         }
 
         // Rotate the bridge completely 90 degress when open. OG is 255 ~= 89.6.
-        data.FrameRots.Add(new()
+        data.FrameEdits.Add(new()
         {
             ModelID = (uint)TR1Type.LiftingDoor,
             AnimIndex = 3,

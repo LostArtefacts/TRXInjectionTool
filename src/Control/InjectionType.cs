@@ -8,7 +8,6 @@ public enum InjectionType
     PSUziSFX,
     FDFix,
     LaraAnims,
-    LaraJumps,
     ItemRotation,
     Item,
     DisableAnimSprite,

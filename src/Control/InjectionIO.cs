@@ -1,31 +1,15 @@
-﻿using TRLevelControl;
+﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using TRLevelControl;
 using TRLevelReader.Model;
-using TRXInjectionTool.Actions;
-
-using LC = TRLevelControl;
 
 namespace TRXInjectionTool.Control;
 
 public static class InjectionIO
 {
-    private static readonly Dictionary<LC.Model.TRGameVersion, InjectionVersion> _versions = new()
+    private static readonly InjectionVersion _version = new()
     {
-        [LC.Model.TRGameVersion.TR1] = new()
-        {
-            Magic = MakeTag('T', '1', 'M', 'J'),
-            Iteration = 11,
-        },
-        [LC.Model.TRGameVersion.TR2] = new()
-        {
-            Magic = MakeTag('T', '2', 'X', 'J'),
-            Iteration = 1,
-        },
-    };
-
-    private enum BlockType
-    {
-        FloorEdits = 0,
-        ItemEdits = 1,
+        Magic = IOUtils.MakeTag('T', 'R', 'X', 'J'),
+        Iteration = 1,
     };
 
     public static void Export(InjectionData data, string file)
@@ -34,150 +18,198 @@ public static class InjectionIO
         File.WriteAllBytes(file, Serialize(data));
     }
 
-    private static uint MakeTag(char a, char b, char c, char d)
-    {
-        return (uint)(a | b << 8 | c << 16 | d << 24);
-    }
-
     public static byte[] Serialize(InjectionData data)
     {
-        if (!_versions.ContainsKey(data.GameVersion))
-        {
-            throw new NotSupportedException();
-        }
-
         using MemoryStream stream = new();
         using TRLevelWriter writer = new(stream);
 
-        switch (data.GameVersion)
-        {
-            case LC.Model.TRGameVersion.TR1:
-                WriteTR1Data(data, writer);
-                break;
-            case LC.Model.TRGameVersion.TR2:
-                WriteTR2Data(data, writer);
-                break;
-        }
+        WriteData(data, writer);
 
-        return stream.ToArray();
+        byte[] exportedData = stream.ToArray();
+        using MemoryStream outStream = new();
+        using DeflaterOutputStream deflater = new(outStream);
+        using MemoryStream inStream = new(exportedData);
+
+        inStream.CopyTo(deflater);
+        deflater.Finish();
+
+        byte[] zippedData = outStream.ToArray();
+
+        using MemoryStream finalStream = new();
+        using TRLevelWriter finalWriter = new(finalStream);
+
+        finalWriter.Write(_version.Magic);
+        finalWriter.Write(_version.Iteration);
+        finalWriter.Write((uint)data.InjectionType);
+
+        finalWriter.Write(exportedData.Length);
+        finalWriter.Write(zippedData.Length);
+        finalWriter.Write(zippedData);
+
+        return finalStream.ToArray();
     }
 
-    private static void WriteTR1Data(InjectionData data, TRLevelWriter writer)
+    private static void WriteData(InjectionData data, TRLevelWriter writer)
     {
-        List<byte> meshData = new();
-        foreach (TRMesh mesh in data.Meshes)
-            meshData.AddRange(mesh.Serialize());
-
+        List<Chunk> chunks = new()
         {
-            // Header
-            WriteVersionAndType(data, writer);
-            writer.Write((uint)data.Images8.Count);
-            writer.Write((uint)data.ObjectTextures.Count);
-            writer.Write((uint)data.SpriteTextures.Count);
-            writer.Write((uint)data.SpriteSequences.Count);
-            writer.Write((uint)(meshData.Count / 2));
-            writer.Write((uint)data.MeshPointers.Count);
-            writer.Write((uint)data.AnimChanges.Count);
-            writer.Write((uint)data.AnimDispatches.Count);
-            writer.Write((uint)data.AnimCommands.Count);
-            writer.Write((uint)(data.MeshTrees.Count * 4));
-            writer.Write((uint)data.AnimFrames.Count);
-            writer.Write((uint)data.Animations.Count);
-            writer.Write((uint)data.Models.Count);
-            writer.Write((uint)data.SFX.Count);
-            uint sampleDataSize = 0;
-            uint sampleCount = 0;
-            foreach (TRSFXData sfx in data.SFX)
-            {
-                sampleDataSize += sfx.GetSampleDataSize();
-                sampleCount += (uint)((sfx.Characteristics & 0xFC) >> 2);
-            }
-            writer.Write(sampleDataSize);
-            writer.Write(sampleCount);
-            writer.Write((uint)data.MeshEdits.Count);
-            writer.Write((uint)data.TextureOverwrites.Count);
-            writer.Write((uint)data.FloorEdits.Count);
+            CreateChunk(ChunkType.TextureData, data, WriteTextureData),
+            CreateChunk(ChunkType.TextureInfo, data, WriteTextureInfo),
+            CreateChunk(ChunkType.MeshData, data, WriteMeshData),
+            CreateChunk(ChunkType.AnimationData, data, WriteAnimationData),
+            CreateChunk(ChunkType.ObjectData, data, WriteObjectData),
+            CreateChunk(ChunkType.SFXData, data, WriteSFXData),
+            CreateChunk(ChunkType.DataEdits, data, WriteEdits),
+        };
 
-            WriteRoomMeshData(writer, data); // Summary of room mesh size changes
-            writer.Write((uint)data.RoomEdits.Count); // Actual fixes
-            writer.Write((uint)data.VisPortalEdits.Count);
-            writer.Write((uint)data.AnimRangeEdits.Count);
-            writer.Write((uint)data.ItemEdits.Count);
-            writer.Write((uint)data.FrameRots.Count);
-            writer.Write((uint)data.CameraEdits.Count);
-        }
+        chunks.RemoveAll(b => b.BlockCount == 0);
 
-        {
-            // Regular TR structures
-            data.Palette.ForEach(p => writer.Write(SquashColour(p).Serialize()));
-            data.Images8.ForEach(i => writer.Write(i.Serialize()));
-            data.ObjectTextures.ForEach(o => writer.Write(o.Serialize()));
-            data.SpriteTextures.ForEach(s => writer.Write(s.Serialize()));
-            data.SpriteSequences.ForEach(s => writer.Write(s.Serialize()));
-
-            writer.Write(meshData);
-            writer.Write(data.MeshPointers);
-
-            data.AnimChanges.ForEach(a => writer.Write(a.Serialize()));
-            data.AnimDispatches.ForEach(a => writer.Write(a.Serialize()));
-            data.AnimCommands.ForEach(a => writer.Write(a.Serialize()));
-            data.MeshTrees.ForEach(m => writer.Write(m.Serialize()));
-            writer.Write(data.AnimFrames);
-            data.Animations.ForEach(a => writer.Write(a.Serialize()));
-            data.Models.ForEach(m => writer.Write(m.Serialize()));
-        }
-
-        {
-            // Injection edits
-            data.SFX.ForEach(s => s.Serialize(writer));
-            data.MeshEdits.ForEach(m => m.Serialize(writer));
-            data.TextureOverwrites.ForEach(t => t.Serialize(writer));
-            data.FloorEdits.ForEach(f => f.Serialize(writer, data.GameVersion));
-            data.RoomEdits.ForEach(r => r.Serialize(writer));
-            data.VisPortalEdits.ForEach(v => v.Serialize(writer));
-            data.AnimRangeEdits.ForEach(a => a.Serialize(writer));
-            data.ItemEdits.ForEach(i => i.Serialize(writer));
-            data.FrameRots.ForEach(f => f.Serialize(writer));
-            data.CameraEdits.ForEach(c => c.Serialize(writer));
-        }
+        writer.Write(chunks.Count);
+        chunks.ForEach(b => b.Serialize(writer));
     }
 
-    private static void WriteTR2Data(InjectionData data, TRLevelWriter writer)
+    private static Chunk CreateChunk(ChunkType type, InjectionData data, Func<InjectionData, TRLevelWriter, int> process)
     {
         using MemoryStream ms = new();
-        using TRLevelWriter blockWriter = new(ms);
-        int totalBlocks = 0;
+        using TRLevelWriter blockSetWriter = new(ms);
+        int blockCount = process(data, blockSetWriter);
+
+        return new()
+        {
+            Type = type,
+            BlockCount = blockCount,
+            Data = ms.ToArray(),
+        };
+    }
+
+    private static int WriteTextureData(InjectionData data, TRLevelWriter writer)
+    {
+        int blockCount = 0;
+
+        blockCount += WriteBlock(BlockType.Palette, data.Palette.Count, writer,
+            s => data.Palette.ForEach(p => s.Write(SquashColour(p).Serialize())));
+
+        blockCount += WriteBlock(BlockType.Images, data.Images.Count, writer,
+            s => data.Images.ForEach(i => s.Write(i.Pixels)));
+
+        return blockCount;
+    }
+
+    private static int WriteTextureInfo(InjectionData data, TRLevelWriter writer)
+    {
+        int blockCount = 0;
+
+        blockCount += WriteBlock(BlockType.ObjectTextures, data.ObjectTextures.Count, writer,
+            s => data.ObjectTextures.ForEach(t => s.Write(t.Serialize())));
+
+        blockCount += WriteBlock(BlockType.SpriteTextures, data.SpriteTextures.Count, writer,
+            s => data.SpriteTextures.ForEach(t => s.Write(t.Serialize())));
+
+        blockCount += WriteBlock(BlockType.SpriteSequences, data.SpriteSequences.Count, writer,
+            s => data.SpriteSequences.ForEach(t => s.Write(t.Serialize())));
+
+        return blockCount;
+    }
+
+    private static int WriteMeshData(InjectionData data, TRLevelWriter writer)
+    {
+        int blockCount = 0;
+
+        blockCount += WriteBlock(BlockType.MeshPointers, data.MeshPointers.Count, writer,
+            s => s.Write(data.MeshPointers));
+
+        List<byte> meshData = new(data.Meshes.SelectMany(m => m.Serialize()));
+        blockCount += WriteBlock(BlockType.ObjectMeshes, meshData.Count / 2, writer,
+            s => s.Write(meshData));
+
+        return blockCount;
+    }
+
+    private static int WriteAnimationData(InjectionData data, TRLevelWriter writer)
+    {
+        int blockCount = 0;
+
+        blockCount += WriteBlock(BlockType.AnimChanges, data.AnimChanges.Count, writer,
+            s => data.AnimChanges.ForEach(a => s.Write(a.Serialize())));
+
+        blockCount += WriteBlock(BlockType.AnimDispatches, data.AnimDispatches.Count, writer,
+            s => data.AnimDispatches.ForEach(d => s.Write(d.Serialize())));
+
+        blockCount += WriteBlock(BlockType.AnimCommands, data.AnimCommands.Count, writer,
+            s => data.AnimCommands.ForEach(c => s.Write(c.Serialize())));
+
+        blockCount += WriteBlock(BlockType.MeshTrees, data.MeshTrees.Count, writer,
+            s => data.MeshTrees.ForEach(m => s.Write(m.Serialize())));
+
+        blockCount += WriteBlock(BlockType.AnimFrames, data.AnimFrames.Count, writer,
+            s => s.Write(data.AnimFrames));
+
+        blockCount += WriteBlock(BlockType.Animations, data.Animations.Count, writer,
+            s => data.Animations.ForEach(a => s.Write(a.Serialize())));
+
+        return blockCount;
+    }
+
+    private static int WriteObjectData(InjectionData data, TRLevelWriter writer)
+    {
+        int blockCount = 0;
+
+        blockCount += WriteBlock(BlockType.Objects, data.Models.Count, writer,
+            s => data.Models.ForEach(a => s.Write(a.Serialize())));
+
+        return blockCount;
+    }
+
+    private static int WriteSFXData(InjectionData data, TRLevelWriter writer)
+    {
+        return WriteBlock(BlockType.SampleInfos, data.SFX.Count, writer,
+            s => data.SFX.ForEach(f => f.Serialize(s)));
+    }
+
+    private static int WriteEdits(InjectionData data, TRLevelWriter writer)
+    {
+        int blockCount = 0;
+
+        blockCount += WriteBlock(BlockType.FloorEdits, data.FloorEdits.Count, writer,
+            s => data.FloorEdits.ForEach(f => f.Serialize(s, data.GameVersion)));
+
+        blockCount += WriteBlock(BlockType.ItemEdits, data.ItemEdits.Count, writer,
+            s => data.ItemEdits.ForEach(i => i.Serialize(s)));
+
+        blockCount += WriteBlock(BlockType.MeshEdits, data.MeshEdits.Count, writer,
+            s => data.MeshEdits.ForEach(m => m.Serialize(s)));
+
+        blockCount += WriteBlock(BlockType.TextureEdits, data.TextureOverwrites.Count, writer,
+            s => data.TextureOverwrites.ForEach(t => t.Serialize(s)));
 
         {
-            // Injection edits
-            totalBlocks += WriteBlock(BlockType.FloorEdits, data.FloorEdits.Count, blockWriter,
-                s => data.FloorEdits.ForEach(f => f.Serialize(s, data.GameVersion)));
-            totalBlocks += WriteBlock(BlockType.ItemEdits, data.ItemEdits.Count, blockWriter,
-                s => data.ItemEdits.ForEach(i => i.Serialize(s)));
+            // Summary data
+            List<RoomMeshMeta> meta = RoomMeshMeta.Create(data);
+            blockCount += WriteBlock(BlockType.RoomEditSummary, meta.Count, writer,
+                s => meta.ForEach(m => m.Serialize(s)));
+
+            blockCount += WriteBlock(BlockType.RoomEdits, data.RoomEdits.Count, writer,
+                s => data.RoomEdits.ForEach(r => r.Serialize(s)));
         }
 
-        WriteVersionAndType(data, writer);
-        writer.Write(totalBlocks);
-        writer.Write(ms.ToArray());
+        blockCount += WriteBlock(BlockType.VisPortalEdits, data.VisPortalEdits.Count, writer,
+            s => data.VisPortalEdits.ForEach(v => v.Serialize(s)));
+
+        blockCount += WriteBlock(BlockType.CameraEdits, data.CameraEdits.Count, writer,
+            s => data.CameraEdits.ForEach(c => c.Serialize(s)));
+
+        blockCount += WriteBlock(BlockType.FrameEdits, data.FrameEdits.Count, writer,
+            s => data.FrameEdits.ForEach(f => f.Serialize(s)));
+
+        return blockCount;
     }
 
-    private static void WriteVersionAndType(InjectionData data, TRLevelWriter writer)
+    private static int WriteBlock(BlockType type, int elementCount, TRLevelWriter writer, Action<TRLevelWriter> subCallback)
     {
-        InjectionVersion version = _versions[data.GameVersion];
-        writer.Write(version.Magic);
-        writer.Write(version.Iteration);
-        writer.Write((uint)data.InjectionType);
-    }
-
-    private static int WriteBlock(BlockType type, int count, TRLevelWriter writer, Action<TRLevelWriter> subCallback)
-    {
-        if (count == 0)
+        if (elementCount == 0)
         {
             return 0;
         }
-
-        writer.Write((int)type);
-        writer.Write(count);
 
         using MemoryStream ms = new();
         using TRLevelWriter subWriter = new(ms);
@@ -185,6 +217,8 @@ public static class InjectionIO
         subWriter.Flush();
 
         byte[] data = ms.ToArray();
+        writer.Write((int)type);
+        writer.Write(elementCount);
         writer.Write(data.Length);
         writer.Write(data);
 
@@ -200,63 +234,4 @@ public static class InjectionIO
             Blue = (byte)(colour.Blue / 4),
         };
     }
-
-    private static void WriteRoomMeshData(BinaryWriter writer, InjectionData data)
-    {
-        // This is added to the header so the game knows in advance how much extra space
-        // to allocate to each room mesh we are manipulating.
-        Dictionary<short, RoomMeshMeta> meta = new();
-        foreach (TRRoomTextureEdit edit in data.RoomEdits)
-        {
-            if (edit.Meta == ExtraMeshMeta.None)
-            {
-                continue;
-            }
-
-            if (!meta.ContainsKey(edit.RoomIndex))
-            {
-                meta[edit.RoomIndex] = new();
-            }
-
-            switch (edit.Meta)
-            {
-                case ExtraMeshMeta.Vertex:
-                    meta[edit.RoomIndex].NumVertices++;
-                    break;
-                case ExtraMeshMeta.Quad:
-                    meta[edit.RoomIndex].NumQuads++;
-                    break;
-                case ExtraMeshMeta.Triangle:
-                    meta[edit.RoomIndex].NumTriangles++;
-                    break;
-                case ExtraMeshMeta.Sprite:
-                    meta[edit.RoomIndex].NumSprites++;
-                    break;
-            }
-        }
-
-        writer.Write((uint)meta.Count);
-        foreach (short room in meta.Keys)
-        {
-            writer.Write(room);
-            writer.Write(meta[room].NumVertices);
-            writer.Write(meta[room].NumQuads);
-            writer.Write(meta[room].NumTriangles);
-            writer.Write(meta[room].NumSprites);
-        }
-    }
-
-    private class RoomMeshMeta
-    {
-        public short NumVertices { get; set; }
-        public short NumQuads { get; set; }
-        public short NumTriangles { get; set; }
-        public short NumSprites { get; set; }
-    }
-}
-
-public class InjectionVersion
-{
-    public uint Magic { get; set; }
-    public uint Iteration { get; set; }
 }

@@ -10,7 +10,7 @@ public class TR1ColosseumDoorBuilder : InjectionBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "colosseum_door");
 
         // The first frame in OG has the door closed when it should be fully open.
-        data.FrameRots.Add(new()
+        data.FrameEdits.Add(new()
         {
             ModelID = (uint)TR1Type.Door2,
             AnimIndex = 1,
