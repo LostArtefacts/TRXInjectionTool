@@ -127,38 +127,6 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
         // Replace the Midas textures used on the roof of Colosseum with
         // those from the beta.
         TRImage betaRoof = new("Resources/TR1/Colosseum/roof.png");
-        List<Color> palette = new()
-        {
-            Color.FromArgb(0),
-        };
-        betaRoof.Read((c, x, z) =>
-        {
-            if (c.A == 0)
-            {
-                return;
-            }
-
-            if (!palette.Contains(c))
-            {
-                palette.Add(c);
-            }
-        });
-
-        while (palette.Count < 256)
-        {
-            palette.Add(Color.Black);
-        }
-
-        List<TRColour> trPalette = new(palette.Select(c => c.ToTRColour()));
-        byte[] pixels = betaRoof.ToRGB(trPalette);
-
-        for (int i = 0; i < data.Palette.Count; i++)
-        {
-            data.Palette[i].Red = trPalette[i].Red;
-            data.Palette[i].Green = trPalette[i].Green;
-            data.Palette[i].Blue = trPalette[i].Blue;
-        }
-
         data.TextureOverwrites.Add(new()
         {
             Page = 3,
@@ -166,7 +134,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
             Y = 0,
             Width = 128,
             Height = 64,
-            Data = pixels,
+            Data = betaRoof.ToRGBA(),
         });
     }
 }

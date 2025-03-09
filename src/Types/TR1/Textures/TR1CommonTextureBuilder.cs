@@ -36,46 +36,11 @@ public static class TR1CommonTextureBuilder
         TRImage tile = new(level.Images8[texInfo.Atlas].Pixels, level.Palette);
         TRImage img = tile.Export(texInfo.Bounds);
 
-        List<Color> palette = new()
-        {
-            Color.Magenta,
-        };
-
-        palette.AddRange(data.TextureOverwrites
-            .SelectMany(o => o.Data)
-            .Where(p => p != 0)
-            .Distinct()
-            .Select(p => Color.FromArgb(data.Palette[p].Red, data.Palette[p].Green, data.Palette[p].Blue)));
-
         img.Write((c, x, y) =>
         {
             c = c.A == 0 ? fillColour : c;
-            if (!palette.Contains(c))
-            {
-                palette.Add(c);
-            }
-
             return c;
         });
-
-        while (palette.Count < 256)
-        {
-            palette.Add(Color.Black);
-        }
-
-        List<TRColour> trPalette = new(palette.Select(c => c.ToTRColour()));
-        byte[] pixels = img.ToRGB(trPalette);
-
-        data.Palette.Clear();
-        for (int i = 0; i < trPalette.Count; i++)
-        {
-            data.Palette.Add(new()
-            {
-                Red = trPalette[i].Red,
-                Green = trPalette[i].Green,
-                Blue = trPalette[i].Blue,
-            });
-        }
 
         data.TextureOverwrites.Add(new()
         {
@@ -84,7 +49,7 @@ public static class TR1CommonTextureBuilder
             Y = (byte)texInfo.Bounds.Y,
             Width = (ushort)texInfo.Size.Width,
             Height = (ushort)texInfo.Size.Height,
-            Data = pixels,
+            Data = img.ToRGBA(),
         });
     }
 }

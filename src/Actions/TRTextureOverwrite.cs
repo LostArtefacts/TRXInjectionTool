@@ -9,7 +9,7 @@ public class TRTextureOverwrite
     public byte Y { get; set; }
     public ushort Width { get; set; }
     public ushort Height { get; set; }
-    public byte[] Data { get; set; }
+    public uint[] Data { get; set; }
 
     public void Serialize(TRLevelWriter writer)
     {
