@@ -1,6 +1,9 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRImageControl.Packing;
+using TRImageControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
+using System.Drawing;
 
 namespace TRXInjectionTool.Types.TR1.Sky;
 
@@ -23,7 +26,27 @@ public class TR1ColosseumSkyboxBuilder : InjectionBuilder
         caves.Models[TR1Type.Unused01] = sky;
         caves.Palette = InitialisePalette8(sky, gold.Palette16);
 
+        Color topColour = Color.FromArgb(24, 16, 48);
+
         PackTextures(caves, gold, sky, _imageIDs);
+
+        // Replace the flat faces at the top of the mesh with a texture.
+        TR1TexturePacker packer = new(caves);
+        TRImage img = new(16, 16);
+        img.Write((c, x, y) => topColour);
+        TRTextileRegion region = new(new()
+        {
+            Texture = new TRObjectTexture(0, 0, 16, 16),
+        }, img);
+        packer.AddRectangle(region);
+        packer.Pack(true);
+
+        List<TRMeshFace> topTriangles = sky.Meshes[0].ColouredTriangles.Where(f => f.Vertices.Contains(32)).ToList();
+        sky.Meshes[0].TexturedTriangles.AddRange(topTriangles);
+        sky.Meshes[0].ColouredTriangles.RemoveAll(topTriangles.Contains);
+        topTriangles.ForEach(t => t.Texture = (ushort)caves.ObjectTextures.Count);
+
+        caves.ObjectTextures.Add(region.Segments.First().Texture as TRObjectTexture);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.Skybox, "colosseum_skybox");
         return new() { data };

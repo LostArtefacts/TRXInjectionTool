@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using TRImageControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -42,6 +43,28 @@ public class TR1ValleySkyboxBuilder : InjectionBuilder
         sky.Animations[0].Frames[0].Rotations[0].Y = 448;
 
         PackTextures(caves, chamber, sky, _imageIDs);
+
+        // Replace the flat faces at the top of the mesh with a texture.
+        TR1TexturePacker packer = new(caves);
+        TRImage img = new(16, 16);
+        img.Write((c, x, y) => topColour);
+        TRTextileRegion region = new(new()
+        {
+            Texture = new TRObjectTexture(0, 0, 16, 16),
+        }, img);
+        packer.AddRectangle(region);
+        packer.Pack(true);
+
+        List<TRMeshFace> topTriangles = sky.Meshes[0].ColouredTriangles.Where(f => !f.Vertices.Contains(32)).ToList();
+        List<TRMeshFace> topRectangles = new(sky.Meshes[0].ColouredRectangles);
+        sky.Meshes[0].TexturedTriangles.AddRange(topTriangles);
+        sky.Meshes[0].TexturedRectangles.AddRange(topRectangles);
+        sky.Meshes[0].ColouredTriangles.RemoveAll(topTriangles.Contains);
+        sky.Meshes[0].ColouredRectangles.Clear();
+        topTriangles.ForEach(t => t.Texture = (ushort)caves.ObjectTextures.Count);
+        topRectangles.ForEach(t => t.Texture = (ushort)caves.ObjectTextures.Count);
+
+        caves.ObjectTextures.Add(region.Segments.First().Texture as TRObjectTexture);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.Skybox, "valley_skybox");
         return new() { data };

@@ -1,6 +1,9 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRImageControl.Packing;
+using TRImageControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
+using System.Drawing;
 
 namespace TRXInjectionTool.Types.TR1.Misc;
 
@@ -10,18 +13,25 @@ public class TR1PSXCrystalBuilder : InjectionBuilder
     {
         TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         TRModel crystal = caves.Models[TR1Type.SavegameCrystal_P];
-        ResetLevel(caves);
+        ResetLevel(caves, 1);
 
         caves.Models[TR1Type.SavegameCrystal_P] = crystal;
-        caves.Palette[1] = new()
-        {
-            Red = 64,
-            Green = 64,
-            Blue = 252,
-        };
 
-        crystal.Meshes[0].ColouredFaces.ToList()
-            .ForEach(f => f.Texture = 1);
+        TR1TexturePacker packer = new(caves);
+        TRImage img = new(16, 16);
+        img.Write((c, x, y) => Color.FromArgb(64, 64, 252));
+        TRTextileRegion region = new(new()
+        {
+            Texture = new TRObjectTexture(0, 0, 16, 16),
+        }, img);
+        packer.AddRectangle(region);
+        packer.Pack(true);
+
+        crystal.Meshes[0].TexturedTriangles.AddRange(crystal.Meshes[0].ColouredTriangles);
+        crystal.Meshes[0].ColouredTriangles.Clear();
+        crystal.Meshes[0].TexturedTriangles.ToList()
+            .ForEach(f => f.Texture = 0);
+        caves.ObjectTextures.Add(region.Segments.First().Texture as TRObjectTexture);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.PSCrystal, "purple_crystal");
         return new() { data };

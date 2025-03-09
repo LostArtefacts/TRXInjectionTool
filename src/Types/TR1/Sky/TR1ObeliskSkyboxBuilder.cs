@@ -1,6 +1,9 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRImageControl.Packing;
+using TRImageControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
+using System.Drawing;
 
 namespace TRXInjectionTool.Types.TR1.Sky;
 
@@ -11,25 +14,36 @@ public class TR1ObeliskSkyboxBuilder : InjectionBuilder
         TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         TR3Level chamber = _control3.Read($"Resources/{TR3LevelNames.WILLIE}");
 
-        ResetLevel(caves);
+        ResetLevel(caves, 1);
 
         TRModel sky = chamber.Models[TR3Type.Skybox_H];
         caves.Models[TR1Type.Unused01] = sky;
 
-        caves.Palette[1] = new()
+        Color topColour = Color.FromArgb(90, 136, 173);
+
+        TR1TexturePacker packer = new(caves);
+        TRImage img = new(16, 16);
+        img.Write((c, x, y) => topColour);
+        TRTextileRegion region = new(new()
         {
-            Red = 90,
-            Green = 136,
-            Blue = 173,
-        };
+            Texture = new TRObjectTexture(0, 0, 16, 16),
+        }, img);
+        packer.AddRectangle(region);
+        packer.Pack(true);
 
         TRMesh mesh = sky.Meshes[0];
-        mesh.ColouredTriangles.ForEach(f => f.Texture = (ushort)(f.Vertices.Contains(65) ? 1 : 2));
-        mesh.ColouredRectangles.ForEach(f => f.Texture = 1);
-        mesh.TexturedRectangles.ForEach(f => f.Texture = (ushort)(f.Vertices[0] <= 15 ? 1 : 2));
+        List<TRMeshFace> topTriangles = mesh.ColouredTriangles.Where(f => f.Vertices.Contains(65)).ToList();
+        mesh.TexturedTriangles.AddRange(topTriangles);
+        mesh.TexturedRectangles.AddRange(mesh.ColouredRectangles);
+        topTriangles.ForEach(t => t.Texture = (ushort)caves.ObjectTextures.Count);
+        mesh.TexturedRectangles.ForEach(t => t.Texture = (ushort)caves.ObjectTextures.Count);
+        mesh.ColouredTriangles.RemoveAll(topTriangles.Contains);
+        mesh.ColouredRectangles.Clear();
 
-        mesh.ColouredRectangles.AddRange(mesh.TexturedRectangles);
-        mesh.TexturedRectangles.Clear();
+        caves.Palette[2] = new();
+        mesh.ColouredTriangles.ForEach(f => f.Texture = 2);        
+
+        caves.ObjectTextures.Add(region.Segments.First().Texture as TRObjectTexture);
 
         for (int i = 33; i <= 48; i++)
         {
