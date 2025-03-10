@@ -10,6 +10,7 @@ public class TR2BarkhangItemBuilder : ItemBuilder
     {
         TR2Level barkhang = _control2.Read($"Resources/{TR2LevelNames.MONASTERY}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "barkhang_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.MONASTERY);
 
         data.ItemEdits = new()
         {

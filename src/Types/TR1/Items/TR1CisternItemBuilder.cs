@@ -10,6 +10,7 @@ public class TR1CisternItemBuilder : ItemBuilder
     {
         TR1Level cistern = _control1.Read($"Resources/{TR1LevelNames.CISTERN}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "cistern_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.CISTERN);
 
         data.ItemEdits = new()
         {

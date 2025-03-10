@@ -10,6 +10,7 @@ public class TR2IcePalaceItemBuilder : ItemBuilder
     {
         TR2Level palace = _control2.Read($"Resources/{TR2LevelNames.CHICKEN}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "palace_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.CHICKEN);
 
         data.ItemEdits = new()
         {

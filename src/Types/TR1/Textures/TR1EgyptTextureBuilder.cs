@@ -12,6 +12,7 @@ public class TR1EgyptTextureBuilder : TextureBuilder
     {
         TR1Level egypt = _control1.Read($"Resources/{TR1LevelNames.EGYPT}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "egypt_textures");
+        CreateDefaultTests(data, TR1LevelNames.EGYPT);
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());

@@ -12,6 +12,7 @@ public class TR1ObeliskFDBuilder : FDBuilder
     {
         TR1Level obelisk = _control1.Read($"Resources/{TR1LevelNames.OBELISK}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "obelisk_fd");
+        CreateDefaultTests(data, TR1LevelNames.OBELISK);
         data.FloorEdits = new()
         {
             MakeMusicOneShot(12, 3, 12),

@@ -10,6 +10,7 @@ public class TR1EgyptCameraBuilder : CameraBuilder
     {
         TR1Level egypt = _control1.Read($"Resources/{TR1LevelNames.EGYPT}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "egypt_cameras");
+        CreateDefaultTests(data, TR1LevelNames.EGYPT);
 
         // Fix LOS issues with the glide camera in room 20.
         data.CameraEdits.Add(SetCameraPosition(egypt, 4, 76672, -7648, 16384, 20));

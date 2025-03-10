@@ -19,6 +19,7 @@ public class TR1EgyptItemBuilder : ItemBuilder
     private static InjectionData FixMeshPositions(TR1Level egypt)
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "egypt_meshfixes");
+        CreateDefaultTests(data, TR1LevelNames.EGYPT);
 
         data.MeshEdits.Add(FixEgyptToppledChair(TR1Type.Architecture7, egypt));
 

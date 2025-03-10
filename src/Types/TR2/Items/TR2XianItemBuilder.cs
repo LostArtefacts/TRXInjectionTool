@@ -10,6 +10,7 @@ public class TR2XianItemBuilder : ItemBuilder
     {
         TR2Level xian = _control2.Read($"Resources/{TR2LevelNames.XIAN}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "xian_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.XIAN);
 
         data.ItemEdits = new()
         {

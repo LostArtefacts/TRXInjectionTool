@@ -11,6 +11,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
     {
         TR1Level toq = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "qualopec_textures");
+        CreateDefaultTests(data, TR1LevelNames.QUALOPEC);
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());

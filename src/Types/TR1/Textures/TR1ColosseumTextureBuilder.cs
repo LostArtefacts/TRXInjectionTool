@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using TRImageControl;
+﻿using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -13,6 +12,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
     {
         TR1Level colosseum = _control1.Read($"Resources/{TR1LevelNames.COLOSSEUM}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "colosseum_textures");
+        CreateDefaultTests(data, TR1LevelNames.COLOSSEUM);
 
         data.RoomEdits.AddRange(CreateVertices(colosseum));
         data.RoomEdits.AddRange(CreateFillers(colosseum));

@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -9,6 +10,7 @@ public class TR1ToQFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "qualopec_fd");
+        CreateDefaultTests(data, TR1LevelNames.QUALOPEC);
         data.FloorEdits = new()
         {
             // We make the track in this corridor one shot and "nullify" the

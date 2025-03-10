@@ -11,6 +11,7 @@ public class TR1CatCameraBuilder : CameraBuilder
     {
         TR1Level cat = _control1.Read($"Resources/{TR1LevelNames.CAT}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "cat_cameras");
+        CreateDefaultTests(data, TR1LevelNames.CAT);
 
         // Move this camera outside to avoid LOS issues.
         data.CameraEdits.Add(SetCameraPosition(cat, 0, 73411, -7448, 49152, 0));

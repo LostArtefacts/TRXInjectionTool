@@ -1,4 +1,5 @@
 ﻿using TRLevelControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -10,6 +11,7 @@ public class TR1StrongholdFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "stronghold_fd");
+        CreateDefaultTests(data, TR1LevelNames.STRONGHOLD);
         data.FloorEdits = new()
         {
             MakeMusicOneShot(4, 17, 6),

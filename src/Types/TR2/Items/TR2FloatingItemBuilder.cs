@@ -10,6 +10,7 @@ public class TR2FloatingItemBuilder : ItemBuilder
     {
         TR2Level floating = _control2.Read($"Resources/{TR2LevelNames.FLOATER}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "floating_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.FLOATER);
 
         data.ItemEdits = new()
         {

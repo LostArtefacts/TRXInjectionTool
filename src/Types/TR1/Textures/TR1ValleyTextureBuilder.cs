@@ -11,6 +11,7 @@ public class TR1ValleyTextureBuilder : TextureBuilder
     {
         TR1Level valley = _control1.Read($"Resources/{TR1LevelNames.VALLEY}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "valley_textures");
+        CreateDefaultTests(data, TR1LevelNames.VALLEY);
 
         data.RoomEdits.AddRange(CreateFillers(valley));
         data.RoomEdits.AddRange(CreateRefacings(valley));

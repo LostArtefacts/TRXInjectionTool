@@ -10,6 +10,7 @@ public class TR1ToQItemBuilder : ItemBuilder
     {
         TR1Level qualopec = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "qualopec_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.QUALOPEC);
 
         data.ItemEdits = new()
         {

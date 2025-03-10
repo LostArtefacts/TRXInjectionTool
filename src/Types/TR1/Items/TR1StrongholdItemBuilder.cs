@@ -10,6 +10,7 @@ public class TR1StrongholdItemBuilder : ItemBuilder
     {
         TR1Level cat = _control1.Read($"Resources/{TR1LevelNames.STRONGHOLD}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "stronghold_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.STRONGHOLD);
 
         data.ItemEdits = new()
         {

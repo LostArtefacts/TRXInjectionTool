@@ -10,6 +10,7 @@ public class TR1SanctuaryItemBuilder : ItemBuilder
     {
         TR1Level sanctuary = _control1.Read($"Resources/{TR1LevelNames.SANCTUARY}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "sanctuary_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.SANCTUARY);
 
         data.ItemEdits = new()
         {

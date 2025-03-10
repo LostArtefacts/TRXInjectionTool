@@ -11,6 +11,7 @@ public class TR1GymTextureBuilder : TextureBuilder
     {
         TR1Level gym = _control1.Read($"Resources/{TR1LevelNames.ASSAULT}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "gym_textures");
+        CreateDefaultTests(data, TR1LevelNames.ASSAULT);
 
         data.RoomEdits.AddRange(CreateRefacings(gym));
         data.RoomEdits.AddRange(CreateRotations());

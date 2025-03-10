@@ -12,6 +12,7 @@ public class TR2CatacombsFDBuilder : FDBuilder
         TR2Level catacombs = _control2.Read($"Resources/{TR2LevelNames.COT}");
 
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "catacombs_fd");
+        CreateDefaultTests(data, TR2LevelNames.COT);
         data.FloorEdits.AddRange(FixMaskRoomFlipmap(catacombs));
         data.FloorEdits.AddRange(FixStartMusicTriggers(catacombs));
 

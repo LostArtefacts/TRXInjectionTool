@@ -11,6 +11,7 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
     {
         TR1Level vilcabamba = _control1.Read($"Resources/{TR1LevelNames.VILCABAMBA}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "vilcabamba_textures");
+        CreateDefaultTests(data, TR1LevelNames.VILCABAMBA);
 
         data.RoomEdits.AddRange(CreateFillers(vilcabamba));
         data.RoomEdits.AddRange(CreateRefacings());

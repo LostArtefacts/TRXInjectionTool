@@ -12,6 +12,7 @@ public class TR1CisternFDBuilder : FDBuilder
     {
         TR1Level cistern = _control1.Read($"Resources/{TR1LevelNames.CISTERN}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "cistern_fd");
+        CreateDefaultTests(data, TR1LevelNames.CISTERN);
         data.FloorEdits = new()
         {
             MakeKeyTrigger(cistern),

@@ -12,6 +12,7 @@ public class TR2XianFDBuilder : FDBuilder
         TR2Level xian = _control2.Read($"Resources/{TR2LevelNames.XIAN}");
 
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "xian_fd");
+        CreateDefaultTests(data, TR2LevelNames.XIAN);
         data.FloorEdits.AddRange(FixDeathTiles(xian));
 
         return new() { data };

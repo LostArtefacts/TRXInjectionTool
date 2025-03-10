@@ -10,6 +10,7 @@ public class TR1FollyItemBuilder : ItemBuilder
     {
         TR1Level folly = _control1.Read($"Resources/{TR1LevelNames.FOLLY}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "folly_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.FOLLY);
 
         data.ItemEdits = new()
         {

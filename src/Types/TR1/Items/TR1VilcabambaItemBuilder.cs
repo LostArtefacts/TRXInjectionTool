@@ -10,6 +10,7 @@ public class TR1VilcabambaItemBuilder : ItemBuilder
     {
         TR1Level vilcabamba = _control1.Read($"Resources/{TR1LevelNames.VILCABAMBA}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "vilcabamba_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.VILCABAMBA);
 
         data.ItemEdits = new()
         {

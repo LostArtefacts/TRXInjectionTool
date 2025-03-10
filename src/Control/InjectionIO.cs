@@ -51,6 +51,8 @@ public static class InjectionIO
 
     private static void WriteData(InjectionData data, TRLevelWriter writer)
     {
+        WriteApplicabilityTests(data, writer);
+
         List<Chunk> chunks = new()
         {
             CreateChunk(ChunkType.TextureData, data, WriteTextureData),
@@ -66,6 +68,18 @@ public static class InjectionIO
 
         writer.Write(chunks.Count);
         chunks.ForEach(b => b.Serialize(writer));
+    }
+
+    private static void WriteApplicabilityTests(InjectionData data, TRLevelWriter writer)
+    {
+        using MemoryStream ms = new();
+        using TRLevelWriter testWriter = new(ms);
+        data.ApplicabilityTests.ForEach(t => t.Serialize(testWriter));
+
+        byte[] testData = ms.ToArray();
+        writer.Write(data.ApplicabilityTests.Count);
+        writer.Write(testData.Length);
+        writer.Write(testData);
     }
 
     private static Chunk CreateChunk(ChunkType type, InjectionData data, Func<InjectionData, TRLevelWriter, int> process)

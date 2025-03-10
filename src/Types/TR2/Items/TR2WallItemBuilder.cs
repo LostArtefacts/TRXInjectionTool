@@ -10,6 +10,7 @@ public class TR2WallItemBuilder : ItemBuilder
     {
         TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "wall_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.GW);
 
         data.ItemEdits = new()
         {

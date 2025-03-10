@@ -21,6 +21,7 @@ public class TR1ObeliskItemBuilder : ItemBuilder
     private static InjectionData CreateItemRots(TR1Level obelisk)
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "obelisk_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.OBELISK);
 
         data.ItemEdits = new()
         {
@@ -34,6 +35,7 @@ public class TR1ObeliskItemBuilder : ItemBuilder
     private static InjectionData FixMeshPositions(TR1Level obelisk)
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "obelisk_meshfixes");
+        CreateDefaultTests(data, TR1LevelNames.OBELISK);
 
         FixBridge(obelisk, data);
         FixStatics(obelisk, data);

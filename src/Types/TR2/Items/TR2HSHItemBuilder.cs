@@ -10,6 +10,7 @@ public class TR2HSHItemBuilder : ItemBuilder
     {
         TR2Level house = _control2.Read($"Resources/{TR2LevelNames.HOME}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "house_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.HOME);
 
         // Everything in the closet.
         foreach (TR2Entity item in house.Entities.Where(e => e.Room == 57))

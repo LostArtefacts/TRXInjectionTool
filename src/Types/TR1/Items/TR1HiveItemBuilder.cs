@@ -10,6 +10,7 @@ public class TR1HiveItemBuilder : ItemBuilder
     {
         TR1Level hive = _control1.Read($"Resources/{TR1LevelNames.HIVE}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "hive_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.HIVE);
 
         data.ItemEdits = new()
         {

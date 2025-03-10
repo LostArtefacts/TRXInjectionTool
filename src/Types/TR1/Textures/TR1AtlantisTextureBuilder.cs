@@ -11,6 +11,7 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
     {
         TR1Level atlantis = _control1.Read($"Resources/{TR1LevelNames.ATLANTIS}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "atlantis_textures");
+        CreateDefaultTests(data, TR1LevelNames.ATLANTIS);
 
         data.RoomEdits.AddRange(CreateFillers(atlantis));
         data.RoomEdits.AddRange(CreateRefacings());

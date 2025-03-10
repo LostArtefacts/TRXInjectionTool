@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -9,6 +10,7 @@ public class TR1HiveTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "hive_textures");
+        CreateDefaultTests(data, TR1LevelNames.HIVE);
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());

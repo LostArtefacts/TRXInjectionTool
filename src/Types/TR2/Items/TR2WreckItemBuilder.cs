@@ -10,6 +10,7 @@ public class TR2WreckItemBuilder : ItemBuilder
     {
         TR2Level wreck = _control2.Read($"Resources/{TR2LevelNames.DORIA}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "wreck_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.DORIA);
 
         data.ItemEdits = new()
         {

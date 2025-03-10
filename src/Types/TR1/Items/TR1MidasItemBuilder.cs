@@ -10,6 +10,7 @@ public class TR1MidasItemBuilder : ItemBuilder
     {
         TR1Level midas = _control1.Read($"Resources/{TR1LevelNames.MIDAS}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "midas_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.MIDAS);
 
         data.ItemEdits = new()
         {

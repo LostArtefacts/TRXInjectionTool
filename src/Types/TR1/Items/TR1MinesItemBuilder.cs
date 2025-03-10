@@ -21,6 +21,7 @@ public class TR1MinesItemBuilder : ItemBuilder
     private static InjectionData CreateItemRots(TR1Level mines)
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "mines_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.MINES);
 
         data.ItemEdits = new()
         {
@@ -33,6 +34,7 @@ public class TR1MinesItemBuilder : ItemBuilder
     private static InjectionData FixMeshPositions()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "mines_meshfixes");
+        CreateDefaultTests(data, TR1LevelNames.MINES);
 
         // Shift the bottom of the motorboat down to fix z-fighting with the water.
         {

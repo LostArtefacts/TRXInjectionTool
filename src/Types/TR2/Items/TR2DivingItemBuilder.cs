@@ -10,6 +10,7 @@ public class TR2DivingItemBuilder : ItemBuilder
     {
         TR2Level diving = _control2.Read($"Resources/{TR2LevelNames.DA}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "diving_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.DA);
 
         data.ItemEdits = new()
         {

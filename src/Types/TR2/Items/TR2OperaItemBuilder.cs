@@ -10,6 +10,7 @@ public class TR2OperaItemBuilder : ItemBuilder
     {
         TR2Level opera = _control2.Read($"Resources/{TR2LevelNames.OPERA}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "opera_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.OPERA);
 
         data.ItemEdits = new()
         {

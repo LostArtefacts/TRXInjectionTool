@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -9,6 +10,7 @@ public class TR2OperaFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "opera_fd");
+        CreateDefaultTests(data, TR2LevelNames.OPERA);
         data.FloorEdits.Add(FixLooseBoardTrigger());
 
         return new() { data };

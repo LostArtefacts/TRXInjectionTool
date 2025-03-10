@@ -11,6 +11,7 @@ public class TR1FollyTextureBuilder : TextureBuilder
     {
         TR1Level folly = _control1.Read($"Resources/{TR1LevelNames.FOLLY}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "folly_textures");
+        CreateDefaultTests(data, TR1LevelNames.FOLLY);
 
         data.RoomEdits.AddRange(CreateFillers(folly));
         data.RoomEdits.AddRange(CreateRefacings());

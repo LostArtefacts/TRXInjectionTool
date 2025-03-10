@@ -11,6 +11,7 @@ public class TR1CisternTextureBuilder : TextureBuilder
     {
         TR1Level cistern = _control1.Read($"Resources/{TR1LevelNames.CISTERN}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "cistern_textures");
+        CreateDefaultTests(data, TR1LevelNames.CISTERN);
 
         data.RoomEdits.AddRange(CreateFillers(cistern));
         data.RoomEdits.AddRange(CreateRotations());

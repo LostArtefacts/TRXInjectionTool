@@ -11,6 +11,7 @@ public class TR1CavesTextureBuilder : TextureBuilder
     {
         TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "caves_textures");
+        CreateDefaultTests(data, TR1LevelNames.CAVES);
 
         data.RoomEdits.AddRange(CreateFillers(caves));
         data.RoomEdits.AddRange(CreateRefacings(caves));

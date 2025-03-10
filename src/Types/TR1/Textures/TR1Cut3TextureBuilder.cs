@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -9,6 +10,7 @@ public class TR1Cut3TextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "cut3_textures");
+        CreateDefaultTests(data, TR1LevelNames.MINES_CUT);
 
         data.RoomEdits.AddRange(CreateRotations());
 

@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.FD;
@@ -8,6 +9,7 @@ public class TR1CatFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "cat_fd");
+        CreateDefaultTests(data, TR1LevelNames.CAT);
         data.FloorEdits = new()
         {
             MakeMusicOneShot(14, 1, 1),

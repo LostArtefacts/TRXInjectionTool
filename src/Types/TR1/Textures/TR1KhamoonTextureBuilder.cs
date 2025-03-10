@@ -12,6 +12,7 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
     {
         TR1Level khamoon = _control1.Read($"Resources/{TR1LevelNames.KHAMOON}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "khamoon_textures");
+        CreateDefaultTests(data, TR1LevelNames.KHAMOON);
 
         data.RoomEdits.AddRange(CreateFillers(khamoon));
         data.RoomEdits.AddRange(CreateRefacings());

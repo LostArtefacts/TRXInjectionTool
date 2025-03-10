@@ -11,6 +11,7 @@ public class TR1TihocanItemBuilder : ItemBuilder
     {
         TR1Level tihocan = _control1.Read($"Resources/{TR1LevelNames.TIHOCAN}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "tihocan_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.TIHOCAN);
 
         tihocan.Entities[12].Z -= TRConsts.Step4;
         data.ItemEdits = new()

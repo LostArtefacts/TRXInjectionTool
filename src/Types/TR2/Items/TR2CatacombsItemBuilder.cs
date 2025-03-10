@@ -10,6 +10,7 @@ public class TR2CatacombsItemBuilder : ItemBuilder
     {
         TR2Level catacombs = _control2.Read($"Resources/{TR2LevelNames.COT}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "catacombs_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.COT);
 
         data.ItemEdits = new()
         {

@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -9,6 +10,7 @@ public class TR1PyramidFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "pyramid_fd");
+        CreateDefaultTests(data, TR1LevelNames.PYRAMID);
         data.FloorEdits = new()
         {
             MakeMusicOneShot(36, 4, 5),

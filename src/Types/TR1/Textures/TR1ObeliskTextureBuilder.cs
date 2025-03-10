@@ -12,6 +12,7 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
     {
         TR1Level obelisk = _control1.Read($"Resources/{TR1LevelNames.OBELISK}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "obelisk_textures");
+        CreateDefaultTests(data, TR1LevelNames.OBELISK);
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());

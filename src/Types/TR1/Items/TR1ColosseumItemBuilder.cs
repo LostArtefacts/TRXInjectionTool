@@ -10,6 +10,7 @@ public class TR1ColosseumItemBuilder : ItemBuilder
     {
         TR1Level colosseum = _control1.Read($"Resources/{TR1LevelNames.COLOSSEUM}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "colosseum_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.COLOSSEUM);
 
         data.ItemEdits = new()
         {

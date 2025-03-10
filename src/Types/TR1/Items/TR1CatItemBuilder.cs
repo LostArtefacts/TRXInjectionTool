@@ -21,6 +21,7 @@ public class TR1CatItemBuilder : ItemBuilder
     private static InjectionData CreateItemRots(TR1Level cat)
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "cat_itemrots");
+        CreateDefaultTests(data, TR1LevelNames.CAT);
 
         data.ItemEdits = new()
         {
@@ -39,6 +40,7 @@ public class TR1CatItemBuilder : ItemBuilder
     private static InjectionData FixMeshPositions(TR1Level cat)
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "cat_meshfixes");
+        CreateDefaultTests(data, TR1LevelNames.CAT);
 
         data.MeshEdits.Add(FixEgyptToppledChair(TR1Type.Architecture7, cat));
 

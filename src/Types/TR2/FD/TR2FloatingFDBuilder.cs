@@ -11,6 +11,7 @@ public class TR2FloatingFDBuilder : FDBuilder
     {
         TR2Level floating = _control2.Read($"Resources/{TR2LevelNames.FLOATER}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "floating_fd");
+        CreateDefaultTests(data, TR2LevelNames.FLOATER);
 
         // Rotate and shift the door that leads to room 86, otherwise there is an invisible wall.
         floating.Entities[72].X += TRConsts.Step4;

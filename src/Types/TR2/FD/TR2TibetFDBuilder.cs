@@ -13,6 +13,7 @@ public class TR2TibetFDBuilder : FDBuilder
         TR2Level tibet= _control2.Read($"Resources/{TR2LevelNames.TIBET}");
 
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "tibet_fd");
+        CreateDefaultTests(data, TR2LevelNames.TIBET);
         data.FloorEdits.AddRange(FixDrawbridgeFlipmap(tibet));
 
         return new() { data };

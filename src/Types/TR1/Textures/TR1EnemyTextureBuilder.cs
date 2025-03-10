@@ -18,7 +18,7 @@ public class TR1EnemyTextureBuilder : TextureBuilder
             FixKold(),
         };
     }
-
+    // Move these to levels
     private static InjectionData FixLarson()
     {
         // Larson's gun is silver in Sanctuary and the ToQ cutscene, but in ToQ itself

@@ -2,6 +2,7 @@
 using TRLevelReader;
 using TRLevelReader.Model;
 using TRXInjectionTool.Actions;
+using TRXInjectionTool.Applicability;
 using LC = TRLevelControl;
 
 namespace TRXInjectionTool.Control;
@@ -11,6 +12,7 @@ public class InjectionData
     public string Name { get; set; }
     public InjectionType InjectionType { get; set; }
     public LC.Model.TRGameVersion GameVersion { get; set; }
+    public List<ApplicabilityTest> ApplicabilityTests { get; set; } = new();
     public List<LC.Model.TRTexImage32> Images { get; set; } = new();
     public List<TRObjectTexture> ObjectTextures { get; set; } = new();
     public List<TRSpriteSequence> SpriteSequences { get; set; } = new();

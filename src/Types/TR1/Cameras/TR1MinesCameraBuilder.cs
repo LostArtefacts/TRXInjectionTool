@@ -10,6 +10,7 @@ public class TR1MinesCameraBuilder : CameraBuilder
     {
         TR1Level mines = _control1.Read($"Resources/{TR1LevelNames.MINES}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "mines_cameras");
+        CreateDefaultTests(data, TR1LevelNames.MINES);
 
         // Prevent seeing the flipmap boat while the actual boat is moving into position.
         data.CameraEdits.Add(SetCameraPosition(mines, 7, 53760, -7296, 28160, 3));

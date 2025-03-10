@@ -10,6 +10,7 @@ public class TR2RigItemBuilder : ItemBuilder
     {
         TR2Level rig = _control2.Read($"Resources/{TR2LevelNames.RIG}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "rig_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.RIG);
 
         data.ItemEdits = new()
         {

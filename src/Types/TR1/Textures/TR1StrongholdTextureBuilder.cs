@@ -11,6 +11,7 @@ public class TR1StrongholdTextureBuilder : TextureBuilder
     {
         TR1Level stronghold = _control1.Read($"Resources/{TR1LevelNames.STRONGHOLD}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "stronghold_textures");
+        CreateDefaultTests(data, TR1LevelNames.STRONGHOLD);
 
         data.RoomEdits.AddRange(CreateFillers(stronghold));
         data.RoomEdits.AddRange(CreateRefacings());

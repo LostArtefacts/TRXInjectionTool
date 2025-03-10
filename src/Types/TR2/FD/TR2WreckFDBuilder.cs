@@ -11,6 +11,7 @@ public class TR2WreckFDBuilder : FDBuilder
     {
         TR2Level wreck = _control2.Read($"Resources/{TR2LevelNames.DORIA}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "wreck_fd");
+        CreateDefaultTests(data, TR2LevelNames.DORIA);
 
         // Flood room 98 where the unreachable shark is.
         data.FloorEdits.Add(new()

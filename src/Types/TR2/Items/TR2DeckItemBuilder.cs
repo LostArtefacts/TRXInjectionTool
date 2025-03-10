@@ -10,6 +10,7 @@ public class TR2DeckItemBuilder : ItemBuilder
     {
         TR2Level deck = _control2.Read($"Resources/{TR2LevelNames.DECK}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "deck_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.DECK);
 
         data.ItemEdits = new()
         {

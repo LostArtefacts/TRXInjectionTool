@@ -11,6 +11,7 @@ public class TR1PyramidTextureBuilder : TextureBuilder
     {
         TR1Level pyramid = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "pyramid_textures");
+        CreateDefaultTests(data, TR1LevelNames.PYRAMID);
 
         data.RoomEdits.AddRange(CreateFillers(pyramid));
         data.RoomEdits.AddRange(CreateRefacings());

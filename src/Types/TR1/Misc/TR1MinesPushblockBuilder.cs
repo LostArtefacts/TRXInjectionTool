@@ -27,6 +27,7 @@ public class TR1MinesPushblockBuilder : InjectionBuilder
         }
 
         InjectionData data = InjectionData.Create(mines, InjectionType.General, "mines_pushblocks", true);
+        CreateDefaultTests(data, TR1LevelNames.MINES);
         return new() { data };
     }
 }

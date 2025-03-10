@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -9,6 +10,7 @@ public class TR1ColosseumFDBuilder : InjectionBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "colosseum_fd");
+        CreateDefaultTests(data, TR1LevelNames.COLOSSEUM);
         data.FloorEdits = CreateBatTriggerFixes();
 
         return new() { data };

@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.FD;
@@ -8,6 +9,7 @@ public class TR1HiveFDBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "hive_fd");
+        CreateDefaultTests(data, TR1LevelNames.HIVE);
         data.FloorEdits = new()
         {
             MakeMusicOneShot(8, 12, 6),

@@ -12,6 +12,7 @@ public class TR1CatTextureBuilder : TextureBuilder
     {
         TR1Level cat = _control1.Read($"Resources/{TR1LevelNames.CAT}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "cat_textures");
+        CreateDefaultTests(data, TR1LevelNames.CAT);
 
         data.RoomEdits.AddRange(CreateFillers(cat));
         data.RoomEdits.AddRange(CreateRefacings());

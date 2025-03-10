@@ -10,6 +10,7 @@ public class TR2TibetItemBuilder : ItemBuilder
     {
         TR2Level tibet = _control2.Read($"Resources/{TR2LevelNames.TIBET}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "tibet_itemrots");
+        CreateDefaultTests(data, TR2LevelNames.TIBET);
 
         data.ItemEdits = new()
         {
