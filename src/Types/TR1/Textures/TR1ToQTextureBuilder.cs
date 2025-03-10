@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRDataControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -10,8 +11,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR1Level toq = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "qualopec_textures");
-        CreateDefaultTests(data, TR1LevelNames.QUALOPEC);
+        InjectionData data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
@@ -89,5 +89,37 @@ public class TR1ToQTextureBuilder : TextureBuilder
                 }
             }
         };
+    }
+
+    private static InjectionData CreateBaseData()
+    {
+        // Larson's gun is silver in Sanctuary and the ToQ cutscene, but in ToQ itself
+        // it's gold. We take the mesh from Sanctuary and replace it in ToQ.
+        TR1Level qualopec = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
+        TR1Level sanctuary = _control1.Read($"Resources/{TR1LevelNames.SANCTUARY}");
+
+        CreateModelLevel(sanctuary, TR1Type.Larson);
+
+        TRModel toqLarson = qualopec.Models[TR1Type.Larson];
+        qualopec.Models[TR1Type.Pierre] = toqLarson;
+        qualopec.Models.Remove(TR1Type.Larson);
+
+        TR1DataImporter importer = new()
+        {
+            Level = qualopec,
+            TypesToImport = new() { TR1Type.Larson },
+        };
+        importer.Import();
+
+        toqLarson.Meshes[14] = qualopec.Models[TR1Type.Larson].Meshes[14];
+        qualopec.Models[TR1Type.Larson] = toqLarson;
+
+        CreateModelLevel(qualopec, TR1Type.Larson);
+
+        qualopec.SoundEffects.Remove(TR1SFX.LarsonDeath);
+
+        InjectionData data = InjectionData.Create(qualopec, InjectionType.TextureFix, "qualopec_textures");
+        CreateDefaultTests(data, TR1LevelNames.QUALOPEC);
+        return data;
     }
 }

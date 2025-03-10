@@ -18,6 +18,8 @@ public class TR1MinesTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(mines));
 
+        FixEnemyTextures(data);
+
         return new() { data };
     }
 
@@ -99,5 +101,149 @@ public class TR1MinesTextureBuilder : TextureBuilder
                 }
             }
         };
+    }
+
+    private static void FixEnemyTextures(InjectionData data)
+    {
+        data.Palette.Add(new());
+        // Skin tone for skatebaord kid and cowboy
+        data.Palette.Add(new()
+        {
+            Red = 204,
+            Green = 132,
+            Blue = 88,
+        });
+        // Skin tone for baldy
+        data.Palette.Add(new()
+        {
+            Red = 112,
+            Green = 72,
+            Blue = 16,
+        });
+
+        const short tone1 = -1;
+        const short tone2 = -2;
+
+        {
+            // Skateboard kid
+            short[] meshIndices = new short[] { 1, 3, 4, 7, };
+            foreach (short meshIndex in meshIndices)
+            {
+                data.MeshEdits.Add(new()
+                {
+                    ModelID = (uint)TR1Type.SkateboardKid,
+                    MeshIndex = meshIndex,
+                    FaceEdits = new()
+                    {
+                        new()
+                        {
+                            FaceType = TRMeshFaceType.ColouredQuad,
+                            MeshIndex = tone1,
+                            TargetFaceIndices = new() { 0 },
+                        }
+                   },
+                });
+            }
+        }
+
+        {
+            // Cowboy
+            short[] meshIndices = new short[] { 4, 7, };
+            foreach (short meshIndex in meshIndices)
+            {
+                data.MeshEdits.Add(new()
+                {
+                    ModelID = (uint)TR1Type.Cowboy,
+                    MeshIndex = meshIndex,
+                    FaceEdits = new()
+                    {
+                        new()
+                        {
+                            FaceType = TRMeshFaceType.ColouredQuad,
+                            MeshIndex = tone1,
+                            TargetFaceIndices = new() { 0 },
+                        }
+                    },
+                });
+            }
+        }
+
+        {
+            // Baldy
+            data.MeshEdits.AddRange(new List<TRMeshEdit>
+            {
+                new()
+                {
+                    ModelID = (uint)TR1Type.Kold,
+                    MeshIndex = 1,
+                    FaceEdits = new()
+                    {
+                        new()
+                        {
+                            FaceType = TRMeshFaceType.ColouredQuad,
+                            MeshIndex = tone2,
+                            TargetFaceIndices = GetRange(10, 3),
+                        },
+                        new()
+                        {
+                            FaceType = TRMeshFaceType.ColouredTriangle,
+                            MeshIndex = tone2,
+                            TargetFaceIndices = GetRange(4, 4),
+                        },
+                    },
+                },
+
+                new()
+                {
+                    ModelID = (uint)TR1Type.Kold,
+                    MeshIndex = 2,
+                    FaceEdits = new()
+                    {
+                        new()
+                        {
+                            FaceType = TRMeshFaceType.ColouredQuad,
+                            MeshIndex = tone2,
+                            TargetFaceIndices = GetRange(0, 8),
+                        },
+                        new()
+                        {
+                            FaceType = TRMeshFaceType.ColouredTriangle,
+                            MeshIndex = tone2,
+                            TargetFaceIndices = GetRange(0, 15),
+                        },
+                    },
+                },
+
+                new()
+                {
+                    ModelID = (uint)TR1Type.Kold,
+                    MeshIndex = 5,
+                    FaceEdits = new()
+                    {
+                        new()
+                        {
+                            FaceType = TRMeshFaceType.ColouredQuad,
+                            MeshIndex = tone2,
+                            TargetFaceIndices = GetRange(0, 6),
+                        },
+                    },
+                },
+
+                new()
+                {
+                    ModelID = (uint)TR1Type.Kold,
+                    MeshIndex = 8,
+                    FaceEdits = new()
+                    {
+                        new()
+                        {
+                            FaceType = TRMeshFaceType.ColouredQuad,
+                            MeshIndex = tone2,
+                            TargetFaceIndices = GetRange(0, 6),
+                        },
+                    },
+                },
+            });
+        }
     }
 }
