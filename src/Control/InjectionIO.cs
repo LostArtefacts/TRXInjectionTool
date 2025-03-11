@@ -1,6 +1,8 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using TRImageControl;
 using TRLevelControl;
 using TRLevelReader.Model;
+using LC = TRLevelControl.Model;
 
 namespace TRXInjectionTool.Control;
 
@@ -103,8 +105,32 @@ public static class InjectionIO
         blockCount += WriteBlock(BlockType.Palette, data.Palette.Count, writer,
             s => data.Palette.ForEach(p => s.Write(SquashColour(p).Serialize())));
 
-        blockCount += WriteBlock(BlockType.Images, data.Images.Count, writer,
-            s => data.Images.ForEach(i => s.Write(i.Pixels)));
+        if (data.Images.Count > 0)
+        {
+            List<LC.TRTexImage8> img8s = new();
+            if (data.Images8 == null)
+            {
+                List<LC.TRColour> trPalette = data.Palette
+                    .Select(c => new LC.TRColour { Red = c.Red, Green = c.Green, Blue = c.Blue })
+                    .ToList();
+                img8s.AddRange(data.Images.Select(i => new LC.TRTexImage8 { Pixels = new TRImage(i.Pixels).ToRGB(trPalette) }));
+            }
+            else
+            {
+                if (data.Images8.Count != data.Images.Count)
+                {
+                    throw new Exception();
+                }
+                img8s.AddRange(data.Images8);
+            }
+
+            blockCount += WriteBlock(BlockType.Images, data.Images.Count, writer,
+                s =>
+                {
+                    data.Images.ForEach(i => s.Write(i.Pixels));
+                    img8s.ForEach(i => s.Write(i.Pixels));
+                });
+        }
 
         return blockCount;
     }
@@ -177,7 +203,7 @@ public static class InjectionIO
     private static int WriteSFXData(InjectionData data, TRLevelWriter writer)
     {
         return WriteBlock(BlockType.SampleInfos, data.SFX.Count, writer,
-            s => data.SFX.ForEach(f => f.Serialize(s)));
+            s => data.SFX.ForEach(f => f.Serialize(s, data.GameVersion)));
     }
 
     private static int WriteEdits(InjectionData data, TRLevelWriter writer)

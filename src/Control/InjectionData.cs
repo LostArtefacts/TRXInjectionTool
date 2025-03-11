@@ -14,6 +14,7 @@ public class InjectionData
     public LC.Model.TRGameVersion GameVersion { get; set; }
     public List<ApplicabilityTest> ApplicabilityTests { get; set; } = new();
     public List<LC.Model.TRTexImage32> Images { get; set; } = new();
+    public List<LC.Model.TRTexImage8> Images8 { get; set; }
     public List<TRObjectTexture> ObjectTextures { get; set; } = new();
     public List<TRSpriteSequence> SpriteSequences { get; set; } = new();
     public List<TRSpriteTexture> SpriteTextures { get; set; } = new();
@@ -73,6 +74,7 @@ public class InjectionData
         InjectionData data = new()
         {
             InjectionType = type,
+            GameVersion = LC.Model.TRGameVersion.TR1,
             Name = name,
             Animations = level.Animations.ToList(),
             AnimChanges = level.StateChanges.ToList(),
@@ -117,6 +119,67 @@ public class InjectionData
                 uint nextIndex = sampleIndex == level.SampleIndices.Length - 1 ? (uint)level.Samples.Length : level.SampleIndices[sampleIndex + 1];
                 data.SFX[i].Data.Add(GetSample(level.SampleIndices[sampleIndex], nextIndex, level.Samples));
             }
+        }
+
+        return data;
+    }
+
+    public static InjectionData Create(LC.Model.TR2Level controlledLevel, InjectionType type, string name, bool removeMeshData = false)
+    {
+        // We convert to old-style flat level to simplify export later.
+        // TODO: update old lib to support reading from memory
+        new LC.TR2LevelControl().Write(controlledLevel, "temp.tr2");
+        TR2Level level = new TR2LevelReader().ReadLevel("temp.tr2");
+        File.Delete("temp.tr2");
+
+        short[] sounds = Array.FindAll(level.SoundMap, s => s != -1);
+        if (removeMeshData)
+        {
+            RemoveMeshData(level);
+        }
+
+        InjectionData data = new()
+        {
+            InjectionType = type,
+            GameVersion = LC.Model.TRGameVersion.TR2,
+            Name = name,
+            Animations = level.Animations.ToList(),
+            AnimChanges = level.StateChanges.ToList(),
+            AnimCommands = level.AnimCommands.ToList(),
+            AnimDispatches = level.AnimDispatches.ToList(),
+            AnimFrames = level.Frames.ToList(),
+            Images = Convert(level.Images16),
+            Images8 = level.NumImages == 0 ? null : level.Images8.Select(i => new LC.Model.TRTexImage8 { Pixels = i.Pixels }).ToList(),
+            Meshes = level.Meshes.ToList(),
+            MeshPointers = level.MeshPointers.ToList(),
+            MeshTrees = level.MeshTrees.ToList(),
+            Models = level.Models.ToList(),
+            ObjectTextures = level.ObjectTextures.ToList(),
+            Palette = level.Palette.Select(c =>
+            {
+                return new TRColour
+                {
+                    Red = (byte)(c.Red * 4),
+                    Green = (byte)(c.Green * 4),
+                    Blue = (byte)(c.Blue * 4),
+                };
+            }).ToList(),
+            SpriteSequences = level.SpriteSequences.ToList(),
+            SpriteTextures = level.SpriteTextures.ToList(),
+        };
+
+        for (int i = 0; i < sounds.Length; i++)
+        {
+            short soundID = (short)Array.IndexOf(level.SoundMap, sounds[i]);
+            TRSoundDetails details = level.SoundDetails[sounds[i]];
+            data.SFX.Add(new()
+            {
+                ID = soundID,
+                Chance = details.Chance,
+                Characteristics = details.Characteristics,
+                Volume = details.Volume,
+                SampleOffset = level.SampleIndices[details.Sample],
+            });
         }
 
         return data;
@@ -179,6 +242,25 @@ public class InjectionData
         }
     }
 
+    private static void RemoveMeshData(TR2Level level)
+    {
+        // The game will detect that there is no mesh data associated with this injection
+        // and hence retain the existing mesh data from the original level.
+        level.NumMeshData = 0;
+        level.Meshes = Array.Empty<TRMesh>();
+        level.NumMeshPointers = 0;
+        level.MeshPointers = Array.Empty<uint>();
+        level.NumMeshTrees = 0;
+        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
+
+        foreach (TRModel model in level.Models)
+        {
+            model.MeshTree = 0;
+            model.StartingMesh = 0;
+            model.NumMeshes = 0;
+        }
+    }
+
     private static List<LC.Model.TRTexImage32> Convert(TRTexImage8[] originalImages, TRColour[] originalPalette)
     {
         List<LC.Model.TRColour> palette = originalPalette.Select(p => new LC.Model.TRColour
@@ -198,5 +280,12 @@ public class InjectionData
             });
         }
         return images;
+    }
+
+    private static List<LC.Model.TRTexImage32> Convert(TRTexImage16[] originalImages)
+    {
+        return originalImages
+            .Select(i => new LC.Model.TRTexImage32 { Pixels = new TRImage(i.Pixels).ToRGBA() })
+            .ToList();
     }
 }

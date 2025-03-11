@@ -1,4 +1,5 @@
 ﻿using TRLevelControl;
+using TRLevelControl.Model;
 
 namespace TRXInjectionTool.Actions;
 
@@ -9,18 +10,26 @@ public class TRSFXData
     public ushort Chance { get; set; }
     public ushort Characteristics { get; set; }
     public List<byte[]> Data { get; set; }
+    public uint SampleOffset { get; set; }
 
-    public void Serialize(TRLevelWriter writer)
+    public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write(ID);
         writer.Write(Volume);
         writer.Write(Chance);
         writer.Write(Characteristics);
 
-        foreach (byte[] data in Data)
+        if (version == TRGameVersion.TR1)
         {
-            writer.Write(data.Length);
-            writer.Write(data);
+            foreach (byte[] data in Data)
+            {
+                writer.Write(data.Length);
+                writer.Write(data);
+            }
+        }
+        else
+        {
+            writer.Write(SampleOffset);
         }
     }
 
