@@ -6,25 +6,25 @@ using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
 
-namespace TRXInjectionTool.Types.TR1.Misc;
+namespace TRXInjectionTool.Types.TR2.Misc;
 
-public class TR1FontBuilder : InjectionBuilder
+public class TR2FontBuilder : InjectionBuilder
 {
     private readonly List<GlyphDef> _glyphDefs;
     private readonly Dictionary<string, TRImage> _imageCache;
 
     public override string ID => "font";
 
-    public TR1FontBuilder()
+    public TR2FontBuilder()
     {
-        _glyphDefs = DeserializeFile<List<GlyphDef>>("Resources/TR1/Font/glyph_info.json");
+        _glyphDefs = DeserializeFile<List<GlyphDef>>("Resources/TR2/Font/glyph_info.json");
         _glyphDefs.Sort((g1, g2) => g1.mesh_num.CompareTo(g2.mesh_num));
         _imageCache = new();
     }
 
     public TRImage GetImage(GlyphDef glyph)
     {
-        string path = Path.Combine("Resources/TR1/Font", glyph.filename);
+        string path = Path.Combine("Resources/TR2/Font", glyph.filename);
         if (!_imageCache.ContainsKey(path))
         {
             _imageCache[path] = new(path);
@@ -42,7 +42,7 @@ public class TR1FontBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
-        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
 
         TRSpriteSequence font = new();
         List<TRTextileRegion> regions = new();
@@ -78,16 +78,18 @@ public class TR1FontBuilder : InjectionBuilder
             });
         }
 
-        ResetLevel(caves, 1);
-        TR1TexturePacker packer = new(caves);
+        ResetLevel(wall, 1);
+        TR2TexturePacker packer = new(wall);
         packer.AddRectangles(regions);
         packer.Pack(true);
 
-        caves.Sprites[TR1Type.FontGraphics_S_H] = font;
+        GenerateImages8(wall);
 
-        _control1.Write(caves, MakeOutputPath(TRGameVersion.TR1, $"Debug/{ID}.phd"));
+        wall.Sprites[TR2Type.FontGraphics_S_H] = font;
 
-        InjectionData data = InjectionData.Create(caves, InjectionType.General, ID);
+        _control2.Write(wall, MakeOutputPath(TRGameVersion.TR2, $"Debug/{ID}.tr2"));
+
+        InjectionData data = InjectionData.Create(wall, InjectionType.General, ID);
         return new() { data };
     }
 }
