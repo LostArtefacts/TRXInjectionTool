@@ -30,6 +30,7 @@ public class InjectionData
     public List<TRColour> Palette { get; set; } = new();
     public List<TRSFXData> SFX { get; set; } = new();
     public List<TRMeshEdit> MeshEdits { get; set; } = new();
+    public List<TRStaticMeshEdit> StaticMeshEdits { get; set; } = new();
     public List<TRTextureOverwrite> TextureOverwrites { get; set; } = new();
     public List<TRFloorDataEdit> FloorEdits { get; set; } = new();
     public List<TRRoomTextureEdit> RoomEdits { get; set; } = new();

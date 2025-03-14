@@ -56,4 +56,5 @@ public enum BlockType
     VisPortalEdits  = 23,
     CameraEdits     = 24,
     FrameEdits      = 25,
+    StaticEdits     = 26,
 }
