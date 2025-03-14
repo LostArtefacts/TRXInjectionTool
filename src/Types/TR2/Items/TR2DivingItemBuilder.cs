@@ -14,8 +14,6 @@ public class TR2DivingItemBuilder : ItemBuilder
 
         data.ItemEdits = new()
         {
-            SetAngle(diving, 58, -32768),
-            SetAngle(diving, 94, -32768),
             SetAngle(diving, 120, 16384),
             SetAngle(diving, 124, -16384),
         };

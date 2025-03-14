@@ -14,7 +14,7 @@ public class TR2FloatingItemBuilder : ItemBuilder
 
         data.ItemEdits = new()
         {
-            SetAngle(floating, 3, -32768),
+            SetAngle(floating, 1, -32768),
         };
 
         return new() { data };

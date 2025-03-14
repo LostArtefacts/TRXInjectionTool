@@ -16,7 +16,6 @@ public class TR2XianItemBuilder : ItemBuilder
         {
             SetAngle(xian, 0, 16384),
             SetAngle(xian, 88, 16384),
-            SetAngle(xian, 95, -32768),
             SetAngle(xian, 103, -16384),
             SetAngle(xian, 137, -32768),
             SetAngle(xian, 160, 16384),

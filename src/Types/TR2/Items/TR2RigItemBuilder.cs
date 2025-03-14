@@ -14,7 +14,7 @@ public class TR2RigItemBuilder : ItemBuilder
 
         data.ItemEdits = new()
         {
-            SetAngle(rig, 30, 16384),
+            SetAngle(rig, 30, -16384),
         };
 
         return new() { data };
