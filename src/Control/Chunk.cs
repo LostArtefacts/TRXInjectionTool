@@ -57,4 +57,5 @@ public enum BlockType
     CameraEdits     = 24,
     FrameEdits      = 25,
     StaticEdits     = 26,
+    AnimCmdEdits    = 27,
 }
