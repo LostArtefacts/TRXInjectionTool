@@ -14,6 +14,7 @@ public class TR2XianFDBuilder : FDBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "xian_fd");
         CreateDefaultTests(data, TR2LevelNames.XIAN);
         data.FloorEdits.AddRange(FixDeathTiles(xian));
+        data.FloorEdits.AddRange(FixChamberKeySoftlock(xian));
 
         return new() { data };
     }
@@ -46,6 +47,71 @@ public class TR2XianFDBuilder : FDBuilder
                 });
             }
         }
+
+        return edits;
+    }
+
+    private static List<TRFloorDataEdit> FixChamberKeySoftlock(TR2Level xian)
+    {
+        // Reset the spike walls in the main chamber in case the player misses the key.
+        FDTriggerEntry antiTrigger = new()
+        {
+            TrigType = FDTrigType.AntiTrigger,
+            Mask = 31,
+            Actions = new()
+            {
+                new() { Parameter = 141 },
+                new() { Parameter = 142 },
+                new() { Parameter = 143 },
+            }
+        };
+
+        // Use a pickup trigger to mark the walls as one shot.
+        FDTriggerEntry pickupTrigger = new()
+        {
+            TrigType = FDTrigType.Pickup,
+            Mask = 31,
+            OneShot = true,
+            Actions = new()
+            {
+                new() { Parameter = 205 },
+                new() { Parameter = 141 },
+                new() { Parameter = 142 },
+                new() { Parameter = 143 },
+                new() { Parameter = 148 },
+            }
+        };
+
+        List<TRFloorDataEdit> edits = new()
+        {
+            // The ones beside the keyhole
+            MakeTrigger(xian, 90, 10, 9, antiTrigger),
+            MakeTrigger(xian, 90, 11, 9, antiTrigger),
+            MakeTrigger(xian, 92, 9, 9, antiTrigger),
+
+            MakeTrigger(xian, 91, 9, 8, antiTrigger),
+            MakeTrigger(xian, 91, 10, 8, antiTrigger),
+            MakeTrigger(xian, 91, 11, 8, antiTrigger),
+
+            MakeTrigger(xian, 91, 8, 5, antiTrigger),
+            MakeTrigger(xian, 91, 8, 6, antiTrigger),
+            MakeTrigger(xian, 91, 8, 7, antiTrigger),
+
+            // The one after the ladder
+            MakeTrigger(xian, 92, 1, 9, new()
+            {
+                TrigType = FDTrigType.AntiTrigger,
+                Mask = 31,
+                Actions = new()
+                {
+                    new() { Parameter = 148 },
+                }
+            }),
+
+            // When the key is picked up, the spike walls will not reset.
+            MakeTrigger(xian, 92, 9, 10, pickupTrigger),
+            MakeTrigger(xian, 92, 9, 11, pickupTrigger),
+        };
 
         return edits;
     }
