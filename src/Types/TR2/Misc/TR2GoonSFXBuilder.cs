@@ -56,6 +56,39 @@ public class TR2GoonSFXBuilder : InjectionBuilder
             result.Add(InjectionData.Create(level, InjectionType.General, binName));
         }
 
+        result.Add(FixColdWarShark());
         return result;
+    }
+
+    private static InjectionData FixColdWarShark()
+    {
+        TR2Level fathoms = _control2.Read($"Resources/{TR2LevelNames.FATHOMS}");
+        TRModel shark = fathoms.Models[TR2Type.Shark];
+        ResetLevel(fathoms);
+        fathoms.Models[TR2Type.Shark] = shark;
+
+        InjectionData data = InjectionData.Create(fathoms, InjectionType.General, "shark_sfx", true);
+        data.Animations.Clear();
+        data.AnimFrames.Clear();
+        data.AnimChanges.Clear();
+        data.AnimDispatches.Clear();
+        data.Models.Clear();
+
+        for (int i = 0; i < shark.Animations.Count; i++)
+        {
+            int count = shark.Animations[i].Commands.Count(c => c is TRSFXCommand);
+            if (count > 0)
+            {
+                data.AnimCmdEdits.Add(new()
+                {
+                    TypeID = (int)TR2Type.Shark,
+                    AnimIndex = i,
+                    RawCount = 3,
+                    TotalCount = count,
+                });
+            }
+        }
+
+        return data;
     }
 }
