@@ -142,6 +142,25 @@ public class TR2PickupScaleBuilder : InjectionBuilder
                 [TR2Type.Puzzle2_M_H] = 1.0f,
             },
         },
+        new()
+        {
+            Level = TR2LevelNames.FOOLGOLD,
+            BinName = "fools_pickup_meshes",
+            Targets = new()
+            {
+                [TR2Type.Key1_M_H] = 0.65f,
+                [TR2Type.Key4_M_H] = 0.65f,
+            },
+        },
+        new()
+        {
+            Level = TR2LevelNames.FURNACE,
+            BinName = "furnace_pickup_meshes",
+            Targets = new()
+            {
+                [TR2Type.Puzzle2_M_H] = 2.6f,
+            },
+        },
     };
 
     public override List<InjectionData> Build()
@@ -233,7 +252,7 @@ public class TR2PickupScaleBuilder : InjectionBuilder
         {
             FixGrenades(model);
         }
-        else if ((level == TR2LevelNames.RIG || level == TR2LevelNames.DA)
+        else if ((level == TR2LevelNames.RIG || level == TR2LevelNames.DA || level == TR2LevelNames.FOOLGOLD)
             && type >= TR2Type.Key1_M_H && type <= TR2Type.Key4_M_H)
         {
             FixYaw(model);
