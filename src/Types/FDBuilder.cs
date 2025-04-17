@@ -140,4 +140,26 @@ public abstract class FDBuilder : InjectionBuilder
             }
         };
     }
+
+    protected static TRVisPortalEdit DeletePortal<R>(List<R> rooms, int baseRoomIndex, int portalIndex)
+        where R : TRRoom
+    {
+        // "Nullify" the vertices - the game will then disable the portal.
+        var portal = rooms[baseRoomIndex].Portals[portalIndex];
+        return new()
+        {
+            BaseRoom = (short)baseRoomIndex,
+            LinkRoom = (short)portal.AdjoiningRoom,
+            PortalIndex = (ushort)portalIndex,
+            VertexChanges = rooms[baseRoomIndex].Portals[portalIndex].Vertices.Select(v =>
+            {
+                return new TRVertex
+                {
+                    X = (short)-v.X,
+                    Y = (short)-v.Y,
+                    Z = (short)-v.Z,
+                };
+            }).ToList(),
+        };
+    }
 }
