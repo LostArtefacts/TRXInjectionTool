@@ -1,6 +1,5 @@
 ﻿using TRLevelControl.Helpers;
 using TRLevelControl.Model;
-using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.FD;
