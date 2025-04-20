@@ -1,4 +1,6 @@
-﻿using TRImageControl.Packing;
+﻿using System.Drawing;
+using TRImageControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -26,6 +28,7 @@ public class TR2Cut4TextureBuilder : TextureBuilder
         var n = regions.SelectMany(r => r.Segments.Select(s => s.Index));
         List<TRObjectTexture> originalInfos = new(cut4.ObjectTextures);
         
+        List<Color> basePalette = new(cut4.Palette.Select(c => c.ToTR1Color()));
         ResetLevel(cut4, 1);
 
         packer = new(cut4);
@@ -41,6 +44,8 @@ public class TR2Cut4TextureBuilder : TextureBuilder
                 TRObjectTexture t = originalInfos[f.Texture];
                 f.Texture = (ushort)cut4.ObjectTextures.IndexOf(t);
             });
+
+        GenerateImages8(cut4, basePalette);
 
         _control2.Write(cut4, MakeOutputPath(TRGameVersion.TR2, "Debug/cut4.tr2"));
 

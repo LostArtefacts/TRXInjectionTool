@@ -1,4 +1,6 @@
-﻿using TRImageControl.Packing;
+﻿using System.Drawing;
+using TRImageControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -17,6 +19,7 @@ public class TR2BoatBitsBuilder : InjectionBuilder
         var regions = packer.GetMeshRegions(boatBits.Meshes).Values.SelectMany(v => v);
         List<TRObjectTexture> originalInfos = new(venice.ObjectTextures);
 
+        List<Color> basePalette = new(venice.Palette.Select(c => c.ToTR1Color()));
         ResetLevel(venice, 1);
 
         packer = new(venice);
@@ -32,6 +35,8 @@ public class TR2BoatBitsBuilder : InjectionBuilder
             {
                 f.Texture = (ushort)venice.ObjectTextures.IndexOf(originalInfos[f.Texture]);
             });
+
+        GenerateImages8(venice, basePalette);
 
         _control2.Write(venice, MakeOutputPath(TRGameVersion.TR2, "Debug/BoatBits.tr2"));
         InjectionData data = InjectionData.Create(venice, InjectionType.TextureFix, "boat_bits", false);

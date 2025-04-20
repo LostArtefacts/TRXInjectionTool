@@ -78,12 +78,13 @@ public class TR2FontBuilder : InjectionBuilder
             });
         }
 
+        List<Color> basePalette = new(wall.Palette.Select(c => c.ToTR1Color()));
         ResetLevel(wall, 1);
         TR2TexturePacker packer = new(wall);
         packer.AddRectangles(regions);
         packer.Pack(true);
 
-        GenerateImages8(wall);
+        GenerateImages8(wall, basePalette);
 
         wall.Sprites[TR2Type.FontGraphics_S_H] = font;
 

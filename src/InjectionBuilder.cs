@@ -237,20 +237,10 @@ public abstract class InjectionBuilder
         return new(palette.Select(c => c.ToTRColour()));
     }
 
-    protected static void GenerateImages8(TR2Level level)
+    protected static void GenerateImages8(TR2Level level, List<Color> palette)
     {
         List<TRImage> imgs = level.Images16.Select(i => new TRImage(i.Pixels)).ToList();
-        List<Color> palette = new()
-        {
-            Color.FromArgb(0, 0, 0, 0),
-        };
-        imgs.ForEach(i => i.Read((c, x, y) =>
-        {
-            if (c.A != 0 && !palette.Contains(c))
-            {
-                palette.Add(c);
-            }
-        }));
+        imgs.ForEach(i => i.Write((c, x, y) => AddColourToPalette(c, palette)));
         while (palette.Count < 256)
         {
             palette.Add(Color.Black);
@@ -258,6 +248,29 @@ public abstract class InjectionBuilder
 
         level.Palette = palette.Select(c => c.ToTRColour()).ToList();
         level.Images8 = imgs.Select(i => new TRTexImage8 { Pixels = i.ToRGB(level.Palette) }).ToList();
+    }
+
+    protected static Color AddColourToPalette(Color c, List<Color> palette, int limit = 256)
+    {
+        if (c.A == 0)
+        {
+            return c;
+        }
+
+        Color snapped = Color.FromArgb(c.R & ~3, c.G & ~3, c.B & ~3);
+        if (!palette.Contains(snapped))
+        {
+            if (palette.Count < limit)
+            {
+                palette.Add(snapped);
+            }
+            else
+            {
+                snapped = palette[palette.FindClosest(snapped, 1)];
+            }
+        }
+
+        return snapped;
     }
 
     protected static T DeserializeFile<T>(string path)

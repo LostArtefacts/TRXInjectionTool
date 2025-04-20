@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
+using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
@@ -279,6 +281,7 @@ public class TR2PickupScaleBuilder : InjectionBuilder
         var regions = packer.GetMeshRegions(models.Values.SelectMany(m => m.Meshes)).Values.SelectMany(v => v);
         List<TRObjectTexture> originalInfos = new(level.ObjectTextures);
 
+        List<Color> basePalette = new(level.Palette.Select(c => c.ToTR1Color()));
         ResetLevel(level, 1);
 
         packer = new(level);
@@ -296,6 +299,7 @@ public class TR2PickupScaleBuilder : InjectionBuilder
                 f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
             });
 
+        GenerateImages8(level, basePalette);
         return InjectionData.Create(level, InjectionType.General, binName);
     }
 
