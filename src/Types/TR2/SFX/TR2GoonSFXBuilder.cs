@@ -3,7 +3,7 @@ using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
-namespace TRXInjectionTool.Types.TR2.Misc;
+namespace TRXInjectionTool.Types.TR2.SFX;
 
 public class TR2GoonSFXBuilder : InjectionBuilder
 {
