@@ -162,4 +162,64 @@ public abstract class FDBuilder : InjectionBuilder
             }).ToList(),
         };
     }
+
+    protected static TRFloorDataEdit MakeSlant
+        (TR1Level level, short room, ushort x, ushort z, sbyte xSlant, sbyte zSlant, FDSlantType type = FDSlantType.Floor)
+    {
+        TRRoomSector sector = level.Rooms[room].GetSector(x, z, TRUnit.Sector);
+        return new()
+        {
+            RoomIndex = room,
+            X = x,
+            Z = z,
+            Fixes = new()
+            {
+                MakeSlantFix(sector, level.FloorData, xSlant, zSlant, type),
+            },
+        };
+    }
+
+    protected static TRFloorDataEdit MakeSlant
+        (TR2Level level, short room, ushort x, ushort z, sbyte xSlant, sbyte zSlant, FDSlantType type = FDSlantType.Floor)
+    {
+        TRRoomSector sector = level.Rooms[room].GetSector(x, z, TRUnit.Sector);
+        return new()
+        {
+            RoomIndex = room,
+            X = x,
+            Z = z,
+            Fixes = new()
+            {
+                MakeSlantFix(sector, level.FloorData, xSlant, zSlant, type),
+            },
+        };
+    }
+
+    protected static FDTrigCreateFix MakeSlantFix
+        (TRRoomSector sector, FDControl floorData, sbyte xSlant, sbyte zSlant, FDSlantType type = FDSlantType.Floor)
+    {
+        FDTrigCreateFix fd = new()
+        {
+            Entries = new(),
+        };
+
+        if (sector.FDIndex != 0)
+        {
+            fd.Entries.AddRange(floorData[sector.FDIndex]);
+            var currentSlant = fd.Entries.Find(e => e is FDSlantEntry slant && slant.Type == type);
+            if (currentSlant != null)
+            {
+                fd.Entries.Remove(currentSlant);
+            }
+        }
+
+        fd.Entries.Add(new FDSlantEntry
+        {
+            Type = type,
+            XSlant = xSlant,
+            ZSlant = zSlant
+        });
+
+        return fd;
+    }
 }
