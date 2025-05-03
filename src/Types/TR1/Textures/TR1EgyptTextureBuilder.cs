@@ -17,6 +17,7 @@ public class TR1EgyptTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(egypt));
+        data.RoomEdits.AddRange(FixVases(egypt));
 
         FixTransparentTextures(egypt, data);
 
@@ -80,6 +81,17 @@ public class TR1EgyptTextureBuilder : TextureBuilder
                 }
             }
         };
+    }
+
+    private static IEnumerable<TRRoomVertexMove> FixVases(TR1Level egypt)
+    {
+        return egypt.Rooms
+            .SelectMany(r => r.Mesh.Sprites.Where(s => s.ID == TR1Type.Debris0).Select(s => new TRRoomVertexMove
+            {
+                RoomIndex = (short)egypt.Rooms.IndexOf(r),
+                VertexIndex = (ushort)s.Vertex,
+                VertexChange = new() { Y = -27 },
+            }));
     }
 
     private static void FixTransparentTextures(TR1Level egypt, InjectionData data)

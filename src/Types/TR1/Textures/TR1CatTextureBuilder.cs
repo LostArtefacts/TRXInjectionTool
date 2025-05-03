@@ -17,6 +17,7 @@ public class TR1CatTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(cat));
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
+        data.RoomEdits.AddRange(FixVases(cat));
 
         FixTransparentTextures(cat, data);
 
@@ -89,6 +90,17 @@ public class TR1CatTextureBuilder : TextureBuilder
             Rotate(96, TRMeshFaceType.TexturedQuad, 73, 3),
             Rotate(96, TRMeshFaceType.TexturedQuad, 27, 1),
         };
+    }
+
+    private static IEnumerable<TRRoomVertexMove> FixVases(TR1Level cat)
+    {
+        return cat.Rooms
+            .SelectMany(r => r.Mesh.Sprites.Where(s => s.ID == TR1Type.Debris0).Select(s => new TRRoomVertexMove
+            {
+                RoomIndex = (short)cat.Rooms.IndexOf(r),
+                VertexIndex = (ushort)s.Vertex,
+                VertexChange = new() { Y = -27 },
+            }));
     }
 
     private static void FixTransparentTextures(TR1Level cat, InjectionData data)

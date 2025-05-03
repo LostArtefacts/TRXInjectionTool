@@ -247,6 +247,9 @@ public static class InjectionIO
         blockCount += WriteBlock(BlockType.AnimCmdEdits, data.AnimCmdEdits.Count, writer,
             s => data.AnimCmdEdits.ForEach(c => c.Serialize(s)));
 
+        blockCount += WriteBlock(BlockType.SpriteEdit, data.SpriteEdits.Count, writer,
+            s => data.SpriteEdits.ForEach(c => c.Serialize(s)));
+
         return blockCount;
     }
 
