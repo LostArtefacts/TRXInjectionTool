@@ -56,6 +56,20 @@ public abstract class TextureBuilder : InjectionBuilder
         return null;
     }
 
+    protected static TRMeshEdit FixStaticMeshPosition<T>(TRDictionary<T, TRStaticMesh> meshes, T id, TRVertex change)
+        where T : Enum
+    {
+        return new()
+        {
+            ModelID = (uint)(object)id,
+            VertexEdits = meshes[id].Mesh.Vertices.Select((v, i) => new TRVertexEdit
+            {
+                Index = (short)i,
+                Change = change,
+            }).ToList(),
+        };
+    }
+
     protected class TextureSource
     {
         public short Room { get; set; }
