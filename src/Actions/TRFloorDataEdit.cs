@@ -31,6 +31,7 @@ public enum FDFixType
     RoomProperties,
     TrigType,
     SectorOverwrite,
+    GlideCameraFix,
 }
 
 public abstract class FDFix
@@ -107,6 +108,22 @@ public class FDMusicOneShot : FDFix
     public override FDFixType FixType => FDFixType.MusicOneShot;
 
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version) { }
+}
+
+public class FDGlideCameraFix : FDFix
+{
+    public override FDFixType FixType => FDFixType.GlideCameraFix;
+
+    public byte Timer { get; set; }
+    public byte Glide { get; set; }
+    public TRVertex Shift { get; set; } = new();
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write(Timer);
+        writer.Write(Glide);
+        writer.Write(Shift);
+    }
 }
 
 public class FDRoomShift : FDFix
