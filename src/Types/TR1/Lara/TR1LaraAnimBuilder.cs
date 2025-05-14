@@ -1,4 +1,9 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.IO.Compression;
+using System.Text;
+using System.Xml;
+using TRImageControl.Packing;
+using TRLevelControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
@@ -6,6 +11,12 @@ namespace TRXInjectionTool.Types.TR1.Lara;
 
 public class TR1LaraAnimBuilder : InjectionBuilder
 {
+    private static readonly string _wadZipPath = "../../Resources/TR1/Lara/Output/tr1_lara_anim_ext.zip";
+    private static readonly DateTimeOffset _wadZipPlaceholderDate
+        = new(new DateTime(2025, 5, 15, 11, 0, 0), new TimeSpan());
+
+    public override string ID => "tr1-lara-anims";
+
     enum InjAnim : int
     {
         RunJumpRollStart = 160,
@@ -59,11 +70,10 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         ImportWetFeet(tr1Lara, caves);
         ImportTR2Gliding(tr1Lara, tr2Lara);
 
-        // This can be opened in WADTool for debugging what ends up in the game itself.
-        _control1.Write(caves, MakeOutputPath(TRGameVersion.TR1, "Debug/ExtendedLaraAnims.phd"));
-
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);
+
+        ExportLaraWAD(caves);
 
         return dataGroup;
     }
@@ -686,4 +696,139 @@ public class TR1LaraAnimBuilder : InjectionBuilder
             [TR1Type.Lara] = level.Models[TR1Type.Lara],
         };
     }
+
+    private static void ExportLaraWAD(TR1Level level)
+    {
+        // Generate the injection's effect on a regular level to allow TRLE builders to utilise
+        // the new animations while also being able to edit the defaults. This is a stripped back
+        // level file that can be opened in WADTool.
+        List<TRObjectTexture> originalInfos = new(level.ObjectTextures);
+        Dictionary<ushort, ushort> texMap = new();
+        level.Models[TR1Type.Lara].Meshes
+            .SelectMany(m => m.TexturedFaces)
+            .Select(f => f.Texture)
+            .Distinct()
+            .ToList().ForEach(t => texMap[t] = (ushort)texMap.Count);
+
+        TR1TexturePacker packer = new(level);
+        var laraRegions = packer.GetMeshRegions(level.Models[TR1Type.Lara].Meshes)
+            .Values.SelectMany(v => v);
+        
+        level.Images8 = new() { new() { Pixels = new byte[TRConsts.TPageSize] } };
+        level.ObjectTextures.Clear();
+
+        packer = new(level);
+        packer.AddRectangles(laraRegions);
+        packer.Pack(true);
+
+        level.ObjectTextures.AddRange(texMap.Keys.Select(t => originalInfos[t]));
+        level.Models[TR1Type.Lara].Meshes
+            .SelectMany(m => m.TexturedFaces)
+            .ToList().ForEach(f => f.Texture = texMap[f.Texture]);
+
+        ExportZip(level);
+        using ZipArchive archive = ZipFile.Open(_wadZipPath, ZipArchiveMode.Update);
+        foreach (ZipArchiveEntry entry in archive.Entries)
+        {
+            // Prevent the zip changing despite the contents having not. C# provides no way to do this on create.
+            entry.LastWriteTime = _wadZipPlaceholderDate;
+        }
+    }
+
+    private static void ExportZip(TR1Level level)
+    {
+        using FileStream stream = new(_wadZipPath, FileMode.Create);
+        using ZipArchive zip = new(stream, ZipArchiveMode.Create);
+
+        {
+            using MemoryStream ms = new();
+            _control1.Write(level, ms);
+            byte[] phdRaw = ms.ToArray();
+            ZipArchiveEntry entry = zip.CreateEntry("lara_anim_ext.phd", CompressionLevel.Optimal);
+            using Stream zipStream = entry.Open();
+            zipStream.Write(phdRaw, 0, phdRaw.Length);
+        }
+
+        {
+            XmlDocument doc = new();
+            XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration("1.0", null, null);
+            doc.InsertBefore(xmlDeclaration, doc.DocumentElement);
+
+            XmlElement wadSoundsElement = doc.CreateElement("WadSounds");
+            doc.AppendChild(wadSoundsElement);
+            XmlElement soundsElement = doc.CreateElement("SoundInfos");
+            wadSoundsElement.AppendChild(soundsElement);
+
+            foreach (var (id, sfx) in level.SoundEffects)
+            {
+                soundsElement.AppendChild(SFXToXML(doc, id, sfx));
+
+                for (int i = 0; i < sfx.Samples.Count; i++)
+                {
+                    ZipArchiveEntry entry = zip.CreateEntry($"SFX/{id}_s{i}.wav", CompressionLevel.Optimal);
+                    using Stream zipStream = entry.Open();
+                    zipStream.Write(sfx.Samples[i], 0, sfx.Samples[i].Length);
+                }
+            }
+
+            {
+                using StringWriter stringWriter = new();
+                using var xmlTextWriter = XmlWriter.Create(stringWriter, new()
+                {
+                    Indent = true,
+                    IndentChars = string.Empty.PadLeft(4),
+                });
+                doc.WriteTo(xmlTextWriter);
+                xmlTextWriter.Flush();
+                byte[] xmlRaw = Encoding.UTF8.GetBytes(stringWriter.GetStringBuilder().ToString());
+
+                ZipArchiveEntry entry = zip.CreateEntry("SFX/wet-feet.xml", CompressionLevel.Optimal);
+                using Stream zipStream = entry.Open();
+                zipStream.Write(xmlRaw, 0, xmlRaw.Length);
+            }
+        }
+    }
+
+    private static XmlElement SFXToXML(XmlDocument doc, TR1SFX id, TR1SoundEffect sfx)
+    {
+        XmlElement root = doc.CreateElement("WadSoundInfo");
+        root.AppendChild(CreateElement(doc, "Id", (int)id));
+        root.AppendChild(CreateElement(doc, "Name", id.ToString().ToUpper()));
+        root.AppendChild(CreateElement(doc, "Volume", TraitToPerc(sfx.Volume)));
+        root.AppendChild(CreateElement(doc, "Chance", sfx.Chance == 0 ? 100 : TraitToPerc(sfx.Chance)));
+        root.AppendChild(CreateElement(doc, "DisablePanning", !sfx.Pan));
+        root.AppendChild(CreateElement(doc, "RandomizePitch", sfx.RandomizePitch));
+        root.AppendChild(CreateElement(doc, "RandomizeVolume", sfx.RandomizeVolume));
+        root.AppendChild(CreateElement(doc, "LoopBehaviour", "None"));
+
+        XmlElement samples = doc.CreateElement("Samples");
+        root.AppendChild(samples);
+        for (int i = 0; i < sfx.Samples.Count; i++)
+        {
+            XmlElement sample = doc.CreateElement("WadSample");
+            samples.AppendChild(sample);
+            sample.AppendChild(CreateElement(doc, "FileName", $"{id}_s{i}.wav"));
+        }
+
+        root.AppendChild(CreateElement(doc, "Global", true));
+        root.AppendChild(CreateElement(doc, "Indexed", true));
+
+        return root;
+    }
+
+    private static XmlElement CreateElement(XmlDocument doc, string name, object value)
+    {
+        XmlElement element = doc.CreateElement(name);
+        string valueStr = value.ToString();
+        if (value is bool)
+        {
+            valueStr = valueStr.ToLower();
+        }
+
+        element.InnerText = valueStr;
+        return element;
+    }
+
+    private static int TraitToPerc(int trait)
+        => (int)Math.Ceiling(100 * ((double)trait / short.MaxValue));
 }

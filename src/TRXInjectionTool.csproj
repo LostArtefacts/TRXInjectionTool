@@ -96,4 +96,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\TR1\Lara\Output\" />
+  </ItemGroup>
+
 </Project>

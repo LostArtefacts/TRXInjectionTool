@@ -1,0 +1,29 @@
+name: Upload artefacts
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install SSH client
+      run: sudo apt-get install -y sshpass
+
+    - name: Upload via SFTP
+      env:
+        SFTP_USER: ${{ secrets.SFTP_USER }}
+        SFTP_PASS: ${{ secrets.SFTP_PASS }}
+      run: |
+        cd src/Resources/TR1/Lara/Output
+        sshpass -p "$SFTP_PASS" sftp -o StrictHostKeyChecking=no $SFTP_USER@lostartefacts.dev <<EOF
+        cd uploads
+        put tr1_lara_anim_ext.zip
+        bye
+        EOF
