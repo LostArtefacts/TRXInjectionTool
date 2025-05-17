@@ -1,6 +1,7 @@
 ﻿using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.FD;
@@ -22,6 +23,31 @@ public class TR2IcePalaceFDBuilder : FDBuilder
         FDTriggerEntry hammerTrigger = GetTrigger(palace, 29, 4, 6);
         data.FloorEdits.Add(MakeTrigger(palace, 29, 3, 6, hammerTrigger));
 
+        data.FloorEdits.Add(FixZoning(palace));
+
         return new() { data };
+    }
+
+    private static TRFloorDataEdit FixZoning(TR2Level palace)
+    {
+        // Box 377 is in room 48, which isn't part of the flipmap, but it also spills
+        // into room 45 which has flip room 110. The original editor appears to have not
+        // recognised this and so the box's flip zone infers there is no zone link.
+        TRRoomSector sector = palace.Rooms[48].GetSector(5, 4, TRUnit.Sector);
+        TRZoneGroup zone = palace.Boxes[sector.BoxIndex].Zone;
+        zone.FlipOnZone = zone.FlipOffZone.Clone();
+        return new()
+        {
+            RoomIndex = 48,
+            X = 5,
+            Z = 4,
+            Fixes = new()
+            {
+                new FDZoneFix
+                {
+                    ZoneOverwrite = zone,
+                },
+            },
+        };
     }
 }

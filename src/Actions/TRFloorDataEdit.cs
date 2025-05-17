@@ -32,6 +32,7 @@ public enum FDFixType
     TrigType,
     SectorOverwrite,
     GlideCameraFix,
+    ZoneFix,
 }
 
 public abstract class FDFix
@@ -165,6 +166,20 @@ public class FDSectorOverwrite : FDFix
         writer.Write(Sector.Floor);
         writer.Write(Sector.RoomAbove);
         writer.Write(Sector.Ceiling);
+    }
+}
+
+public class FDZoneFix : FDFix
+{
+    public override FDFixType FixType => FDFixType.ZoneFix;
+    public TRZoneGroup ZoneOverwrite { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write(ZoneOverwrite.FlipOffZone.Ground.Values);
+        writer.Write(ZoneOverwrite.FlipOffZone.Fly);
+        writer.Write(ZoneOverwrite.FlipOnZone.Ground.Values);
+        writer.Write(ZoneOverwrite.FlipOnZone.Fly);
     }
 }
 
