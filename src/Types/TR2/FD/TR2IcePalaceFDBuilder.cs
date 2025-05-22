@@ -1,4 +1,5 @@
-﻿using TRLevelControl;
+﻿using System.Diagnostics;
+using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -14,6 +15,8 @@ public class TR2IcePalaceFDBuilder : FDBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "palace_fd");
         CreateDefaultTests(data, TR2LevelNames.CHICKEN);
 
+        data.FloorEdits.AddRange(FixSpringboardTrigger(palace));
+
         // Rotate and shift the door that leads to the Jade secret, otherwise there is an invisible wall.
         // Although this is an item shift, it's included in FD as it's closest to that in terms of config setting.
         palace.Entities[143].X += TRConsts.Step4;
@@ -26,6 +29,18 @@ public class TR2IcePalaceFDBuilder : FDBuilder
         data.FloorEdits.Add(FixZoning(palace));
 
         return new() { data };
+    }
+
+    private static List<TRFloorDataEdit> FixSpringboardTrigger(TR2Level palace)
+    {
+        FDTriggerEntry springTrig = GetTrigger(palace, 104, 3, 2);
+        Debug.Assert(springTrig != null);
+
+        return new()
+        {
+            RemoveTrigger(palace, 104, 3, 2),
+            MakeTrigger(palace, 104, 2, 2, springTrig),
+        };
     }
 
     private static TRFloorDataEdit FixZoning(TR2Level palace)
