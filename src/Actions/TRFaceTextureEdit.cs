@@ -1,4 +1,7 @@
 ﻿using TRLevelControl;
+using TRLevelControl.Model;
+using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Actions;
 
@@ -18,9 +21,9 @@ public class TRFaceTextureEdit
     public short FaceIndex { get; set; }
     public List<short> TargetFaceIndices { get; set; } = new();
 
-    public void Serialize(TRLevelWriter writer)
+    public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
-        writer.Write(ModelID);
+        writer.Write((int)ModelID, TRObjectType.Game, version);
         writer.Write(MeshIndex);
         writer.Write((uint)FaceType);
         writer.Write(FaceIndex);

@@ -1,4 +1,7 @@
 ﻿using TRLevelControl;
+using TRLevelControl.Model;
+using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Actions;
 
@@ -11,9 +14,9 @@ public class TRAnimCmdEdit
     public int RawCount { get; set; }
     public int TotalCount { get; set; }
 
-    public void Serialize(TRLevelWriter writer)
+    public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
-        writer.Write(TypeID);
+        writer.Write(TypeID, TRObjectType.Game, version);
         writer.Write(AnimIndex);
         writer.Write(RawCount);
         writer.Write(TotalCount);

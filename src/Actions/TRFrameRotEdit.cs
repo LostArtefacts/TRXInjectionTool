@@ -1,5 +1,7 @@
 ﻿using TRLevelControl;
 using TRLevelControl.Model;
+using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Actions;
 
@@ -12,9 +14,9 @@ public class TRFrameRotEdit
     public int AnimIndex { get; set; }
     public TRVertex Rotation { get; set; }
 
-    public void Serialize(TRLevelWriter writer)
+    public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
-        writer.Write(ModelID);
+        writer.Write((int)ModelID, TRObjectType.Game, version);
         writer.Write(AnimIndex);        
         writer.Write(PackYZRotation(Rotation.Y, Rotation.Z));
         writer.Write(PackXYRotation(Rotation.X, Rotation.Y));

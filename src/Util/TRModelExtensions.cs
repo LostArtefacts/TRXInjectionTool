@@ -1,4 +1,9 @@
-﻿using TRLevelControl.Model;
+﻿using System.Diagnostics;
+using TRLevelControl;
+using TRLevelControl.Helpers;
+using TRLevelControl.Model;
+using TRXInjectionTool.Control;
+using LM = TRLevelReader.Model;
 
 namespace TRXInjectionTool.Util;
 
@@ -56,5 +61,42 @@ public static class TRModelExtensions
         double inner = Math.Max(xs, Math.Max(ys, zs)) / 2d;
         double outer = Math.Sqrt(Math.Pow(xs, 2) + Math.Pow(ys, 2) + Math.Pow(zs, 2)) / 2d;
         mesh.CollRadius = (int)Math.Ceiling((inner + outer) / 2d);
+    }
+
+    public static void Serialize(this LM.TRModel model, TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write((int)model.ID, TRObjectType.Game, version);
+        writer.Write(model.NumMeshes);
+        writer.Write(model.StartingMesh);
+        writer.Write(model.MeshTree);
+        writer.Write(model.FrameOffset);
+        writer.Write(model.Animation);
+    }
+
+    public static void Serialize(this LM.TRSpriteSequence sequence, TRLevelWriter writer, TRGameVersion version)
+    {
+        int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
+        TRObjectType type = sequence.SpriteID >= sceneryBase ? TRObjectType.Static2D : TRObjectType.Game;
+        writer.Write(sequence.SpriteID, type, version);
+        writer.Write(sequence.NegativeLength);
+        writer.Write(sequence.Offset);
+    }
+
+    public static void Write(this TRLevelWriter writer, int objectID, TRObjectType objectType, TRGameVersion version)
+    {
+        if (objectType != TRObjectType.Game)
+        {
+            int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
+            Debug.Assert(objectID >= sceneryBase);
+            objectID -= sceneryBase;
+        }
+
+        writer.Write((int)objectType);
+        writer.Write(objectID);
+        if (objectType == TRObjectType.Game)
+        {
+            Guid guid = TRXGuid.Get(version, objectID);
+            writer.Write(guid.ToByteArray());
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using TRLevelControl;
 using TRLevelControl.Build;
 using TRLevelControl.Model;
+using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Actions;
 
@@ -55,7 +57,14 @@ public class FDTrigItem : FDFix
 
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
-        writer.Write(Item);
+        writer.Write((int)Item.TypeID, TRObjectType.Game, version);
+        writer.Write(Item.Room);
+        writer.Write(Item.X);
+        writer.Write(Item.Y);
+        writer.Write(Item.Z);
+        writer.Write(Item.Angle);
+        writer.Write(Item.Intensity);
+        writer.Write(Item.Flags);
     }
 }
 

@@ -36,7 +36,7 @@ public abstract class InjectionBuilder
                 data.ApplicabilityTests.Add(new ItemMetaTest
                 {
                     Index = level.Entities.IndexOf(item),
-                    TypeID = (short)item.TypeID,
+                    TypeID = (int)item.TypeID,
                     X = item.X,
                     Y = item.Y,
                     Z = item.Z,
@@ -61,7 +61,7 @@ public abstract class InjectionBuilder
                 data.ApplicabilityTests.Add(new ItemMetaTest
                 {
                     Index = level.Entities.IndexOf(item),
-                    TypeID = (short)item.TypeID,
+                    TypeID = (int)item.TypeID,
                     X = item.X,
                     Y = item.Y,
                     Z = item.Z,

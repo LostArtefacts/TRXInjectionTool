@@ -11,7 +11,7 @@ public class RoomMetaTest : ApplicabilityTest
     public ushort XSize { get; set; }
     public ushort ZSize { get; set; }
 
-    protected override void SerializeImpl(TRLevelWriter writer)
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write(Index);
         writer.Write(Info, TRGameVersion.TR1);

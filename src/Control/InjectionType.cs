@@ -1,5 +1,4 @@
 ﻿namespace TRXInjectionTool.Control;
-
 public enum InjectionType
 {
     General,
@@ -13,4 +12,11 @@ public enum InjectionType
     DisableAnimSprite,
     Skybox,
     PSCrystal,
+}
+
+public enum TRObjectType
+{
+    Game,
+    Static2D,
+    Static3D,
 }
