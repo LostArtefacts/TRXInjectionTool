@@ -105,9 +105,9 @@ public class TR1CatTextureBuilder : TextureBuilder
 
     private static void FixTransparentTextures(TR1Level cat, InjectionData data)
     {
-        TR1CommonTextureBuilder.FixTransparentPixels(cat, data,
+        FixTransparentPixels(cat, data,
             cat.Rooms[2].Mesh.Rectangles[128], Color.FromArgb(188, 140, 64));
-        TR1CommonTextureBuilder.FixTransparentPixels(cat, data,
+        FixTransparentPixels(cat, data,
             cat.Rooms[7].Mesh.Rectangles[19], Color.FromArgb(188, 140, 64));
     }
 }

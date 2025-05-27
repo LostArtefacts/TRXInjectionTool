@@ -1,5 +1,9 @@
-﻿using TRLevelControl.Model;
+﻿using System.Diagnostics;
+using System.Drawing;
+using TRImageControl;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
+using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types;
 
@@ -68,6 +72,71 @@ public abstract class TextureBuilder : InjectionBuilder
                 Change = change,
             }).ToList(),
         };
+    }
+
+    protected static void FixWolfTransparency(TRLevelBase level, InjectionData data)
+    {
+        TRModel model;
+        if (level is TR1Level level1)
+        {
+            model = level1.Models[TR1Type.Wolf];
+        }
+        else if (level is TR2Level level2)
+        {
+            model = level2.Models[TR2Type.Spider];
+        }
+        else
+        {
+            throw new Exception("Unsupported level type");
+        }
+
+        List<ushort> eyeVerts = new() { 20, 13, 12, 22 };
+        TRMeshFace eyeFace = model.Meshes[3]
+            .TexturedRectangles.Find(t => t.Vertices.All(eyeVerts.Contains));
+
+        FixTransparentPixels(level, data, eyeFace, Color.Black);
+    }
+
+    protected static void FixBatTransparency(TR1Level level, InjectionData data)
+    {
+        List<ushort> eyeVerts = new() { 0, 1, 3 };
+        TRMeshFace eyeFace = level.Models[TR1Type.Bat].Meshes[4]
+            .TexturedTriangles.Find(t => t.Vertices.All(eyeVerts.Contains));
+
+        FixTransparentPixels(level, data, eyeFace, Color.Black);
+    }
+
+    protected static void FixTransparentPixels(TRLevelBase level, InjectionData data, TRFace face, Color fillColour)
+    {
+        Debug.Assert(face != null);
+
+        TRObjectTexture texInfo = level.ObjectTextures[face.Texture];
+        TRImage tile;
+        if (level is TR1Level level1)
+        {
+            tile = new(level1.Images8[texInfo.Atlas].Pixels, level1.Palette);
+        }
+        else if (level is TR2Level level2)
+        {
+            tile = new(level2.Images16[texInfo.Atlas].Pixels);
+        }
+        else
+        {
+            throw new Exception("Unsupported level type");
+        }
+
+        TRImage img = tile.Export(texInfo.Bounds);
+        img.Write((c, x, y) => c.A == 0 ? fillColour : c);
+
+        data.TextureOverwrites.Add(new()
+        {
+            Page = texInfo.Atlas,
+            X = (byte)texInfo.Bounds.X,
+            Y = (byte)texInfo.Bounds.Y,
+            Width = (ushort)texInfo.Size.Width,
+            Height = (ushort)texInfo.Size.Height,
+            Data = img.ToRGBA(),
+        });
     }
 
     protected class TextureSource

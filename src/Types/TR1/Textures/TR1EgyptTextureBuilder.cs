@@ -96,9 +96,9 @@ public class TR1EgyptTextureBuilder : TextureBuilder
 
     private static void FixTransparentTextures(TR1Level egypt, InjectionData data)
     {
-        TR1CommonTextureBuilder.FixTransparentPixels(egypt, data,
+        FixTransparentPixels(egypt, data,
             egypt.Rooms[25].Mesh.Rectangles[32], Color.FromArgb(188, 140, 64));
-        TR1CommonTextureBuilder.FixTransparentPixels(egypt, data,
+        FixTransparentPixels(egypt, data,
             egypt.Rooms[39].Mesh.Rectangles[125], Color.FromArgb(188, 140, 64));
     }
 }

@@ -109,9 +109,9 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
 
     private static void FixTransparentTextures(TR1Level khamoon, InjectionData data)
     {
-        TR1CommonTextureBuilder.FixTransparentPixels(khamoon, data,
+        FixTransparentPixels(khamoon, data,
             khamoon.Rooms[20].Mesh.Rectangles[77], Color.FromArgb(188, 140, 64));
-        TR1CommonTextureBuilder.FixTransparentPixels(khamoon, data,
+        FixTransparentPixels(khamoon, data,
             khamoon.Rooms[20].Mesh.Rectangles[78], Color.FromArgb(188, 140, 64));
     }
 }

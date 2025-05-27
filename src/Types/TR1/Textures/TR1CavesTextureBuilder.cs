@@ -17,8 +17,8 @@ public class TR1CavesTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(caves));
         data.RoomEdits.AddRange(CreateShifts(caves));
 
-        TR1CommonTextureBuilder.FixBatTransparency(caves, data);
-        TR1CommonTextureBuilder.FixWolfTransparency(caves, data);
+        FixBatTransparency(caves, data);
+        FixWolfTransparency(caves, data);
 
         return new() { data };
     }
