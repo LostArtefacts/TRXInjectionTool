@@ -106,6 +106,15 @@ public abstract class TextureBuilder : InjectionBuilder
         FixTransparentPixels(level, data, eyeFace, Color.Black);
     }
 
+    protected static void FixLaraTransparency(TR2Level level, InjectionData data)
+    {
+        List<ushort> eyeVerts = new() { 12, 13, 34 };
+        TRMeshFace eyeFace = level.Models[TR2Type.Lara].Meshes[14]
+            .TexturedTriangles.Find(t => t.Vertices.All(eyeVerts.Contains));
+
+        FixTransparentPixels(level, data, eyeFace, Color.FromArgb(249, 236, 217));
+    }
+
     protected static void FixTransparentPixels(TRLevelBase level, InjectionData data, TRFace face, Color fillColour)
     {
         Debug.Assert(face != null);
