@@ -7,12 +7,16 @@ namespace TRXInjectionTool.Types.TR1.FD;
 
 public class TR1ValleyFDBuilder : FDBuilder
 {
+    private static readonly List<short> _windyRooms
+        = new() { 6, 31, 32, 33, 34, 39, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66 };
+
     public override List<InjectionData> Build()
     {
         TR1Level valley = _control1.Read($"Resources/{TR1LevelNames.VALLEY}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "valley_fd");
         CreateDefaultTests(data, TR1LevelNames.VALLEY);
         FixSlopeSoftlock(valley, data);
+        data.FloorEdits.AddRange(AddRoomFlags(_windyRooms, TRRoomFlag.Wind, valley.Rooms));
 
         return new() { data };
     }

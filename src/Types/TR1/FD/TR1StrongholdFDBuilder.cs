@@ -8,8 +8,12 @@ namespace TRXInjectionTool.Types.TR1.FD;
 
 public class TR1StrongholdFDBuilder : FDBuilder
 {
+    private static readonly List<short> _windyRooms
+        = new() { 4, 13 };
+
     public override List<InjectionData> Build()
     {
+        TR1Level stronghold = _control1.Read($"Resources/{TR1LevelNames.STRONGHOLD}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "stronghold_fd");
         CreateDefaultTests(data, TR1LevelNames.STRONGHOLD);
         data.FloorEdits = new()
@@ -25,6 +29,7 @@ public class TR1StrongholdFDBuilder : FDBuilder
             MakeMusicOneShot(25, 3, 4),
         };
         CreatePortalCrashFix(data);
+        data.FloorEdits.AddRange(AddRoomFlags(_windyRooms, TRRoomFlag.Wind, stronghold.Rooms));
 
         return new() { data };
     }
