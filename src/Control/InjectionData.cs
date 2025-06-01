@@ -55,6 +55,19 @@ public class InjectionData
         return data;
     }
 
+    public static InjectionData Create(LC.Model.TRLevelBase controlledLevel, InjectionType type, string name, bool removeMeshData = false)
+    {
+        if (controlledLevel is LC.Model.TR1Level level1)
+        {
+            return Create(level1, type, name, removeMeshData);
+        }
+        else if (controlledLevel is LC.Model.TR2Level level2)
+        {
+            return Create(level2, type, name, removeMeshData);
+        }
+        throw new Exception("Only TR1 and TR2 levels supported");
+    }
+
     public static InjectionData Create(LC.Model.TR1Level controlledLevel, InjectionType type, string name, bool removeMeshData = false)
     {
         // We convert to old-style flat level to simplify export later.
