@@ -4,6 +4,7 @@ using TRDataControl;
 using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Applicability;
 using TRXInjectionTool.Control;
@@ -294,4 +295,32 @@ public abstract class InjectionBuilder
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
         return fullPath;
     }
+
+    protected static readonly Dictionary<string, string> _tr2NameMap = new()
+    {
+        [TR2LevelNames.ASSAULT] = "gym",
+        [TR2LevelNames.GW] = "wall",
+        [TR2LevelNames.VENICE] = "venice",
+        [TR2LevelNames.BARTOLI] = "bartoli",
+        [TR2LevelNames.OPERA] = "opera",
+        [TR2LevelNames.RIG] = "rig",
+        [TR2LevelNames.DA] = "diving",
+        [TR2LevelNames.FATHOMS] = "fathoms",
+        [TR2LevelNames.DORIA] = "wreck",
+        [TR2LevelNames.LQ] = "living",
+        [TR2LevelNames.DECK] = "deck",
+        [TR2LevelNames.TIBET] = "tibet",
+        [TR2LevelNames.MONASTERY] = "barkhang",
+        [TR2LevelNames.COT] = "catacombs",
+        [TR2LevelNames.CHICKEN] = "palace",
+        [TR2LevelNames.XIAN] = "xian",
+        [TR2LevelNames.FLOATER] = "floating",
+        [TR2LevelNames.LAIR] = "lair",
+        [TR2LevelNames.HOME] = "house",
+        [TR2LevelNames.COLDWAR] = "coldwar",
+        [TR2LevelNames.FOOLGOLD] = "fools",
+        [TR2LevelNames.FURNACE] = "furnace",
+        [TR2LevelNames.KINGDOM] = "kingdom",
+        [TR2LevelNames.VEGAS] = "vegas",
+    };
 }
