@@ -1,17 +1,18 @@
-﻿using TRLevelControl.Helpers;
-using TRLevelControl.Model;
+﻿using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Misc;
 
 public class TR1PDABuilder : InjectionBuilder
 {
+    public override string ID => "tr1-pda";
+
     public override List<InjectionData> Build()
     {
-        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
-        CreateModelLevel(caves, TR1Type.Map_M_U);
+        var pdaLevel = CreatePDALevel();
+        _control1.Write(pdaLevel, MakeOutputPath(TRGameVersion.TR1, $"Debug/{ID}.phd"));
 
-        InjectionData data = InjectionData.Create(caves, InjectionType.General, "pda_model");
+        var data = InjectionData.Create(pdaLevel, InjectionType.General, "pda_model");
         return new() { data };
     }
 }

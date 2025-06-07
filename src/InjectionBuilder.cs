@@ -173,6 +173,26 @@ public abstract class InjectionBuilder
         importer.Import();
     }
 
+    protected static TR1Level CreatePDALevel()
+    {
+        const TR1Type betaMapID = TR1Type.PushBlock4;
+        var caves = _control1.Read($"Resources/TR1/1996-07-02.phd");
+        CreateModelLevel(caves, betaMapID);
+        caves.Models.ChangeKey(betaMapID, TR1Type.Map_M_U);
+
+        // Repeat the frames in reverse so the map can close on exit. The open frame is also
+        // slightly misaligned, so fix that.
+        var anim = caves.Models[TR1Type.Map_M_U].Animations[0];
+        anim.Frames[^1].Rotations[1].Z++;
+
+        for (int i = anim.Frames.Count - 2; i >= 0; i--)
+        {
+            anim.Frames.Add(anim.Frames[i].Clone());
+            anim.FrameEnd++;
+        }
+        return caves;
+    }
+
     protected static void PackTextures(TR1Level dataLevel, TRLevelBase sourceLevel, TRModel sky, Dictionary<string, string> regionMap)
     {
         TRTexturePacker sourcePacker;
