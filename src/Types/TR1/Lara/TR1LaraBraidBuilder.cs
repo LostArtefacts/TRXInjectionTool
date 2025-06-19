@@ -109,7 +109,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         PackTextures(caves, wall, hair, new());
 
         // Additional meshes for Midas touch
-        int goldSlot = caves.Palette.FindIndex(c => c.Red == 0 && c.Green == 0 && c.Blue == 0);
+        int goldSlot = caves.Palette.FindIndex(1, c => c.Red == 0 && c.Green == 0 && c.Blue == 0);
         Debug.Assert(goldSlot != -1);
         caves.Palette[goldSlot] = new()
         {
@@ -124,8 +124,10 @@ public class TR1LaraBraidBuilder : InjectionBuilder
             TRMesh copy = meshes[i].Clone();
             hair.Meshes.Add(copy);
             copy.ColouredRectangles.AddRange(copy.TexturedRectangles);
+            copy.ColouredTriangles.AddRange(copy.TexturedTriangles);
             copy.TexturedRectangles.Clear();
-            copy.ColouredRectangles.ForEach(f => f.Texture = (ushort)goldSlot);
+            copy.TexturedTriangles.Clear();
+            copy.ColouredFaces.ToList().ForEach(f => f.Texture = (ushort)goldSlot);
         }
 
         List<TRMeshTreeNode> treeClones = new(hair.MeshTrees.Select(t => t.Clone()));
