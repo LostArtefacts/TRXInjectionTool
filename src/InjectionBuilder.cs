@@ -173,6 +173,55 @@ public abstract class InjectionBuilder
         importer.Import();
     }
 
+    protected static void CreateModelLevel(TR2Level level, params TR2Type[] types)
+    {
+        var models = new TRDictionary<TR2Type, TRModel>();
+        foreach (TR2Type type in types)
+        {
+            models[type] = level.Models[type];
+        }
+
+        TR2DataProvider tr2Data = new();
+        List<TR2SFX> soundIDs = new(types.SelectMany(t => tr2Data.GetHardcodedSounds(t)));
+        
+        soundIDs.AddRange(models.Values.SelectMany(m => m.Animations)
+            .SelectMany(a => a.Commands.Where(c => c is TRSFXCommand))
+            .Select(s => (TR2SFX)((TRSFXCommand)s).SoundID));
+
+        var idsToPack = soundIDs
+            .Where(s => level.SoundEffects.ContainsKey(s))
+            .Distinct()
+            .ToList();
+        TRDictionary<TR2SFX, TR2SoundEffect> effects = new();
+        idsToPack.ForEach(s => effects[s] = level.SoundEffects[s]);
+
+        var packer = new TR2TexturePacker(level);
+        var regions = packer.GetMeshRegions(models.Values.SelectMany(m => m.Meshes))
+            .Values.SelectMany(v => v);
+        var originalInfos = level.ObjectTextures.ToList();
+
+        var basePalette = level.Palette.Select(c => c.ToTR1Color()).ToList();
+        ResetLevel(level, 1);
+
+        packer = new(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        level.Models = models;
+        level.SoundEffects = effects;
+        level.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        models.Values
+            .SelectMany(m => m.Meshes)
+            .SelectMany(m => m.TexturedFaces)
+            .ToList()
+            .ForEach(f =>
+            {
+                f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+
+        GenerateImages8(level, basePalette);
+    }
+
     protected static TR1Level CreatePDALevel()
     {
         const TR1Type betaMapID = TR1Type.PushBlock4;
@@ -191,6 +240,23 @@ public abstract class InjectionBuilder
             anim.FrameEnd++;
         }
         return caves;
+    }
+
+    protected static TR2Level CreateWinstonLevel(string levelName)
+    {
+        TR2Level level = _control2.Read($"Resources/{levelName}");
+        CreateModelLevel(level, TR2Type.Winston);
+
+        // Fix Winston's nose
+        var model = level.Models[TR2Type.Winston];
+        model.Meshes[25].TexturedTriangles.Add(new()
+        {
+            Type = TRFaceType.Triangle,
+            Vertices = new() { 24, 22, 25 },
+            Texture = model.Meshes[25].TexturedRectangles[9].Texture,
+        });
+
+        return level;
     }
 
     protected static void PackTextures(TR1Level dataLevel, TRLevelBase sourceLevel, TRModel sky, Dictionary<string, string> regionMap)
