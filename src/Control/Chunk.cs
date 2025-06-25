@@ -59,4 +59,5 @@ public enum BlockType
     StaticEdits     = 26,
     AnimCmdEdits    = 27,
     SpriteEdit      = 28,
+    StaticObjects   = 29,
 }

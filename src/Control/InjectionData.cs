@@ -27,6 +27,7 @@ public class InjectionData
     public List<TRAnimation> Animations { get; set; } = new();
     public List<ushort> AnimFrames { get; set; } = new();
     public List<TRModel> Models { get; set; } = new();
+    public List<TRStaticMesh> StaticObjects { get; set; } = new();
     public List<TRColour> Palette { get; set; } = new();
     public List<TRSFXData> SFX { get; set; } = new();
     public List<TRMeshEdit> MeshEdits { get; set; } = new();
@@ -102,6 +103,7 @@ public class InjectionData
             MeshPointers = level.MeshPointers.ToList(),
             MeshTrees = level.MeshTrees.ToList(),
             Models = level.Models.ToList(),
+            StaticObjects = level.StaticMeshes.ToList(),
             ObjectTextures = level.ObjectTextures.ToList(),
             Palette = level.Palette.Select(c =>
             {
@@ -170,6 +172,7 @@ public class InjectionData
             MeshPointers = level.MeshPointers.ToList(),
             MeshTrees = level.MeshTrees.ToList(),
             Models = level.Models.ToList(),
+            StaticObjects = level.StaticMeshes.ToList(),
             ObjectTextures = level.ObjectTextures.ToList(),
             Palette = level.Palette.Select(c =>
             {

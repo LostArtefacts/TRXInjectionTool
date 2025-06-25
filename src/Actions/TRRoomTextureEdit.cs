@@ -14,6 +14,7 @@ public abstract class TRRoomTextureEdit
         AddFace,
         AddVertex,
         AddSprite,
+        AddStatic3D,
     }
 
     public abstract TRRoomTextureFixType FixType { get; }
@@ -39,6 +40,7 @@ public enum ExtraMeshMeta
     Quad,
     Triangle,
     Sprite,
+    Static3D,
 }
 
 public class TRRoomTextureReface : TRRoomTextureEdit
@@ -146,6 +148,24 @@ public class TRRoomSpriteCreate : TRRoomTextureEdit
     {
         writer.Write(Vertex);
         writer.Write(Texture);
+    }
+}
+
+public class TRRoomStatic3DCreate : TRRoomTextureEdit
+{
+    public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddStatic3D;
+    public override ExtraMeshMeta Meta => ExtraMeshMeta.Static3D;
+    public int ID { get; set; }
+    public TR1RoomStaticMesh StaticMesh { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer)
+    {
+        writer.Write(StaticMesh.X);
+        writer.Write(StaticMesh.Y);
+        writer.Write(StaticMesh.Z);
+        writer.Write(StaticMesh.Angle);
+        writer.Write(StaticMesh.Intensity);
+        writer.Write((ushort)ID);
     }
 }
 

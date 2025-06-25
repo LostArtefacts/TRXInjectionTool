@@ -10,6 +10,7 @@ public class RoomMeshMeta
     public short NumQuads { get; set; }
     public short NumTriangles { get; set; }
     public short NumSprites { get; set; }
+    public short NumStatic3Ds { get; set; }
 
     public void Serialize(TRLevelWriter writer)
     {
@@ -18,6 +19,7 @@ public class RoomMeshMeta
         writer.Write(NumQuads);
         writer.Write(NumTriangles);
         writer.Write(NumSprites);
+        writer.Write(NumStatic3Ds);
     }
 
     public static List<RoomMeshMeta> Create(InjectionData data)
@@ -52,6 +54,9 @@ public class RoomMeshMeta
                     break;
                 case ExtraMeshMeta.Sprite:
                     roomMeta.NumSprites++;
+                    break;
+                case ExtraMeshMeta.Static3D:
+                    roomMeta.NumStatic3Ds++;
                     break;
             }
         }
