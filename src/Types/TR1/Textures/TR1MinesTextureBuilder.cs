@@ -14,7 +14,7 @@ public class TR1MinesTextureBuilder : TextureBuilder
         CreateDefaultTests(data, TR1LevelNames.MINES);
 
         data.RoomEdits.AddRange(CreateFillers(mines));
-        data.RoomEdits.AddRange(CreateRefacings());
+        data.RoomEdits.AddRange(CreateRefacings(mines));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(mines));
 
@@ -43,7 +43,7 @@ public class TR1MinesTextureBuilder : TextureBuilder
         };
     }
 
-    private static List<TRRoomTextureReface> CreateRefacings()
+    private static List<TRRoomTextureReface> CreateRefacings(TR1Level mines)
     {
         return new()
         {
@@ -65,6 +65,14 @@ public class TR1MinesTextureBuilder : TextureBuilder
                 SourceIndex = 99,
                 TargetIndex = 89
             },
+            Reface(mines, 13, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 3, 29),
+            Reface(mines, 24, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1, 140),
+            Reface(mines, 47, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 25, 24),
+            Reface(mines, 84, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 50),
+            Reface(mines, 87, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 157, 10),
+            Reface(mines, 88, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 157, 10),
+            Reface(mines, 87, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 87, 12),
+            Reface(mines, 88, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 87, 12),
         };
     }
 
@@ -75,6 +83,18 @@ public class TR1MinesTextureBuilder : TextureBuilder
             Rotate(23, TRMeshFaceType.TexturedTriangle, 8, 2),
             Rotate(23, TRMeshFaceType.TexturedTriangle, 6, 2),
             Rotate(24, TRMeshFaceType.TexturedTriangle, 0, 1),
+            Rotate(29, TRMeshFaceType.TexturedQuad, 140, 3),
+            Rotate(30, TRMeshFaceType.TexturedQuad, 134, 3),
+            Rotate(31, TRMeshFaceType.TexturedQuad, 178, 3),
+            Rotate(31, TRMeshFaceType.TexturedTriangle, 2, 2),
+            Rotate(47, TRMeshFaceType.TexturedQuad, 24, 3),
+            Rotate(47, TRMeshFaceType.TexturedTriangle, 0, 1),
+            Rotate(87, TRMeshFaceType.TexturedTriangle, 10, 2),
+            Rotate(87, TRMeshFaceType.TexturedTriangle, 13, 2),
+            Rotate(88, TRMeshFaceType.TexturedTriangle, 10, 2),
+            Rotate(88, TRMeshFaceType.TexturedTriangle, 13, 2),
+            Rotate(92, TRMeshFaceType.TexturedTriangle, 1, 2),
+            Rotate(98, TRMeshFaceType.TexturedTriangle, 1, 2),
         };
     }
 

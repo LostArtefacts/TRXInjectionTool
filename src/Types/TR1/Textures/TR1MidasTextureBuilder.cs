@@ -119,6 +119,7 @@ public class TR1MidasTextureBuilder : TextureBuilder
             Rotate(31, TRMeshFaceType.TexturedQuad, 57, 2),
             Rotate(31, TRMeshFaceType.TexturedQuad, 115, 2),
             Rotate(31, TRMeshFaceType.TexturedQuad, 277, 2),
+            Rotate(28, TRMeshFaceType.TexturedQuad, 22, 2),
             Rotate(7, TRMeshFaceType.TexturedTriangle, 32, 2),
             Rotate(20, TRMeshFaceType.TexturedTriangle, 0, 2),
         };

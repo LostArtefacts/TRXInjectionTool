@@ -16,6 +16,7 @@ public class TR1CavesTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(caves));
         data.RoomEdits.AddRange(CreateRefacings(caves));
         data.RoomEdits.AddRange(CreateShifts(caves));
+        data.RoomEdits.AddRange(CreateRotations());
 
         FixBatTransparency(caves, data);
         FixWolfTransparency(caves, data);
@@ -109,6 +110,8 @@ public class TR1CavesTextureBuilder : TextureBuilder
         return new()
         {
             Reface(caves, 6, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 27, 179),
+            Reface(caves, 14, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 0, 231),
+            Reface(caves, 22, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedQuad, 43, 0),
         };
     }
 
@@ -129,6 +132,14 @@ public class TR1CavesTextureBuilder : TextureBuilder
                     }
                 }
             }
+        };
+    }
+
+    private static List<TRRoomTextureRotate> CreateRotations()
+    {
+        return new()
+        {
+            Rotate(22, TRMeshFaceType.TexturedTriangle, 0, 2),
         };
     }
 }

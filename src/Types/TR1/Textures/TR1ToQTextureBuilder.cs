@@ -13,7 +13,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
         TR1Level toq = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
         InjectionData data = CreateBaseData();
 
-        data.RoomEdits.AddRange(CreateRefacings());
+        data.RoomEdits.AddRange(CreateRefacings(toq));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(toq));
 
@@ -22,7 +22,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
         return new() { data };
     }
 
-    private static List<TRRoomTextureReface> CreateRefacings()
+    private static List<TRRoomTextureReface> CreateRefacings(TR1Level toq)
     {
         return new()
         {
@@ -35,6 +35,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
                 SourceIndex = 97,
                 TargetIndex = 87,
             },
+            Reface(toq, 14, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 3, 96),
         };
     }
 

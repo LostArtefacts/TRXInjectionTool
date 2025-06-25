@@ -245,6 +245,10 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                 SourceIndex = 4,
                 TargetIndex = 6
             },
+
+            Reface(valley, 27, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 3, 93),
+            Reface(valley, 5, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 0, 130),
+            Reface(valley, 88, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 0, 130),
         };
     }
 
@@ -262,6 +266,7 @@ public class TR1ValleyTextureBuilder : TextureBuilder
             Rotate(16, TRMeshFaceType.TexturedQuad, 89, 1),
             Rotate(27, TRMeshFaceType.TexturedTriangle, 26, 2),
             Rotate(27, TRMeshFaceType.TexturedTriangle, 27, 2),
+            Rotate(66, TRMeshFaceType.TexturedTriangle, 5, 2),
         };
     }
 

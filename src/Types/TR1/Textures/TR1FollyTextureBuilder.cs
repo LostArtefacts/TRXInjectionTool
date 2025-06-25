@@ -14,7 +14,7 @@ public class TR1FollyTextureBuilder : TextureBuilder
         CreateDefaultTests(data, TR1LevelNames.FOLLY);
 
         data.RoomEdits.AddRange(CreateFillers(folly));
-        data.RoomEdits.AddRange(CreateRefacings());
+        data.RoomEdits.AddRange(CreateRefacings(folly));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(folly));
 
@@ -42,7 +42,7 @@ public class TR1FollyTextureBuilder : TextureBuilder
         };
     }
 
-    private static List<TRRoomTextureReface> CreateRefacings()
+    private static List<TRRoomTextureReface> CreateRefacings(TR1Level folly)
     {
         return new()
         {
@@ -81,7 +81,9 @@ public class TR1FollyTextureBuilder : TextureBuilder
                 SourceFaceType = TRMeshFaceType.TexturedQuad,
                 SourceIndex = 74,
                 TargetIndex = 62
-            }
+            },
+            Reface(folly, 23, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 28, 205),
+            Reface(folly, 23, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 28, 206),
         };
     }
 
@@ -93,6 +95,7 @@ public class TR1FollyTextureBuilder : TextureBuilder
             Rotate(1, TRMeshFaceType.TexturedTriangle, 8, 2),
             Rotate(3, TRMeshFaceType.TexturedQuad, 208, 1),
             Rotate(4, TRMeshFaceType.TexturedQuad, 62, 1),
+            Rotate(18, TRMeshFaceType.TexturedQuad, 31, 3),
         };
     }
 

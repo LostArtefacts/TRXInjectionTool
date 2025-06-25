@@ -10,13 +10,14 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR1Level atlantis = _control1.Read($"Resources/{TR1LevelNames.ATLANTIS}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "atlantis_textures");
+        InjectionData data = CreateBaseData();
         CreateDefaultTests(data, TR1LevelNames.ATLANTIS);
 
         data.RoomEdits.AddRange(CreateFillers(atlantis));
-        data.RoomEdits.AddRange(CreateRefacings());
+        data.RoomEdits.AddRange(CreateRefacings(atlantis));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(atlantis));
+        FixPlatformDoorArea(data, atlantis);
 
         return new() { data };
     }
@@ -84,7 +85,7 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
         };
     }
 
-    private static List<TRRoomTextureReface> CreateRefacings()
+    private static List<TRRoomTextureReface> CreateRefacings(TR1Level atlantis)
     {
         return new()
         {
@@ -276,7 +277,10 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
                 SourceFaceType = TRMeshFaceType.TexturedQuad,
                 SourceIndex = 201,
                 TargetIndex = 222
-            }
+            },
+            Reface(atlantis, 88, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 8, 10),
+            Reface(atlantis, 90, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 8, 6),
+            Reface(atlantis, 62, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 8, 7),
         };
     }
 
@@ -357,5 +361,119 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
                 }
             }
         };
+    }
+
+    private static void FixPlatformDoorArea(InjectionData data, TR1Level atlantis)
+    {
+        var mesh = atlantis.Rooms[36].Mesh;
+        data.RoomEdits.AddRange(new[] { 0, 1 }.Select(i =>
+        {
+            return new TRRoomVertexMove
+            {
+                RoomIndex = 36,
+                VertexIndex = mesh.Rectangles[40].Vertices[i],
+                VertexChange = new() { Y = 256 },
+            };
+        }));
+        data.RoomEdits.AddRange(new[] { 0, 1 }.Select(i =>
+        {
+            return new TRRoomVertexCreate
+            {
+                RoomIndex = 36,
+                Vertex = mesh.Vertices[mesh.Rectangles[40].Vertices[i]],
+            };
+        }));
+        data.RoomEdits.Add(new TRRoomTextureCreate
+        {
+            FaceType = TRMeshFaceType.TexturedQuad,
+            RoomIndex = 36,
+            SourceRoom = 36,
+            SourceIndex = 45,
+            Vertices = new()
+            {
+                (ushort)mesh.Vertices.Count,
+                (ushort)(mesh.Vertices.Count + 1),
+                mesh.Rectangles[40].Vertices[1],
+                mesh.Rectangles[40].Vertices[0],
+            },
+        });
+        data.RoomEdits.Add(Reface(atlantis, 36, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 12, 40));
+        data.RoomEdits.Add(Reface(atlantis, 36, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 134, 39));
+
+        data.RoomEdits.Add(new TRRoomTextureMove
+        {
+            FaceType = TRMeshFaceType.TexturedQuad,
+            RoomIndex = 36,
+            TargetIndex = 45,
+            VertexRemap = new()
+            {
+                new()
+                {
+                    Index = 1,
+                    NewVertexIndex = (ushort)mesh.Vertices.Count,
+                }
+            },
+        });
+        data.RoomEdits.Add(new TRRoomTextureMove
+        {
+            FaceType = TRMeshFaceType.TexturedQuad,
+            RoomIndex = 36,
+            TargetIndex = 34,
+            VertexRemap = new()
+            {
+                new()
+                {
+                    Index = 0,
+                    NewVertexIndex = (ushort)(mesh.Vertices.Count + 1),
+                }
+            },
+        });
+    }
+
+    private static InjectionData CreateBaseData()
+    {
+        TR1Level baseLevel = CreateAtlantisContinuityLevel(TR1Type.SceneryBase + 17);
+        InjectionData data = InjectionData.Create(baseLevel, InjectionType.TextureFix, "atlantis_textures");
+        data.RoomEdits.Add(new TRRoomStatic3DCreate
+        {
+            ID = 17,
+            RoomIndex = 50,
+            StaticMesh = new()
+            {
+                X = 52736,
+                Y = -20404,
+                Z = 45568,
+                Intensity = 6000,
+            }
+        });
+
+        data.RoomEdits.Add(new TRRoomStatic3DCreate
+        {
+            ID = 18,
+            RoomIndex = 48,
+            StaticMesh = new()
+            {
+                X = 65024 - 512,
+                Y = -15616,
+                Z = 45568 - 512,
+                Angle = 16384,
+                Intensity = 4096,
+            }
+        });
+
+        data.ItemEdits.Add(new()
+        {
+            Index = 69,
+            Item = new()
+            {
+                Angle = -16384,
+                X = 64000 + 64,
+                Y = -15616,
+                Z = 45568,
+                Room = 48,
+            },
+        });
+
+        return data;
     }
 }

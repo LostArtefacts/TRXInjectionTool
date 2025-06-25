@@ -40,6 +40,20 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
                     vilcabamba.Rooms[15].Mesh.Rectangles[166].Vertices[0],
                 },
             },
+            new()
+            {
+                RoomIndex = 21,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                SourceRoom = 21,
+                SourceIndex = 5,
+                Vertices = new()
+                {
+                    vilcabamba.Rooms[21].Mesh.Rectangles[4].Vertices[3],
+                    vilcabamba.Rooms[21].Mesh.Rectangles[4].Vertices[2],
+                    vilcabamba.Rooms[21].Mesh.Rectangles[5].Vertices[1],
+                    vilcabamba.Rooms[21].Mesh.Rectangles[5].Vertices[0],
+                },
+            },
         };
     }
 
@@ -64,6 +78,8 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
         return new()
         {
             Rotate(15, TRMeshFaceType.TexturedQuad, 191, 3),
+            Rotate(26, TRMeshFaceType.TexturedTriangle, 0, 1),
+            Rotate(73, TRMeshFaceType.TexturedQuad, 3, 3),
         };
     }
 }

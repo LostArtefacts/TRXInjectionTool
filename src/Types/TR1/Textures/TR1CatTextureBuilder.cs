@@ -15,7 +15,7 @@ public class TR1CatTextureBuilder : TextureBuilder
         CreateDefaultTests(data, TR1LevelNames.CAT);
 
         data.RoomEdits.AddRange(CreateFillers(cat));
-        data.RoomEdits.AddRange(CreateRefacings());
+        data.RoomEdits.AddRange(CreateRefacings(cat));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(FixVases(cat));
 
@@ -44,7 +44,7 @@ public class TR1CatTextureBuilder : TextureBuilder
         };
     }
 
-    private static List<TRRoomTextureReface> CreateRefacings()
+    private static List<TRRoomTextureReface> CreateRefacings(TR1Level cat)
     {
         return new()
         {
@@ -74,7 +74,11 @@ public class TR1CatTextureBuilder : TextureBuilder
                 SourceRoom = 87,
                 SourceIndex = 47,
                 TargetIndex = 100,
-            }
+            },
+            Reface(cat, 32, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 45, 254),
+            Reface(cat, 98, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedQuad, 16, 2),
+            Reface(cat, 98, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 17, 72),
+            Reface(cat, 98, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 208, 74),
         };
     }
 

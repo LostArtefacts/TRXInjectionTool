@@ -15,6 +15,7 @@ public class TR1CisternTextureBuilder : TextureBuilder
 
         data.RoomEdits.AddRange(CreateFillers(cistern));
         data.RoomEdits.AddRange(CreateRotations());
+        data.RoomEdits.AddRange(CreateRefacings(cistern));
 
         FixRoom9(cistern, data);
 
@@ -46,7 +47,17 @@ public class TR1CisternTextureBuilder : TextureBuilder
     {
         return new()
         {
+            Rotate(22, TRMeshFaceType.TexturedQuad, 3, 1),
             Rotate(102, TRMeshFaceType.TexturedTriangle, 4, 2),
+        };
+    }
+
+    private static List<TRRoomTextureReface> CreateRefacings(TR1Level cistern)
+    {
+        return new()
+        {
+            Reface(cistern, 22, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedQuad, 55, 0),
+            Reface(cistern, 22, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 55, 36),
         };
     }
 

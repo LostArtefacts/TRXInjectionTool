@@ -18,6 +18,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(colosseum));
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateVertexShifts(colosseum));
+        data.RoomEdits.AddRange(CreateRotations());
 
         FixRoofTextures(data);
 
@@ -119,6 +120,15 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
                 VertexIndex = colosseum.Rooms[2].Mesh.Rectangles[2].Vertices[0],
                 VertexChange = new() { Y = -256 }
             },
+        };
+    }
+
+    private static List<TRRoomTextureRotate> CreateRotations()
+    {
+        return new()
+        {
+            Rotate(0, TRMeshFaceType.TexturedQuad, 4, 2),
+            Rotate(83, TRMeshFaceType.TexturedQuad, 59, 2),
         };
     }
 

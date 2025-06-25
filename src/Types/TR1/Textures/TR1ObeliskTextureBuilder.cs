@@ -14,7 +14,7 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "obelisk_textures");
         CreateDefaultTests(data, TR1LevelNames.OBELISK);
 
-        data.RoomEdits.AddRange(CreateRefacings());
+        data.RoomEdits.AddRange(CreateRefacings(obelisk));
         data.RoomEdits.AddRange(CreateRotations());
 
         FixCityGaps(obelisk, data);
@@ -23,7 +23,7 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
         return new() { data };
     }
 
-    private static List<TRRoomTextureReface> CreateRefacings()
+    private static List<TRRoomTextureReface> CreateRefacings(TR1Level obelisk)
     {
         return new()
         {
@@ -62,7 +62,9 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
                 SourceFaceType = TRMeshFaceType.TexturedQuad,
                 SourceIndex = 25,
                 TargetIndex = 1
-            }
+            },
+            Reface(obelisk, 66, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 120, 111),
+            Reface(obelisk, 66, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 105, 147),
         };
     }
 

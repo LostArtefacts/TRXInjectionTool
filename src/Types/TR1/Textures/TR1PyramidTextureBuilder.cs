@@ -260,6 +260,7 @@ public class TR1PyramidTextureBuilder : TextureBuilder
             Rotate(31, TRMeshFaceType.TexturedQuad, 70, 2),
             Rotate(49, TRMeshFaceType.TexturedTriangle, 10, 1),
             Rotate(50, TRMeshFaceType.TexturedTriangle, 6, 2),
+            Rotate(65, TRMeshFaceType.TexturedTriangle, 6, 2),
             Rotate(54, TRMeshFaceType.TexturedQuad, 255, 1),
             Rotate(54, TRMeshFaceType.TexturedQuad, 228, 3),
         };

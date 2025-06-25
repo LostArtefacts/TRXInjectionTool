@@ -16,6 +16,7 @@ public class TR1SanctuaryTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(sanctuary));
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateVertexShifts(sanctuary));
+        data.RoomEdits.AddRange(CreateRotations());
 
         return new() { data };
     }
@@ -725,7 +726,20 @@ public class TR1SanctuaryTextureBuilder : TextureBuilder
                     sanctuary.Rooms[52].Mesh.Rectangles[158].Vertices[0],
                     sanctuary.Rooms[52].Mesh.Rectangles[158].Vertices[3],
                 }
-            }
+            },
+            new()
+            {
+                RoomIndex = 10,
+                FaceType = TRMeshFaceType.TexturedTriangle,
+                SourceRoom = GetSource(sanctuary, TRMeshFaceType.TexturedTriangle, 24).Room,
+                SourceIndex = GetSource(sanctuary, TRMeshFaceType.TexturedTriangle, 24).Room,
+                Vertices = new()
+                {
+                    sanctuary.Rooms[10].Mesh.Triangles[15].Vertices[1],
+                    sanctuary.Rooms[10].Mesh.Rectangles[93].Vertices[1],
+                    sanctuary.Rooms[10].Mesh.Rectangles[93].Vertices[0],
+                }
+            },
         };
     }
 
@@ -761,6 +775,14 @@ public class TR1SanctuaryTextureBuilder : TextureBuilder
                 VertexIndex = sanctuary.Rooms[54].Mesh.Rectangles[4].Vertices[0],
                 VertexChange = new() { Y = -256 }
             },
+        };
+    }
+
+    private static List<TRRoomTextureRotate> CreateRotations()
+    {
+        return new()
+        {
+            Rotate(11, TRMeshFaceType.TexturedQuad, 116, 1),
         };
     }
 }

@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using TRImageControl;
+using TRImageControl.Packing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types;
 
@@ -146,6 +149,61 @@ public abstract class TextureBuilder : InjectionBuilder
             Height = (ushort)texInfo.Size.Height,
             Data = img.ToRGBA(),
         });
+    }
+
+    protected static TR1Level CreateAtlantisContinuityLevel(TR1Type startSceneryIdx)
+    {
+        TR1Level pyramid = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
+
+        TRMesh lightningBoxMesh = pyramid.Models[TR1Type.ThorLightning].Meshes[0];
+        lightningBoxMesh.Vertices.ForEach(v => v.Y += 52);
+
+        TRMesh doorMesh = pyramid.Models[TR1Type.Door2].Meshes[0];
+        new[] { 1, 2, 5, 6 }.Select(i => doorMesh.Vertices[i])
+            .ToList().ForEach(v => v.X -= 26);
+
+        var statics = new[]
+        {
+            new TRStaticMesh
+            {
+                Mesh = lightningBoxMesh,
+                CollisionBox = lightningBoxMesh.GetBounds(),
+                VisibilityBox = lightningBoxMesh.GetBounds(),
+                Visible = true,
+            },
+            new TRStaticMesh
+            {
+                Mesh = doorMesh,
+                CollisionBox = doorMesh.GetBounds(),
+                VisibilityBox = doorMesh.GetBounds(),
+                Visible = true,
+            },
+        };
+
+        var packer = new TR1TexturePacker(pyramid);
+        var regions = packer.GetMeshRegions(statics.Select(s => s.Mesh))
+            .Values.SelectMany(v => v);
+        var originalInfos = pyramid.ObjectTextures.ToList();
+        ResetLevel(pyramid, 1);
+
+        packer = new(pyramid);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        for (int i = 0; i < statics.Length; i++)
+        {
+            pyramid.StaticMeshes[(TR1Type)((int)startSceneryIdx + i)] = statics[i];
+        }
+        pyramid.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        statics.Select(s => s.Mesh)
+            .SelectMany(m => m.TexturedFaces)
+            .ToList()
+            .ForEach(f =>
+            {
+                f.Texture = (ushort)pyramid.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+
+        return pyramid;
     }
 
     protected class TextureSource
