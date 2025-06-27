@@ -106,6 +106,30 @@
     <None Update="Resources\TR2\Font\glyph_info.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\TR2\lara_hands.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TR2\lara_hands.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TR2\Objects\LARAAUTOANIM_H_ASSAULT.TRB">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TR2\Objects\LARAAUTOANIM_H_HOME.TRB">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TR2\Objects\LARAPISTOLANIM_H_ASSAULT.TRB">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TR2\Objects\LARAPISTOLANIM_H_HOME.TRB">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TR2\Objects\LARAUZIANIM_H_ASSAULT.TRB">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TR2\Objects\LARAUZIANIM_H_HOME.TRB">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\TR2\pda.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

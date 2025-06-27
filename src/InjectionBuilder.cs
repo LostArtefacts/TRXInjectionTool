@@ -213,6 +213,7 @@ public abstract class InjectionBuilder
         models.Values
             .SelectMany(m => m.Meshes)
             .SelectMany(m => m.TexturedFaces)
+            .Distinct()
             .ToList()
             .ForEach(f =>
             {

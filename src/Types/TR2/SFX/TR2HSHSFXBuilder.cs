@@ -1,4 +1,3 @@
-using TRDataControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
