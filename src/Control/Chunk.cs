@@ -26,6 +26,7 @@ public enum ChunkType
     ObjectData    = 4,
     SFXData       = 5,
     DataEdits     = 6,
+    CameraData    = 7,
 }
 
 public enum BlockType
@@ -60,4 +61,5 @@ public enum BlockType
     AnimCmdEdits    = 27,
     SpriteEdit      = 28,
     StaticObjects   = 29,
+    CinematicFrames = 30,
 }

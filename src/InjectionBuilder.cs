@@ -115,6 +115,7 @@ public abstract class InjectionBuilder
         level.Boxes.Clear();
         level.Entities.Clear();
         level.Cameras.Clear();
+        level.CinematicFrames.Clear();
 
         for (int i = 0; i < 256; i++)
         {
@@ -144,6 +145,7 @@ public abstract class InjectionBuilder
         level.Boxes.Clear();
         level.Entities.Clear();
         level.Cameras.Clear();
+        level.CinematicFrames.Clear();
 
         for (int i = 0; i < 256; i++)
         {

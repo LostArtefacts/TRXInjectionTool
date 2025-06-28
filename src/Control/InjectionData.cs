@@ -30,6 +30,7 @@ public class InjectionData
     public List<TRStaticMesh> StaticObjects { get; set; } = new();
     public List<TRColour> Palette { get; set; } = new();
     public List<TRSFXData> SFX { get; set; } = new();
+    public List<TRCinematicFrame> CinematicFrames { get; set; } = new();
     public List<TRMeshEdit> MeshEdits { get; set; } = new();
     public List<TRStaticMeshEdit> StaticMeshEdits { get; set; } = new();
     public List<TRTextureOverwrite> TextureOverwrites { get; set; } = new();
@@ -116,6 +117,7 @@ public class InjectionData
             }).ToList(),
             SpriteSequences = level.SpriteSequences.ToList(),
             SpriteTextures = level.SpriteTextures.ToList(),
+            CinematicFrames = level.CinematicFrames.ToList(),
         };
 
         for (int i = 0; i < sounds.Length; i++)
@@ -185,6 +187,7 @@ public class InjectionData
             }).ToList(),
             SpriteSequences = level.SpriteSequences.ToList(),
             SpriteTextures = level.SpriteTextures.ToList(),
+            CinematicFrames = level.CinematicFrames.ToList(),
         };
 
         for (int i = 0; i < sounds.Length; i++)
