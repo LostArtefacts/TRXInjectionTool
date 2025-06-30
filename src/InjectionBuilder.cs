@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Drawing;
+using System.IO.Compression;
 using TRDataControl;
 using TRImageControl;
 using TRImageControl.Packing;
@@ -383,6 +384,33 @@ public abstract class InjectionBuilder
         string fullPath = $"Output/{version}/{path}";
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
         return fullPath;
+    }
+
+    public static void ExportLevelZip(TRLevelBase level, string levelName)
+    {
+        using FileStream stream = new($"../../Resources/Published/{levelName}.zip", FileMode.Create);
+        using ZipArchive zip = new(stream, ZipArchiveMode.Create);
+        using MemoryStream ms = new();
+        string ext;
+        if (level is TR1Level level1)
+        {
+            _control1.Write(level1, ms);
+            ext = "phd";
+        }
+        else if (level is TR2Level level2)
+        {
+            _control2.Write(level2, ms);
+            ext = "tr2";
+        }
+        else
+        {
+            throw new Exception("Only TR1 and TR2 supported");
+        }
+
+        byte[] phdRaw = ms.ToArray();
+        ZipArchiveEntry entry = zip.CreateEntry($"{levelName}.{ext}", CompressionLevel.Optimal);
+        using Stream zipStream = entry.Open();
+        zipStream.Write(phdRaw, 0, phdRaw.Length);
     }
 
     protected static readonly Dictionary<string, string> _tr2NameMap = new()

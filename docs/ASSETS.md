@@ -10,7 +10,7 @@ to use the provided injection file, your modifications will be overwritten. To
 resolve this, you can follow these steps.
 
 1. Download and extract the following zip file.
-https://lostartefacts.dev/pub/tr1_lara_anim_ext.zip
+https://lostartefacts.dev/pub/tr1-lara-anim-ext.zip
 
 2. Open your level's WAD file in WadTool.
 
@@ -31,6 +31,19 @@ or otherwise, provide your own samples for these SFX.
 7. Update your TR1X gameflow to remove the reference(s) to
 `lara_animations.bin`.
 
-##  Updating the asset file (internal)
+# PDA models
+The PDA model is used in-game for gameplay config options. The original model
+only has one mesh and no animation data, so if the default injection that ships
+with TRX is not used, the animation will not work correctly. The modified models
+can be downloaded below and added directly to your WAD to allow customisation.
 
-Run `TRXInjectionTool.exe tr1-lara-anims` to generate the above zip file.
+https://lostartefacts.dev/pub/tr1_pda.zip
+https://lostartefacts.dev/pub/tr2_pda.zip
+
+##  Updating the asset files (internal)
+
+Run the following to generate the above zip files.
+
+- `TRXInjectionTool.exe tr1-lara-anims`
+- `TRXInjectionTool.exe tr1-pda`
+- `TRXInjectionTool.exe tr2-pda`

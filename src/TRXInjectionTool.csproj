@@ -136,7 +136,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\TR1\Lara\Output\" />
+    <Folder Include="Resources\Published\" />
   </ItemGroup>
 
 </Project>

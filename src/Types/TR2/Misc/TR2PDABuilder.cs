@@ -25,7 +25,7 @@ public class TR2PDABuilder : InjectionBuilder
 
         GenerateImages8(wall, wall.Palette.Select(c => c.ToTR1Color()).ToList());
 
-        _control2.Write(wall, MakeOutputPath(TRGameVersion.TR2, $"Debug/{ID}.tr2"));
+        ExportLevelZip(wall, ID);
 
         var data = InjectionData.Create(wall, InjectionType.General, "pda_model");
         return new() { data };

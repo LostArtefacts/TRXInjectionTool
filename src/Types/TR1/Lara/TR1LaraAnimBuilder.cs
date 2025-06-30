@@ -11,7 +11,7 @@ namespace TRXInjectionTool.Types.TR1.Lara;
 
 public class TR1LaraAnimBuilder : InjectionBuilder
 {
-    private static readonly string _wadZipPath = "../../Resources/TR1/Lara/Output/tr1_lara_anim_ext.zip";
+    private static readonly string _wadZipPath = "../../Resources/Published/tr1-lara-anim-ext.zip";
     private static readonly DateTimeOffset _wadZipPlaceholderDate
         = new(new DateTime(2025, 5, 15, 11, 0, 0), new TimeSpan());
 
