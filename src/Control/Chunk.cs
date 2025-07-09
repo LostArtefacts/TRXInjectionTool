@@ -62,4 +62,5 @@ public enum BlockType
     SpriteEdit      = 28,
     StaticObjects   = 29,
     CinematicFrames = 30,
+    ObjectTypeEdits = 31,
 }

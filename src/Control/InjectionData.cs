@@ -42,6 +42,7 @@ public class InjectionData
     public List<TRAnimCmdEdit> AnimCmdEdits { get; set; } = new();
     public List<TRCameraEdit> CameraEdits { get; set; } = new();
     public List<TRSpriteEdit> SpriteEdits { get; set; } = new();
+    public List<TRObjectTypeEdit> ObjectTypeEdits { get; set; } = new();
 
     private InjectionData() { }
 
