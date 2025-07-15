@@ -206,6 +206,72 @@ public abstract class TextureBuilder : InjectionBuilder
         return pyramid;
     }
 
+    protected static void FixHomeWindows(TR2Level baseLevel, string baseName)
+    {
+        var venice = _control2.Read($"Resources/{TR2LevelNames.VENICE}");
+        CreateModelLevel(venice, TR2Type.BreakableWindow1);
+
+        var home = _control2.Read($"Resources/{baseName}");
+        var ogWindow = home.Models[TR2Type.BreakableWindow1];
+        var normalImg = GetImage(ogWindow.Meshes[0].TexturedFaces.First().Texture, home);
+        var smashedImg = GetImage(ogWindow.Meshes[8].TexturedFaces.First().Texture, home);
+
+        var window = venice.Models[TR2Type.BreakableWindow1];
+        window.Animations = ogWindow.Animations;
+        ImportImage(window.Meshes[0].TexturedFaces.First().Texture, normalImg, venice);
+        ImportImage(window.Meshes[8].TexturedFaces.First().Texture, smashedImg, venice);
+
+        for (int i = 0; i < window.Meshes.Count; i++)
+        {
+            window.Meshes[i].Normals = ogWindow.Meshes[i].Normals;
+            window.Meshes[i].Lights = ogWindow.Meshes[i].Lights;
+        }
+
+        // Replace the wooden bit to match the house windows: off-brown => off-purple
+        var paneImg = GetImage(window.Meshes[1].TexturedFaces.First().Texture, venice);
+        paneImg.Write((c, x, y) =>
+        {
+            if (c.A == 0 || c.R >= 200)
+            {
+                return c;
+            }
+            int g = (int)(c.R * 0.95f);
+            int b = (int)(g * 1.3f);
+            return Color.FromArgb(c.R, g, b);
+        });
+        ImportImage(window.Meshes[1].TexturedFaces.First().Texture, paneImg, venice);
+
+        var packer = new TR2TexturePacker(venice);
+        var regions = packer.GetMeshRegions(window.Meshes)
+            .Values.SelectMany(v => v);
+        packer = new(baseLevel);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        baseLevel.Models[TR2Type.BreakableWindow1] = window;
+        window.Meshes.SelectMany(m => m.TexturedFaces)
+            .ToList().ForEach(f => f.Texture += (ushort)baseLevel.ObjectTextures.Count);
+        baseLevel.ObjectTextures.AddRange(venice.ObjectTextures);
+        GenerateImages8(baseLevel, baseLevel.Palette.Select(c => c.ToTR1Color()).ToList());
+    }
+
+    private static TRImage GetImage(ushort texture, TR2Level level)
+    {
+        var texInfo = level.ObjectTextures[texture];
+        var page = level.Images16[texInfo.Atlas];
+        return new TRImage(page.Pixels)
+            .Export(texInfo.Bounds);
+    }
+
+    private static void ImportImage(ushort texture, TRImage img, TR2Level level)
+    {
+        var texInfo = level.ObjectTextures[texture];
+        var page = level.Images16[texInfo.Atlas];
+        var image = new TRImage(page.Pixels);
+        image.Import(img, texInfo.Position);
+        level.Images16[texInfo.Atlas].Pixels = image.ToRGB555();
+    }
+
     protected class TextureSource
     {
         public short Room { get; set; }

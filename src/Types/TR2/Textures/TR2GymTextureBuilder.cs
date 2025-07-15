@@ -24,6 +24,8 @@ public class TR2GymTextureBuilder : TextureBuilder
         // Current injection limitation, do not replace SFX
         level.SoundEffects.Clear();
 
+        FixHomeWindows(level, TR2LevelNames.ASSAULT);
+
         InjectionData data = InjectionData.Create(level, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR2LevelNames.ASSAULT);
         return data;
