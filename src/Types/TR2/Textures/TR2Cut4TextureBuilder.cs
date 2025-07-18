@@ -9,13 +9,15 @@ namespace TRXInjectionTool.Types.TR2.Textures;
 
 public class TR2Cut4TextureBuilder : TextureBuilder
 {
+    public override string ID => "cut4_textures";
+
     public override List<InjectionData> Build()
     {
         InjectionData data = CreateBaseData();
         return new() { data };
     }
 
-    private static InjectionData CreateBaseData()
+    private InjectionData CreateBaseData()
     {
         // Fix Lara's hips appearing on Bartoli's back.
         TR2Level cut4 = _control2.Read($"Resources/{TR2LevelNames.XIAN_CUT}");
@@ -49,7 +51,7 @@ public class TR2Cut4TextureBuilder : TextureBuilder
 
         _control2.Write(cut4, MakeOutputPath(TRGameVersion.TR2, "Debug/cut4.tr2"));
 
-        InjectionData data = InjectionData.Create(cut4, InjectionType.TextureFix, "cut4_textures");
+        InjectionData data = InjectionData.Create(cut4, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR2LevelNames.XIAN_CUT);
         return data;
     }

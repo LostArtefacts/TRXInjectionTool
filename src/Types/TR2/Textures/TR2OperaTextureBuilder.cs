@@ -12,15 +12,23 @@ public class TR2OperaTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR2Level opera = _control2.Read($"Resources/{TR2LevelNames.OPERA}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.TextureFix, "opera_textures");
+        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR2LevelNames.OPERA);
-        data.RoomEdits.AddRange(CreateRefacings());
+
+        data.RoomEdits.AddRange(CreateRefacings(opera));
+        data.RoomEdits.AddRange(CreateRotations());
+
         return new() { data };
     }
 
-    private static List<TRRoomTextureReface> CreateRefacings()
+    private static List<TRRoomTextureReface> CreateRefacings(TR2Level level)
     {
-        return new[]{ 33, 35, 45, 54, 66, 69, 85, 87 }
+        var result = new List<TRRoomTextureReface>
+        {
+            Reface(level, 176, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1729, 9),
+        };
+
+        var planeAreaFixes = new[] { 33, 35, 45, 54, 66, 69, 85, 87 }
             .Select(i => new TRRoomTextureReface
             {
                 RoomIndex = 134,
@@ -29,7 +37,16 @@ public class TR2OperaTextureBuilder : TextureBuilder
                 SourceRoom = 134,
                 SourceIndex = 0,
                 TargetIndex = (short)i,
-            })
-            .ToList();
+            });
+        result.AddRange(planeAreaFixes);
+        return result;
+    }
+
+    private static List<TRRoomTextureRotate> CreateRotations()
+    {
+        return new()
+        {
+            Rotate(122, TRMeshFaceType.TexturedTriangle, 1, 1),
+        };
     }
 }

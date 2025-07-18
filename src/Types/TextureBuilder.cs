@@ -28,7 +28,7 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
-    protected static TRRoomTextureReface Reface(TR1Level level, short roomIndex, TRMeshFaceType targetType,
+    protected static TRRoomTextureReface Reface(TRLevelBase level, short roomIndex, TRMeshFaceType targetType,
         TRMeshFaceType sourceType, ushort texture, short targetIndex)
     {
         TextureSource source = GetSource(level, sourceType, texture);
@@ -43,12 +43,29 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
-    protected static TextureSource GetSource(TR1Level level, TRMeshFaceType type, ushort textureIndex)
+    protected static TextureSource GetSource(TRLevelBase level, TRMeshFaceType type, ushort textureIndex)
     {
-        for (short i = 0; i < level.Rooms.Count; i++)
+        List<List<TRFace>> meshes;
+        if (level is TR1Level level1)
         {
-            TR1Room room = level.Rooms[i];
-            List<TRFace> faces = type == TRMeshFaceType.TexturedQuad ? room.Mesh.Rectangles : room.Mesh.Triangles;
+            meshes = level1.Rooms
+                .Select(r => type == TRMeshFaceType.TexturedQuad ? r.Mesh.Rectangles : r.Mesh.Triangles)
+                .ToList();
+        }
+        else if (level is TR2Level level2)
+        {
+            meshes = level2.Rooms
+                .Select(r => type == TRMeshFaceType.TexturedQuad ? r.Mesh.Rectangles : r.Mesh.Triangles)
+                .ToList();
+        }
+        else
+        {
+            throw new Exception();
+        }
+
+        for (short i = 0; i < meshes.Count; i++)
+        {
+            List<TRFace> faces = meshes[i];
             int match = faces.FindIndex(f => f.Texture == textureIndex);
             if (match != -1)
             {
@@ -270,6 +287,91 @@ public abstract class TextureBuilder : InjectionBuilder
         var image = new TRImage(page.Pixels);
         image.Import(img, texInfo.Position);
         level.Images16[texInfo.Atlas].Pixels = image.ToRGB555();
+    }
+
+    protected static void FixToilets(TR2Level level, string levelName)
+    {
+        TR2Level gym = _control2.Read($"Resources/{TR2LevelNames.ASSAULT}");
+        var statics = new List<TRStaticMesh>
+        {
+            gym.StaticMeshes[TR2Type.SceneryBase + 4],
+        };
+        if (levelName == TR2LevelNames.HOME)
+        {
+            statics.Add(gym.StaticMeshes[TR2Type.SceneryBase + 45]);
+        }
+
+        var packer = new TR2TexturePacker(gym);
+        var regions = packer.GetMeshRegions(statics.Select(s => s.Mesh))
+            .Values.SelectMany(v => v);
+        var originalInfos = gym.ObjectTextures.ToList();
+
+        packer = new(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        level.StaticMeshes[TR2Type.SceneryBase + 4] = statics[0];
+        if (statics.Count > 1)
+        {
+            level.StaticMeshes[TR2Type.SceneryBase + 26] = statics[1];
+        }
+        level.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        statics.Select(s => s.Mesh)
+            .SelectMany(m => m.TexturedFaces)
+            .ToList()
+            .ForEach(f =>
+            {
+                f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+
+        GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
+    }
+
+    protected static void FixHomeStatue(TR2Level level)
+    {
+        TR2Level gym = _control2.Read($"Resources/{TR2LevelNames.ASSAULT}");
+        var statue = gym.StaticMeshes[TR2Type.SceneryBase + 16];
+
+        var packer = new TR2TexturePacker(gym);
+        var regions = packer.GetMeshRegions(new[] { statue.Mesh })
+            .Values.SelectMany(v => v).ToList();
+        var originalInfos = gym.ObjectTextures.ToList();
+
+        var img = new TRImage(8, 8);
+        img.Fill(Color.FromArgb(40, 24, 24));
+
+        var texInfo = new TRObjectTexture(0, 0, 8, 8);
+        regions.Add(new()
+        {
+            Image = img,
+            Bounds = texInfo.Bounds,
+            Segments = new()
+            {
+                new()
+                {
+                    Index = regions.Count,
+                    Texture = texInfo,
+                }
+            }
+        });
+
+        packer = new(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        level.StaticMeshes[TR2Type.SceneryBase + 16] = statue;
+        level.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        
+        statue.Mesh.TexturedFaces.ToList()
+            .ForEach(f =>
+            {
+                f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+        statue.Mesh.ColouredRectangles.ForEach(f => f.Texture = (ushort)(level.ObjectTextures.Count - 1));
+        statue.Mesh.TexturedRectangles.AddRange(statue.Mesh.ColouredRectangles);
+        statue.Mesh.ColouredRectangles.Clear();
+
+        GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
     }
 
     protected class TextureSource
