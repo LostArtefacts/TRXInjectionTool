@@ -50,6 +50,45 @@ public class TR1CatCameraBuilder : CameraBuilder
             });
         }
 
+        // Camera 28 is too high so shows OOB objects, and has mismatched one-shot triggers.
+        data.CameraEdits.Add(SetCameraPosition(cat, 28, y: -21248));
+        data.FloorEdits.AddRange(FixCamera28Triggers(cat));
+
         return new() { data };
+    }
+
+    private static IEnumerable<TRFloorDataEdit> FixCamera28Triggers(TR1Level level)
+    {
+        static bool camTest(FDActionItem a)
+            => a.Action == FDTrigAction.Camera && a.Parameter == 28 && !a.CamAction.Once;
+
+        for (short r = 0; r < level.Rooms.Count; r++)
+        {
+            var room = level.Rooms[r];
+            for (ushort x = 1; x < room.NumXSectors - 1; x++)
+            {
+                for (ushort z = 1; z < room.NumZSectors - 1; z++)
+                {
+                    var sector = room.GetSector(x, z, TRUnit.Sector);
+                    if (sector.FDIndex == 0)
+                    {
+                        continue;
+                    }
+
+                    var trigger = level.FloorData[sector.FDIndex]
+                        .OfType<FDTriggerEntry>()
+                        .FirstOrDefault(t => t.Actions.Any(camTest));
+                    if (trigger == null)
+                    {
+                        continue;
+                    }
+
+                    trigger.Actions.Where(camTest)
+                        .ToList()
+                        .ForEach(a => a.CamAction.Once = true);
+                    yield return FDBuilder.MakeTrigger(level, r, x, z, trigger);
+                }
+            }
+        }
     }
 }
