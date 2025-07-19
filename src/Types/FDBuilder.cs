@@ -58,7 +58,7 @@ public abstract class FDBuilder : InjectionBuilder
         };
     }
 
-    protected static TRFloorDataEdit MakeTrigger(TR1Level level, short room, ushort x, ushort z, FDTriggerEntry trigger)
+    public static TRFloorDataEdit MakeTrigger(TR1Level level, short room, ushort x, ushort z, FDTriggerEntry trigger)
     {
         FDTrigCreateFix fd = MakeTrigFix(level, room, x, z);
         fd.Entries.Add(trigger);
