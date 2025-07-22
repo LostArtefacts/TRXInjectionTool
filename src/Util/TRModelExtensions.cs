@@ -43,6 +43,16 @@ public static class TRModelExtensions
         };
     }
 
+    public static void Scale(this TRMesh mesh, float scale)
+    {
+        mesh.Vertices.ForEach(v =>
+        {
+            v.X = (short)(v.X * scale);
+            v.Y = (short)(v.Y * scale);
+            v.Z = (short)(v.Z * scale);
+        });
+    }
+
     public static void SelfCalculateBounds(this TRMesh mesh)
     {
         TRBoundingBox box = mesh.GetBounds();
