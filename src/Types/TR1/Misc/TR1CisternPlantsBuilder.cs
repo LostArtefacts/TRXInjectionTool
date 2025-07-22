@@ -26,7 +26,7 @@ public class TR1CisternPlantsBuilder : InjectionBuilder
 
         cistern.Sprites[TR1Type.Plant2] = plant;
 
-        InjectionData data = InjectionData.Create(cistern, InjectionType.DisableAnimSprite, "cistern_plants");
+        InjectionData data = InjectionData.Create(cistern, InjectionType.AlterAnimSprite, "cistern_plants");
         return new() { data };
     }
 }

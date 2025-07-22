@@ -141,13 +141,15 @@ public class TRRoomSpriteCreate : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddSprite;
     public override ExtraMeshMeta Meta => ExtraMeshMeta.Sprite;
+    public int ID { get; set; }
     public ushort Vertex { get; set; }
-    public ushort Texture { get; set; }
+    public ushort Frame { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer)
     {
+        writer.Write(ID);
         writer.Write(Vertex);
-        writer.Write(Texture);
+        writer.Write(Frame);
     }
 }
 

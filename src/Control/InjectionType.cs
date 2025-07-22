@@ -9,7 +9,7 @@ public enum InjectionType
     LaraAnims,
     ItemRotation,
     Item,
-    DisableAnimSprite,
+    AlterAnimSprite,
     Skybox,
     PSCrystal,
 }
