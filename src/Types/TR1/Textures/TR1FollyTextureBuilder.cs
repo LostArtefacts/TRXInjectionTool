@@ -18,6 +18,8 @@ public class TR1FollyTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(folly));
 
+        FixPassport(folly, data);
+
         return new() { data };
     }
 

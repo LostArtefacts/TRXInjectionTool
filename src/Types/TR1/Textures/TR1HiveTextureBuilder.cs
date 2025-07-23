@@ -9,11 +9,14 @@ public class TR1HiveTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
+        TR1Level hive = _control1.Read($"Resources/{TR1LevelNames.HIVE}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "hive_textures");
         CreateDefaultTests(data, TR1LevelNames.HIVE);
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
+
+        FixPassport(hive, data);
 
         return new() { data };
     }

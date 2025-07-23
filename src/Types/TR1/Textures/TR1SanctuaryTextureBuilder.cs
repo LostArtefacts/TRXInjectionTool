@@ -18,6 +18,8 @@ public class TR1SanctuaryTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateVertexShifts(sanctuary));
         data.RoomEdits.AddRange(CreateRotations());
 
+        FixPassport(sanctuary, data);
+
         return new() { data };
     }
 

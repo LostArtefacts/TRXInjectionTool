@@ -7,14 +7,17 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Textures;
 
-public class TR2ColdWarTextureBuilder : InjectionBuilder
+public class TR2ColdWarTextureBuilder : TextureBuilder
 {
     public override string ID => "coldwar_textures";
 
     public override List<InjectionData> Build()
     {
+        TR2Level level = _control2.Read($"Resources/{TR2LevelNames.COLDWAR}");
         InjectionData data = CreateBaseData();
         CreateDefaultTests(data, TR2LevelNames.COLDWAR);
+
+        FixPassport(level, data);
 
         return new() { data };
     }

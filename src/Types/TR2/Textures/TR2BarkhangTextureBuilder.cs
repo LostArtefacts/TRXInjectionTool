@@ -23,6 +23,8 @@ public class TR2BarkhangTextureBuilder : TextureBuilder
         data.MeshEdits.Add(
             FixStaticMeshPosition(barkhang.StaticMeshes, TR2Type.Architecture7, new() { X = 5 }));
 
+        FixPassport(barkhang, data);
+
         return new() { data };
     }
 

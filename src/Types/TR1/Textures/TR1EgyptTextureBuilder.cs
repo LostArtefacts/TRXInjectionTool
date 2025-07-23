@@ -20,6 +20,7 @@ public class TR1EgyptTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(FixVases(egypt));
 
         FixTransparentTextures(egypt, data);
+        FixPassport(egypt, data);
 
         return new() { data };
     }

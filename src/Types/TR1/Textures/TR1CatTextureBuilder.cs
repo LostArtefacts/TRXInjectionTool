@@ -20,6 +20,7 @@ public class TR1CatTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(FixVases(cat));
 
         FixTransparentTextures(cat, data);
+        FixPassport(cat, data);
 
         return new() { data };
     }

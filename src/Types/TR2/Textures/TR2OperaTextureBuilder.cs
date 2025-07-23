@@ -18,6 +18,8 @@ public class TR2OperaTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(opera));
         data.RoomEdits.AddRange(CreateRotations());
 
+        FixPassport(opera, data);
+
         return new() { data };
     }
 

@@ -24,6 +24,7 @@ public class TR2GymTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(gym));
         data.RoomEdits.AddRange(CreateRotations());
         ReplaceGoldIdol(data, gym);
+        FixPassport(gym, data);
 
         return new() { data };
     }

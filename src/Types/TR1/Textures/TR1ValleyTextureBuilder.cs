@@ -20,6 +20,7 @@ public class TR1ValleyTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateVertexShifts(valley));
 
         FixWolfTransparency(valley, data);
+        FixPassport(valley, data);
 
         return new() { data };
     }

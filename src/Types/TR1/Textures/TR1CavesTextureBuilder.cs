@@ -20,6 +20,7 @@ public class TR1CavesTextureBuilder : TextureBuilder
 
         FixBatTransparency(caves, data);
         FixWolfTransparency(caves, data);
+        FixPassport(caves, data);
 
         return new() { data };
     }

@@ -22,6 +22,8 @@ public class TR2BartoliTextureBuilder : TextureBuilder
         data.MeshEdits.Add(
             FixStaticMeshPosition(bartoli.StaticMeshes, TR2Type.Architecture4, new() { Z = 27 }));
 
+        FixPassport(bartoli, data);
+
         return new() { data };
     }
 

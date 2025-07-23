@@ -20,6 +20,7 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateVertexShifts(khamoon));
 
         FixTransparentTextures(khamoon, data);
+        FixPassport(khamoon, data);
 
         return new() { data };
     }

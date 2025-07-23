@@ -16,6 +16,8 @@ public class TR1GymTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(gym));
         data.RoomEdits.AddRange(CreateRotations());
 
+        FixPassport(gym, data);
+
         return new() { data };
     }
 

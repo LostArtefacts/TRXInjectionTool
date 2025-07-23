@@ -18,6 +18,7 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(atlantis));
         FixPlatformDoorArea(data, atlantis);
+        FixPassport(atlantis, data);
 
         return new() { data };
     }

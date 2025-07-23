@@ -21,6 +21,8 @@ public class TR2VeniceTextureBuilder : TextureBuilder
         data.MeshEdits.Add(
             FixStaticMeshPosition(venice.StaticMeshes, TR2Type.Architecture4, new() { Z = 27 }));
 
+        FixPassport(venice, data);
+
         return new() { data };
     }
 

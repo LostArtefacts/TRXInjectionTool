@@ -21,6 +21,8 @@ public class TR2FurnaceTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(furnace));
         data.RoomEdits.AddRange(CreateRefacings(furnace));
 
+        FixPassport(furnace, data);
+
         return new() { data };
     }
 

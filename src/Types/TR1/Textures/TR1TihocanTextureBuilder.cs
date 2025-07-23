@@ -16,6 +16,8 @@ public class TR1TihocanTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateShifts(tihocan));
 
+        FixPassport(tihocan, data);
+
         return new() { data };
     }
 

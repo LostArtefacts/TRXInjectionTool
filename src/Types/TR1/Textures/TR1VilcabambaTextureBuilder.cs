@@ -19,6 +19,7 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
 
         FixBatTransparency(vilcabamba, data);
         FixWolfTransparency(vilcabamba, data);
+        FixPassport(vilcabamba, data);
 
         return new() { data };
     }

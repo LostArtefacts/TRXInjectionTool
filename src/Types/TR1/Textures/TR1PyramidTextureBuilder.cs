@@ -18,6 +18,7 @@ public class TR1PyramidTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
 
         FixRoom25(pyramid, data);
+        FixPassport(pyramid, data);
 
         return new() { data };
     }

@@ -18,6 +18,8 @@ public class TR2VegasTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         FixTV(level, data);
 
+        FixPassport(level, data);
+
         return new() { data };
     }
 

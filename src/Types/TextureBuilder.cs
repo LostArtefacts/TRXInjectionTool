@@ -374,6 +374,69 @@ public abstract class TextureBuilder : InjectionBuilder
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
     }
 
+    protected static void FixPassport(TRLevelBase level, InjectionData data)
+    {
+        Dictionary<uint, short> typeMap;
+        if (level is TR1Level level1)
+        {
+            typeMap = new()
+            {
+                [(uint)TR1Type.PassportClosed_M_H] = -2,
+                [(uint)TR1Type.PassportOpen_M_H] = -1,
+            };
+
+            var texInfos = new[]
+            {
+                level1.ObjectTextures[level1.Models[TR1Type.PassportClosed_M_H].Meshes[0].TexturedRectangles[^1].Texture],
+                level1.ObjectTextures[level1.Models[TR1Type.PassportOpen_M_H].Meshes[1].TexturedRectangles[^1].Texture],
+            }.Distinct();
+
+            foreach (var texInfo in texInfos)
+            {
+                var texFixBounds = new Rectangle(texInfo.Bounds.X + 1, texInfo.Bounds.Y, 1, texInfo.Size.Height);
+                var img = new TRImage(level1.Images8[texInfo.Atlas].Pixels, level1.Palette)
+                    .Export(texFixBounds);
+                data.TextureOverwrites.Add(new()
+                {
+                    Page = texInfo.Atlas,
+                    X = (byte)texInfo.Bounds.X,
+                    Y = (byte)texInfo.Bounds.Y,
+                    Width = (ushort)img.Width,
+                    Height = (ushort)img.Height,
+                    Data = img.ToRGBA(),
+                });
+            }
+        }
+        else if (level is TR2Level)
+        {
+            typeMap = new()
+            {
+                [(uint)TR2Type.PassportClosed_M_H] = -2,
+                [(uint)TR2Type.PassportOpen_M_H] = -1,
+            };
+        }
+        else
+        {
+            throw new Exception();
+        }
+
+        foreach (var (type, shift) in typeMap)
+        {
+            data.MeshEdits.Add(new()
+            {
+                ModelID = type,
+                VertexEdits = new[] { 1, 2, 5, 6 }.Select(i =>
+                {
+                    return new TRVertexEdit
+                    {
+                        Index = (short)i,
+                        Change = new() { X = shift },
+                    };
+                }).ToList(),
+            });
+        }
+    }
+
     protected class TextureSource
     {
         public short Room { get; set; }

@@ -20,6 +20,7 @@ public class TR1StrongholdTextureBuilder : TextureBuilder
 
         FixRoom13(stronghold, data);
         FixHubRoom(stronghold, data);
+        FixPassport(stronghold, data);
 
         return new() { data };
     }

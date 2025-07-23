@@ -19,6 +19,7 @@ public class TR1MidasTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateShifts(midas));
 
         FixRoom13(midas, data);
+        FixPassport(midas, data);
 
         return new() { data };
     }

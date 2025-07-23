@@ -27,6 +27,8 @@ public class TR2KingdomTextureBuilder : TextureBuilder
             }
         });
 
+        FixPassport(kingdom, data);
+
         return new() { data };
     }
 }

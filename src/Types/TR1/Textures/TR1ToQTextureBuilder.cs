@@ -18,6 +18,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateShifts(toq));
 
         FixWolfTransparency(toq, data);
+        FixPassport(toq, data);
 
         return new() { data };
     }

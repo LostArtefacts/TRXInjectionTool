@@ -21,6 +21,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
 
         FixRoofTextures(data);
+        FixPassport(colosseum, data);
 
         return new() { data };
     }

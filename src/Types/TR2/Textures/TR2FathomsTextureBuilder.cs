@@ -19,6 +19,8 @@ public class TR2FathomsTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(level));
         data.RoomEdits.AddRange(CreateRotations());
 
+        FixPassport(level, data);
+
         return new() { data };
     }
 

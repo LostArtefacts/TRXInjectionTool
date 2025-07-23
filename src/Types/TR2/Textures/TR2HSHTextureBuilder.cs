@@ -22,6 +22,8 @@ public class TR2HSHTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(house));
         data.RoomEdits.AddRange(CreateRotations());
 
+        FixPassport(house, data);
+
         return new() { data };
     }
 

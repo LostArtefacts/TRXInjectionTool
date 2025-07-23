@@ -18,6 +18,7 @@ public class TR1CisternTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(cistern));
 
         FixRoom9(cistern, data);
+        FixPassport(cistern, data);
 
         return new() { data };
     }

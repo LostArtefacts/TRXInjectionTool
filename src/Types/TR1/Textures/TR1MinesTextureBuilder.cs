@@ -19,6 +19,7 @@ public class TR1MinesTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateShifts(mines));
 
         FixEnemyTextures(data);
+        FixPassport(mines, data);
 
         return new() { data };
     }

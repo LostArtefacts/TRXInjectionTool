@@ -21,6 +21,8 @@ public class TR2XianTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.RoomEdits.AddRange(CreateRotations());
 
+        FixPassport(level, data);
+
         return new() { data };
     }
 

@@ -20,6 +20,8 @@ public class TR2RigTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(level));
         FixThinWall(level, data);
 
+        FixPassport(level, data);
+
         return new() { data };
     }
 

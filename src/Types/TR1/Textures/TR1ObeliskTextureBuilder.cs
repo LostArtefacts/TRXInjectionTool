@@ -19,6 +19,7 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
 
         FixCityGaps(obelisk, data);
         FixTransparentTextures(obelisk, data);
+        FixPassport(obelisk, data);
 
         return new() { data };
     }

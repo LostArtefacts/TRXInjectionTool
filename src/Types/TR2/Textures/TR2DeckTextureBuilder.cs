@@ -21,6 +21,8 @@ public class TR2DeckTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         FixRoom80(level, data);
 
+        FixPassport(level, data);
+
         return new() { data };
     }
 
