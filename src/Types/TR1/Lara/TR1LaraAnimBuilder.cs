@@ -43,6 +43,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         SwimToHuddle = 181,
         SwimToSprawl = 182,
         SwimToMedium = 183,
+        SlideToRun = 184,
     };
 
     enum InjState : int
@@ -59,16 +60,19 @@ public class TR1LaraAnimBuilder : InjectionBuilder
 
         TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        TR3Level jungle = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
         ResetLevel(caves);
 
         TRModel tr1Lara = caves.Models[TR1Type.Lara];
         TRModel tr2Lara = wall.Models[TR2Type.Lara];
+        TRModel tr3Lara = jungle.Models[TR3Type.Lara];
         ImportTR2Jumping(tr1Lara, tr2Lara);
         ImportJumpTwist(tr1Lara, tr2Lara);
         ImportUWRoll(tr1Lara);
         ImportWading(tr1Lara, tr2Lara);
         ImportWetFeet(tr1Lara, caves);
         ImportTR2Gliding(tr1Lara, tr2Lara);
+        ImportSlideToRun(tr1Lara, tr3Lara);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);
@@ -679,6 +683,20 @@ public class TR1LaraAnimBuilder : InjectionBuilder
 
         // Not essential, but easier to read in WADTool
         responsiveGlideChange.Dispatches.Sort((d1, d2) => d1.Low.CompareTo(d2.Low));
+    }
+
+    private static void ImportSlideToRun(TRModel tr1Lara, TRModel tr3Lara)
+    {
+        TRAnimation anim = tr3Lara.Animations[246].Clone();
+        tr1Lara.Animations.Add(anim);
+        
+        anim.Commands.RemoveAll(a => a is not TRSFXCommand);
+        (anim.Commands[0] as TRSFXCommand).SoundID = (short)TR1SFX.LaraWetFeet;
+
+        TRStateChange change = tr3Lara.Animations[70].Changes.Find(c => c.StateID == 1).Clone();
+        change.StateID = (ushort)InjState.Responsive;
+        change.Dispatches[0].NextAnimation = (short)InjAnim.SlideToRun;
+        tr1Lara.Animations[70].Changes.Add(change);
     }
 
     static void ResetLevel(TR1Level level)

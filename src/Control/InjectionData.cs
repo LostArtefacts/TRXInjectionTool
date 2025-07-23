@@ -153,6 +153,11 @@ public class InjectionData
         TR2Level level = new TR2LevelReader().ReadLevel("temp.tr2");
         File.Delete("temp.tr2");
 
+        if (type == InjectionType.LaraAnims)
+        {
+            ResetLaraLevel(level);
+        }
+
         short[] sounds = Array.FindAll(level.SoundMap, s => s != -1);
         if (removeMeshData)
         {
@@ -234,6 +239,37 @@ public class InjectionData
         {
             TRColour c = level.Palette[i];
             c.Red = c.Green = c.Blue = 0;
+        }
+        level.NumMeshData = 0;
+        level.Meshes = Array.Empty<TRMesh>();
+        level.NumMeshPointers = 0;
+        level.MeshPointers = Array.Empty<uint>();
+        level.NumMeshTrees = 0;
+        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
+        level.Models[0].MeshTree = 0;
+        level.Models[0].StartingMesh = 0;
+        level.Models[0].NumMeshes = 0;
+    }
+
+    private static void ResetLaraLevel(TR2Level level)
+    {
+        level.NumMeshData = 0;
+        level.Meshes = Array.Empty<TRMesh>();
+        level.NumMeshPointers = 0;
+        level.MeshPointers = Array.Empty<uint>();
+        level.NumMeshTrees = 0;
+        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
+        level.Images8 = Array.Empty<TRTexImage8>();
+        level.Images16 = Array.Empty<TRTexImage16>();
+        level.NumImages = 0;
+        level.ObjectTextures = Array.Empty<TRObjectTexture>();
+        level.NumObjectTextures = 0;
+        for (int i = 0; i < 256; i++)
+        {
+            TRColour c = level.Palette[i];
+            c.Red = c.Green = c.Blue = 0;
+            TRColour4 c4 = level.Palette16[i];
+            c4.Unused = c4.Red = c4.Green = c4.Blue = 0;
         }
         level.NumMeshData = 0;
         level.Meshes = Array.Empty<TRMesh>();

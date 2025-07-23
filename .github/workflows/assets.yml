@@ -25,6 +25,7 @@ jobs:
         sshpass -p "$SFTP_PASS" sftp -o StrictHostKeyChecking=no $SFTP_USER@lostartefacts.dev <<EOF
         cd uploads
         put tr1-lara-anim-ext.zip
+        put tr2-lara-anim-ext.zip
         put tr1-pda.zip
         put tr2-pda.zip
         bye
