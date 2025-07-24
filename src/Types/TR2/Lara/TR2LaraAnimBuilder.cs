@@ -37,6 +37,7 @@ public class TR2LaraAnimBuilder : InjectionBuilder
         wall.Models[TR2Type.Lara] = tr2Lara;
         
         ImportSlideToRun(tr2Lara, tr3Lara);
+        ImproveTwists(tr2Lara);
 
         var data = InjectionData.Create(wall, InjectionType.LaraAnims, "lara_animations");
         ExportLaraWAD(wall);
@@ -44,10 +45,10 @@ public class TR2LaraAnimBuilder : InjectionBuilder
         return new() { data };
     }
 
-    private static void ImportSlideToRun(TRModel tr1Lara, TRModel tr3Lara)
+    private static void ImportSlideToRun(TRModel tr2Lara, TRModel tr3Lara)
     {
         TRAnimation anim = tr3Lara.Animations[246].Clone();
-        tr1Lara.Animations.Add(anim);
+        tr2Lara.Animations.Add(anim);
 
         anim.Commands.RemoveAll(a => a is not TRSFXCommand);
         (anim.Commands[0] as TRSFXCommand).SoundID = (short)TR2SFX.LaraWetFeet;
@@ -55,7 +56,18 @@ public class TR2LaraAnimBuilder : InjectionBuilder
         TRStateChange change = tr3Lara.Animations[70].Changes.Find(c => c.StateID == 1).Clone();
         change.StateID = (ushort)InjState.Responsive;
         change.Dispatches[0].NextAnimation = (short)InjAnim.SlideToRun;
-        tr1Lara.Animations[70].Changes.Add(change);
+        tr2Lara.Animations[70].Changes.Add(change);
+    }
+
+    private static void ImproveTwists(TRModel tr2Lara)
+    {
+        // Apply the TR1 UW roll fix.
+        var uwRollLevel = _control1.Read("Resources/TR1/Lara/uw_roll.phd");
+        tr2Lara.Animations[203] = uwRollLevel.Models[TR1Type.Lara].Animations[0];
+        tr2Lara.Animations[205] = uwRollLevel.Models[TR1Type.Lara].Animations[1];
+
+        tr2Lara.Animations[203].NextAnimation = 205;
+        tr2Lara.Animations[205].NextAnimation = 108;
     }
 
     private static void ExportLaraWAD(TR2Level level)
