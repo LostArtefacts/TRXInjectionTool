@@ -17,6 +17,7 @@ public class TR1ValleyFDBuilder : FDBuilder
         CreateDefaultTests(data, TR1LevelNames.VALLEY);
         FixSlopeSoftlock(valley, data);
         data.FloorEdits.AddRange(AddRoomFlags(_windyRooms, TRRoomFlag.Wind, valley.Rooms));
+        FixWaterfalls(valley, data);
 
         return new() { data };
     }
@@ -143,5 +144,23 @@ public class TR1ValleyFDBuilder : FDBuilder
             VertexIndex = mesh.Triangles[0].Vertices[1],
             VertexChange = new() { Y = 256 }
         });
+    }
+
+    private static void FixWaterfalls(TR1Level valley, InjectionData data)
+    {
+        for (ushort z = 4; z < 10; z++)
+        {
+            var trigger = GetTrigger(valley, 88, 6, z);
+            trigger.OneShot = true;
+            trigger.TrigType = FDTrigType.AntiTrigger;
+            data.FloorEdits.Add(MakeTrigger(valley, 88, 6, z, trigger));
+        }
+
+        {
+            var trigger = GetTrigger(valley, 0, 6, 1);
+            trigger.Actions.AddRange(new[] { 15, 16, 17 }
+                .Select(i => new FDActionItem { Parameter = (short)i }));
+            data.FloorEdits.Add(MakeTrigger(valley, 0, 6, 1, trigger));
+        }
     }
 }
