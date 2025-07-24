@@ -19,6 +19,7 @@ public class TR2LaraAnimBuilder : InjectionBuilder
     enum InjAnim : int
     {
         SlideToRun = 218,
+        JumpTwistContinue = 219,
     };
 
     enum InjState : int
@@ -61,13 +62,32 @@ public class TR2LaraAnimBuilder : InjectionBuilder
 
     private static void ImproveTwists(TRModel tr2Lara)
     {
-        // Apply the TR1 UW roll fix.
-        var uwRollLevel = _control1.Read("Resources/TR1/Lara/uw_roll.phd");
-        tr2Lara.Animations[203] = uwRollLevel.Models[TR1Type.Lara].Animations[0];
-        tr2Lara.Animations[205] = uwRollLevel.Models[TR1Type.Lara].Animations[1];
-
+        var twistLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
+        var twistLara = twistLevel.Models[TR1Type.Lara];
+        tr2Lara.Animations[203] = twistLara.Animations[0];
+        tr2Lara.Animations[205] = twistLara.Animations[1];
         tr2Lara.Animations[203].NextAnimation = 205;
+        tr2Lara.Animations[203].NextFrame = 1;
         tr2Lara.Animations[205].NextAnimation = 108;
+
+        tr2Lara.Animations[207] = twistLara.Animations[2];
+        tr2Lara.Animations[209] = twistLara.Animations[3];
+        tr2Lara.Animations[210] = twistLara.Animations[4];
+        tr2Lara.Animations[211] = twistLara.Animations[5];
+        tr2Lara.Animations[212] = twistLara.Animations[6];
+        tr2Lara.Animations[213] = twistLara.Animations[7];
+        tr2Lara.Animations.Add(twistLara.Animations[8]); // JumpTwistContinue
+
+        tr2Lara.Animations[207].NextAnimation = (ushort)InjAnim.JumpTwistContinue;
+        tr2Lara.Animations[209].NextAnimation = 75;
+        tr2Lara.Animations[209].NextFrame = 39;
+        tr2Lara.Animations[210].NextAnimation = 211;
+        tr2Lara.Animations[211].NextAnimation = 75;
+        tr2Lara.Animations[211].NextFrame = 39;
+        tr2Lara.Animations[212].NextAnimation = 213;
+        tr2Lara.Animations[213].NextAnimation = 77;
+        tr2Lara.Animations[213].NextFrame = 39;
+        tr2Lara.Animations[219].NextAnimation = 209;
     }
 
     private static void ExportLaraWAD(TR2Level level)

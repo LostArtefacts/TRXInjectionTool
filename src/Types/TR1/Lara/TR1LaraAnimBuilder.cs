@@ -44,6 +44,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         SwimToSprawl = 182,
         SwimToMedium = 183,
         SlideToRun = 184,
+        JumpTwistContinue = 185,
     };
 
     enum InjState : int
@@ -73,6 +74,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         ImportWetFeet(tr1Lara, caves);
         ImportTR2Gliding(tr1Lara, tr2Lara);
         ImportSlideToRun(tr1Lara, tr3Lara);
+        ImproveTwists(tr1Lara);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);
@@ -193,13 +195,14 @@ public class TR1LaraAnimBuilder : InjectionBuilder
     {
         // This is a trimmed down anim set, only the two we're interested in are present.
         // See PR 1272/1276
-        TR1Level animLevel = _control1.Read("Resources/TR1/Lara/uw_roll.phd");
+        TR1Level animLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
         TRModel tr2Lara = animLevel.Models[TR1Type.Lara];
 
         TRAnimation uwRollStart = tr2Lara.Animations[0];
         TRAnimation uwRollEnd = tr2Lara.Animations[1];
 
         uwRollStart.NextAnimation = (ushort)InjAnim.UWRollEnd;
+        uwRollStart.NextFrame = 1;
         uwRollEnd.NextAnimation = 108;
         tr1Lara.Animations.Add(uwRollStart);
         tr1Lara.Animations.Add(uwRollEnd);
@@ -227,6 +230,31 @@ public class TR1LaraAnimBuilder : InjectionBuilder
                 }
             });
         }
+    }
+
+    private static void ImproveTwists(TRModel tr2Lara)
+    {
+        var twistLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
+        var twistLara = twistLevel.Models[TR1Type.Lara];
+
+        tr2Lara.Animations[(int)InjAnim.RunJumpRollStart] = twistLara.Animations[2];
+        tr2Lara.Animations[(int)InjAnim.RunJumpRollEnd] = twistLara.Animations[3];
+        tr2Lara.Animations[(int)InjAnim.JumpFwdRollStart] = twistLara.Animations[4];
+        tr2Lara.Animations[(int)InjAnim.JumpFwdRollEnd] = twistLara.Animations[5];
+        tr2Lara.Animations[(int)InjAnim.JumpBackRollStart] = twistLara.Animations[6];
+        tr2Lara.Animations[(int)InjAnim.JumpBackRollEnd] = twistLara.Animations[7];
+        tr2Lara.Animations.Add(twistLara.Animations[8]); // JumpTwistContinue
+
+        tr2Lara.Animations[(int)InjAnim.RunJumpRollStart].NextAnimation = (ushort)InjAnim.JumpTwistContinue;
+        tr2Lara.Animations[(int)InjAnim.RunJumpRollEnd].NextAnimation = 75;
+        tr2Lara.Animations[(int)InjAnim.RunJumpRollEnd].NextFrame = 39;
+        tr2Lara.Animations[(int)InjAnim.JumpFwdRollStart].NextAnimation = (ushort)InjAnim.JumpFwdRollEnd;
+        tr2Lara.Animations[(int)InjAnim.JumpFwdRollEnd].NextAnimation = 75;
+        tr2Lara.Animations[(int)InjAnim.JumpFwdRollEnd].NextFrame = 39;
+        tr2Lara.Animations[(int)InjAnim.JumpBackRollStart].NextAnimation = (ushort)InjAnim.JumpBackRollEnd;
+        tr2Lara.Animations[(int)InjAnim.JumpBackRollEnd].NextAnimation = 77;
+        tr2Lara.Animations[(int)InjAnim.JumpBackRollEnd].NextFrame = 39;
+        tr2Lara.Animations[(int)InjAnim.JumpTwistContinue].NextAnimation = (int)InjAnim.RunJumpRollEnd;
     }
 
     static void ImportWading(TRModel tr1Lara, TRModel tr2Lara)
