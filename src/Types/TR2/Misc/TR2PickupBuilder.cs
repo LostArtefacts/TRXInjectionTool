@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using TRDataControl;
 using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl.Helpers;
@@ -9,7 +10,7 @@ using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types.TR2.Misc;
 
-public class TR2PickupScaleBuilder : InjectionBuilder
+public class TR2PickupBuilder : InjectionBuilder
 {
     private class Target
     {
@@ -63,6 +64,12 @@ public class TR2PickupScaleBuilder : InjectionBuilder
         {
             Level = TR2LevelNames.GW,
             BinName = "common_pickup_meshes",
+            Targets = new(),
+        },
+        new()
+        {
+            Level = TR2LevelNames.COLDWAR,
+            BinName = "common_pickup_meshes_gm",
             Targets = new(),
         },
         new()
@@ -181,7 +188,7 @@ public class TR2PickupScaleBuilder : InjectionBuilder
 
             _control2.Write(level, MakeOutputPath(TRGameVersion.TR2, $"Debug/{target.Level}"));
 
-            InjectionData data = CreateData(level, target.BinName, typeTargets.Select(k => k.Key));
+            InjectionData data = CreateData(level, target.Level, target.BinName, typeTargets.Select(k => k.Key));
             result.Add(data);
         }
 
@@ -269,9 +276,32 @@ public class TR2PickupScaleBuilder : InjectionBuilder
         }
     }
 
-    private static InjectionData CreateData(TR2Level level, string binName, IEnumerable<TR2Type> types)
+    private static InjectionData CreateData(TR2Level level, string levelName, string binName, IEnumerable<TR2Type> types)
     {
-        TRDictionary<TR2Type, TRModel> models = new();
+        // Always fix meds
+        level.Models.Remove(TR2Type.SmallMed_M_H);
+        level.Models.Remove(TR2Type.LargeMed_M_H);
+        var importer = new TR2DataImporter
+        {
+            Level = level,
+            DataFolder = "Resources/TR2/Objects",
+            TypesToImport = new()
+            {
+                TR2Type.SmallMed_M_H,
+                TR2Type.LargeMed_M_H,
+            },
+        };
+        if (TR2LevelNames.AsListGold.Contains(levelName))
+        {
+            importer.DataFolder += "/GM";
+        }
+        importer.Import();
+
+        TRDictionary<TR2Type, TRModel> models = new()
+        {
+            [TR2Type.SmallMed_M_H] = level.Models[TR2Type.SmallMed_M_H],
+            [TR2Type.LargeMed_M_H] = level.Models[TR2Type.LargeMed_M_H],
+        };
         foreach (TR2Type type in types)
         {
             models[type] = level.Models[type];
