@@ -9,13 +9,17 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Lara;
 
-public class TR1LaraAnimBuilder : InjectionBuilder
+public class TR1LaraAnimBuilder : LaraBuilder
 {
     private static readonly string _wadZipPath = "../../Resources/Published/tr1-lara-anim-ext.zip";
     private static readonly DateTimeOffset _wadZipPlaceholderDate
         = new(new DateTime(2025, 5, 15, 11, 0, 0), new TimeSpan());
 
     public override string ID => "tr1-lara-anims";
+    protected override short JumpSFX => (short)TR1SFX.LaraJump;
+    protected override short DryFeetSFX => (short)TR1SFX.LaraFeet;
+    protected override short WetFeetSFX => (short)TR1SFX.LaraWetFeet;
+    protected override short LandSFX => (short)TR1SFX.LaraLand;
 
     enum InjAnim : int
     {
@@ -45,6 +49,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         SwimToMedium = 183,
         SlideToRun = 184,
         JumpTwistContinue = 185,
+        JumpNeutralRoll = 186,
     };
 
     enum InjState : int
@@ -53,6 +58,7 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         UWRoll = 58,
         Wade = 59,
         Responsive = 60,
+        NeutralRoll = 61,
     };
 
     public override List<InjectionData> Build()
@@ -75,6 +81,8 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         ImportTR2Gliding(tr1Lara, tr2Lara);
         ImportSlideToRun(tr1Lara, tr3Lara);
         ImproveTwists(tr1Lara);
+
+        ImportNeutralTwist(tr1Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll, (short)InjState.Responsive);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);

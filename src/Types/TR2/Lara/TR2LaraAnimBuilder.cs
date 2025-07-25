@@ -8,23 +8,29 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Lara;
 
-public class TR2LaraAnimBuilder : InjectionBuilder
+public class TR2LaraAnimBuilder : LaraBuilder
 {
     private static readonly string _wadZipPath = "../../Resources/Published/tr2-lara-anim-ext.zip";
     private static readonly DateTimeOffset _wadZipPlaceholderDate
         = new(new DateTime(2025, 7, 23, 19, 0, 0), new TimeSpan());
 
     public override string ID => "tr2-lara-anims";
+    protected override short JumpSFX => (short)TR2SFX.LaraJump;
+    protected override short DryFeetSFX => (short)TR2SFX.LaraFeet;
+    protected override short WetFeetSFX => (short)TR2SFX.LaraWetFeet;
+    protected override short LandSFX => (short)TR2SFX.LaraLand;
 
     enum InjAnim : int
     {
         SlideToRun = 218,
         JumpTwistContinue = 219,
+        JumpNeutralRoll = 220,
     };
 
     enum InjState : int
     {
         Responsive = 71,
+        NeutralRoll = 72,
     };
 
     public override List<InjectionData> Build()
@@ -39,6 +45,7 @@ public class TR2LaraAnimBuilder : InjectionBuilder
         
         ImportSlideToRun(tr2Lara, tr3Lara);
         ImproveTwists(tr2Lara);
+        ImportNeutralTwist(tr2Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll, (short)InjState.Responsive);
 
         var data = InjectionData.Create(wall, InjectionType.LaraAnims, "lara_animations");
         ExportLaraWAD(wall);
