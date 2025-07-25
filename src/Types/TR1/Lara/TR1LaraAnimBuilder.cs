@@ -435,7 +435,14 @@ public class TR1LaraAnimBuilder : InjectionBuilder
         level.SoundEffects[TR1SFX.LaraWade] = wade1;
 
         // Add the wet feet commands wherever there are regular feet commands.
-        foreach (TRAnimation anim in tr1Lara.Animations)
+        var excludeFeetAnims = new List<TRAnimation>
+        {
+            tr1Lara.Animations[42], // climb 3-click
+            tr1Lara.Animations[50], // climb 2-click
+            tr1Lara.Animations[51], // climb 2-click-end
+            tr1Lara.Animations[97], // hang-to-climb-on
+        };
+        foreach (TRAnimation anim in tr1Lara.Animations.Except(excludeFeetAnims))
         {
             List<TRSFXCommand> feetCmds = anim.Commands
                 .FindAll(c => c is TRSFXCommand s && s.SoundID == 0)
