@@ -34,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resources\pose.phd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\TR1\1996-07-02.phd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -48,3 +48,10 @@ Run the following to generate the above zip files.
 - `TRXInjectionTool.exe tr1-lara-anims`
 - `TRXInjectionTool.exe tr1-pda`
 - `TRXInjectionTool.exe tr2-pda`
+
+# Poses
+
+Additional poses can be added to `Resources/pose.phd` using WadTool and then the
+following should be run to generate the JSON file for the games.
+
+- `TRXInjectionTool.exe pose`
