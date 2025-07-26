@@ -12,10 +12,8 @@ public class TR1VilcabambaItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "vilcabamba_itemrots");
         CreateDefaultTests(data, TR1LevelNames.VILCABAMBA);
 
-        data.ItemEdits = new()
-        {
-            SetAngle(vilcabamba, 4, -16384),
-        };
+        data.ItemEdits.Add(SetAngle(vilcabamba, 4, -16384));
+        data.ItemEdits.Add(SetAngle(vilcabamba, 88, -16384));
 
         return new() { data };
     }

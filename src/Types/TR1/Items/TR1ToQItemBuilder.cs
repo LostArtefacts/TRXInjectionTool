@@ -12,11 +12,9 @@ public class TR1ToQItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "qualopec_itemrots");
         CreateDefaultTests(data, TR1LevelNames.QUALOPEC);
 
-        data.ItemEdits = new()
-        {
-            SetAngle(qualopec, 20, -16384),
-            SetAngle(qualopec, 28, 16384),
-        };
+        data.ItemEdits.Add(SetAngle(qualopec, 20, -16384));
+        data.ItemEdits.Add(SetAngle(qualopec, 28, 16384));
+        data.ItemEdits.Add(SetAngle(qualopec, 29, 16384));
 
         return new() { data };
     }
