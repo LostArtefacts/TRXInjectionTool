@@ -138,7 +138,7 @@ public class TR2GymTextureBuilder : TextureBuilder
         level.SoundEffects.Clear();
 
         FixHomeWindows(level, TR2LevelNames.ASSAULT);
-        FixHomeStatue(level);
+        FixHomeStatues(level);
         ImportGoldIdol(level);
 
         InjectionData data = InjectionData.Create(level, InjectionType.TextureFix, ID);

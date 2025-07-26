@@ -327,13 +327,17 @@ public abstract class TextureBuilder : InjectionBuilder
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
     }
 
-    protected static void FixHomeStatue(TR2Level level)
+    protected static void FixHomeStatues(TR2Level level)
     {
         TR2Level gym = _control2.Read($"Resources/{TR2LevelNames.ASSAULT}");
-        var statue = gym.StaticMeshes[TR2Type.SceneryBase + 16];
+        var statues = new List<TRStaticMesh>
+        {
+            gym.StaticMeshes[TR2Type.SceneryBase + 16],
+            gym.StaticMeshes[TR2Type.SceneryBase + 38],
+        };
 
         var packer = new TR2TexturePacker(gym);
-        var regions = packer.GetMeshRegions(new[] { statue.Mesh })
+        var regions = packer.GetMeshRegions(statues.Select(s => s.Mesh))
             .Values.SelectMany(v => v).ToList();
         var originalInfos = gym.ObjectTextures.ToList();
 
@@ -359,17 +363,25 @@ public abstract class TextureBuilder : InjectionBuilder
         packer.AddRectangles(regions);
         packer.Pack(true);
 
-        level.StaticMeshes[TR2Type.SceneryBase + 16] = statue;
+        level.StaticMeshes[TR2Type.SceneryBase + 16] = statues[0];
+        level.StaticMeshes[TR2Type.SceneryBase + 38] = statues[1];
         level.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
         
-        statue.Mesh.TexturedFaces.ToList()
-            .ForEach(f =>
+        statues.SelectMany(s => s.Mesh.TexturedFaces)
+            .ToList().ForEach(f =>
             {
                 f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
             });
-        statue.Mesh.ColouredRectangles.ForEach(f => f.Texture = (ushort)(level.ObjectTextures.Count - 1));
-        statue.Mesh.TexturedRectangles.AddRange(statue.Mesh.ColouredRectangles);
-        statue.Mesh.ColouredRectangles.Clear();
+        statues[0].Mesh.ColouredRectangles.ForEach(f => f.Texture = (ushort)(level.ObjectTextures.Count - 1));
+        statues[0].Mesh.TexturedRectangles.AddRange(statues[0].Mesh.ColouredRectangles);
+        statues[0].Mesh.ColouredRectangles.Clear();
+
+        statues[1].Mesh.TexturedRectangles.Add(new()
+        {
+            Type = TRFaceType.Rectangle,
+            Texture = statues[1].Mesh.TexturedRectangles[11].Texture,
+            Vertices = new() { 20, 23, 22, 21 }
+        });
 
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
     }

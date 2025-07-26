@@ -1,4 +1,6 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRImageControl;
+using TRImageControl.Packing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -7,12 +9,15 @@ namespace TRXInjectionTool.Types.TR1.Textures;
 
 public class TR1VilcabambaTextureBuilder : TextureBuilder
 {
+    public override string ID => "vilcabamba_textures";
+
     public override List<InjectionData> Build()
     {
         TR1Level vilcabamba = _control1.Read($"Resources/{TR1LevelNames.VILCABAMBA}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "vilcabamba_textures");
-        CreateDefaultTests(data, TR1LevelNames.VILCABAMBA);
+        var data = CreateBaseData();
 
+        data.RoomEdits.AddRange(CreateVertexShifts(vilcabamba));
+        data.RoomEdits.AddRange(CreateShifts(vilcabamba));
         data.RoomEdits.AddRange(CreateFillers(vilcabamba));
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
@@ -22,6 +27,81 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
         FixPassport(vilcabamba, data);
 
         return new() { data };
+    }
+
+    private static List<TRRoomVertexMove> CreateVertexShifts(TR1Level level)
+    {
+        return new()
+        {
+            new()
+            {
+                RoomIndex = 41,
+                VertexIndex = level.Rooms[41].Mesh.Rectangles[73].Vertices[1],
+                VertexChange = new() { Y = -512 }
+            },
+            new()
+            {
+                RoomIndex = 41,
+                VertexIndex = level.Rooms[41].Mesh.Rectangles[73].Vertices[2],
+                VertexChange = new() { Y = -512 }
+            },
+            new()
+            {
+                RoomIndex = 36,
+                VertexIndex = level.Rooms[36].Mesh.Rectangles[187].Vertices[0],
+                VertexChange = new() { Y = -512 }
+            },
+            new()
+            {
+                RoomIndex = 36,
+                VertexIndex = level.Rooms[36].Mesh.Rectangles[187].Vertices[0],
+                VertexChange = new(),
+                ShadeChange = 2048,
+            },
+        };
+    }
+
+    private static List<TRRoomTextureEdit> CreateShifts(TR1Level level)
+    {
+        var vtx = level.Rooms[36].Mesh.Vertices[level.Rooms[36].Mesh.Rectangles[187].Vertices[1]];
+        vtx.Vertex.Y -= 512;
+
+        return new()
+        {
+            new TRRoomVertexCreate
+            {
+                RoomIndex = 36,
+                Vertex = vtx,
+            },
+            new TRRoomTextureMove
+            {
+                RoomIndex = 36,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                TargetIndex = 187,
+                VertexRemap = new()
+                {
+                    new()
+                    {
+                        Index = 1,
+                        NewVertexIndex = (ushort)level.Rooms[36].Mesh.Vertices.Count,
+                    },
+                }
+            },
+            new TRRoomTextureMove
+            {
+                RoomIndex = 36,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                TargetIndex = 185,
+                VertexRemap = new()
+                {
+                    new()
+                    {
+                        Index = 0,
+                        NewVertexIndex = (ushort)level.Rooms[36].Mesh.Vertices.Count,
+                    },
+                }
+            }
+        };
     }
 
     private static List<TRRoomTextureCreate> CreateFillers(TR1Level vilcabamba)
@@ -55,6 +135,32 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
                     vilcabamba.Rooms[21].Mesh.Rectangles[5].Vertices[0],
                 },
             },
+            new()
+            {
+                RoomIndex = 36,
+                FaceType = TRMeshFaceType.TexturedTriangle,
+                SourceRoom = GetSource(vilcabamba, TRMeshFaceType.TexturedTriangle, 98).Room,
+                SourceIndex = GetSource(vilcabamba, TRMeshFaceType.TexturedTriangle, 98).Face,
+                Vertices = new()
+                {
+                    vilcabamba.Rooms[36].Mesh.Rectangles[187].Vertices[1],
+                    vilcabamba.Rooms[36].Mesh.Rectangles[187].Vertices[2],
+                    (ushort)vilcabamba.Rooms[36].Mesh.Vertices.Count,                    
+                },
+            },
+            new()
+            {
+                RoomIndex = 36,
+                FaceType = TRMeshFaceType.TexturedTriangle,
+                SourceRoom = GetSource(vilcabamba, TRMeshFaceType.TexturedTriangle, 76).Room,
+                SourceIndex = GetSource(vilcabamba, TRMeshFaceType.TexturedTriangle, 76).Face,
+                Vertices = new()
+                {
+                    (ushort)vilcabamba.Rooms[36].Mesh.Vertices.Count,
+                    vilcabamba.Rooms[36].Mesh.Rectangles[185].Vertices[3],
+                    vilcabamba.Rooms[36].Mesh.Rectangles[185].Vertices[0],                    
+                },
+            },
         };
     }
 
@@ -82,5 +188,43 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
             Rotate(26, TRMeshFaceType.TexturedTriangle, 0, 1),
             Rotate(73, TRMeshFaceType.TexturedQuad, 3, 3),
         };
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.VILCABAMBA}");
+        var statue = level.StaticMeshes[TR1Type.SceneryBase + 30];
+
+        var packer = new TR1TexturePacker(level);
+        var regions = packer.GetMeshRegions(new[] { statue.Mesh })
+            .Values.SelectMany(v => v);
+        var originalInfos = level.ObjectTextures.ToList();
+        ResetLevel(level, 1);
+
+        packer = new(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        level.StaticMeshes[TR1Type.SceneryBase + 30] = statue;
+        level.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        statue.Mesh.TexturedFaces.ToList()
+            .ForEach(f =>
+            {
+                f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+
+        var p = new List<ushort> {11,15,17,18 };
+        var f = statue.Mesh.TexturedRectangles.FindIndex(v => v.Vertices.All(p.Contains));
+        statue.Mesh.TexturedRectangles.Add(new()
+        {
+            Type = TRFaceType.Rectangle,
+            Texture = statue.Mesh.TexturedRectangles[9].Texture,
+            Vertices = new() { 20, 23, 22, 21 }
+        });
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR1LevelNames.VILCABAMBA);
+
+        return data;
     }
 }

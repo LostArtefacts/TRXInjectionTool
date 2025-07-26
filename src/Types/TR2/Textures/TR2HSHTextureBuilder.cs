@@ -219,7 +219,7 @@ public class TR2HSHTextureBuilder : TextureBuilder
 
         FixHomeWindows(level, TR2LevelNames.HOME);
         FixToilets(level, TR2LevelNames.HOME);
-        FixHomeStatue(level);
+        FixHomeStatues(level);
 
         InjectionData data = InjectionData.Create(level, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR2LevelNames.HOME);
