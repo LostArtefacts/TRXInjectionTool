@@ -50,6 +50,8 @@ public class TR1LaraAnimBuilder : LaraBuilder
         SlideToRun = 184,
         JumpTwistContinue = 185,
         JumpNeutralRoll = 186,
+        ControlledDrop = 187,
+        ControlledDropContinue = 188,
     };
 
     enum InjState : int
@@ -81,8 +83,8 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportTR2Gliding(tr1Lara, tr2Lara);
         ImportSlideToRun(tr1Lara, tr3Lara);
         ImproveTwists(tr1Lara);
-
         ImportNeutralTwist(tr1Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll, (short)InjState.Responsive);
+        ImportControlledDrop(tr1Lara, (short)InjAnim.ControlledDropContinue);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);

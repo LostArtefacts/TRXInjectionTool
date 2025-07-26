@@ -124,4 +124,17 @@ public abstract class LaraBuilder : InjectionBuilder
             }
         });
     }
+
+    protected static void ImportControlledDrop(TRModel lara, short continueAnimID)
+    {
+        var twistLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
+        var twistLara = twistLevel.Models[TR1Type.Lara];
+        var startAnim = twistLara.Animations[9];
+        var endAnim = twistLara.Animations[10];
+
+        lara.Animations.Add(startAnim);
+        lara.Animations.Add(endAnim);
+        startAnim.NextAnimation = (ushort)continueAnimID;
+        endAnim.NextAnimation = 95;
+    }
 }
