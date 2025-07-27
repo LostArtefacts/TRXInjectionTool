@@ -144,6 +144,9 @@ public class TR2GymTextureBuilder : TextureBuilder
 
         InjectionData data = InjectionData.Create(level, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR2LevelNames.ASSAULT);
+
+        FixPushButton(data);
+
         return data;
     }
 

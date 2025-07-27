@@ -21,6 +21,7 @@ public class TR2RigTextureBuilder : TextureBuilder
         FixThinWall(level, data);
 
         FixPassport(level, data);
+        FixPushButton(data);
 
         return new() { data };
     }

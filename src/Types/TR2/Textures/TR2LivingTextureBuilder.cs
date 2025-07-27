@@ -18,6 +18,7 @@ public class TR2LivingTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(level));
 
         FixPassport(level, data);
+        FixPushButton(data);
 
         return new() { data };
     }

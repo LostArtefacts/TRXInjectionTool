@@ -22,6 +22,7 @@ public class TR2XianTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
 
         FixPassport(level, data);
+        FixPushButton(data);
 
         return new() { data };
     }

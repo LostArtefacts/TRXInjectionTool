@@ -32,3 +32,42 @@ public class TRFrameRotEdit
         return (short)(((y & 0x003F) << 10) | (z & 0x03FF));
     }
 }
+
+public class TRFrameReplacement
+{
+    public uint ModelID { get; set; }
+    public Dictionary<int, List<ushort>> Frames { get; set; } = new();
+
+    public void Serialize(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write((int)ModelID, TRObjectType.Game, version);
+        writer.Write(Frames.Count);
+        foreach (var (animID, frames) in Frames)
+        {
+            writer.Write(animID);
+            writer.Write(frames.Count);
+            writer.Write(frames);
+        }
+    }
+
+    public static IEnumerable<TRFrameReplacement> CreateFrom(TR2Level level)
+    {
+        var tempData = InjectionData.Create(level, InjectionType.General, string.Empty);
+        foreach (var (type, _) in level.Models)
+        {
+            var replacer = new TRFrameReplacement
+            {
+                ModelID = (uint)type,
+            };
+            for (int i = 0; i < tempData.Animations.Count; i++)
+            {
+                var offset = (int)(tempData.Animations[i].FrameOffset / 2);
+                var nextOffset = i == tempData.Animations.Count - 1
+                    ? tempData.AnimFrames.Count
+                    : (int)(tempData.Animations[i + 1].FrameOffset / 2);
+                replacer.Frames[i] = tempData.AnimFrames.GetRange(offset, nextOffset - offset);
+            }
+            yield return replacer;
+        }
+    }
+}

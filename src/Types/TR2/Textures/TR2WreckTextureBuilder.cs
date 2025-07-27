@@ -21,6 +21,7 @@ public class TR2WreckTextureBuilder : TextureBuilder
 
         FixTransparentPixels(level, data, level.Rooms[31].Mesh.Rectangles[23], Color.FromArgb(189, 222, 230));
         FixPassport(level, data);
+        FixPushButton(data);
 
         return new() { data };
     }

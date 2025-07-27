@@ -255,6 +255,9 @@ public static class InjectionIO
         blockCount += WriteBlock(BlockType.FrameEdits, data.FrameEdits.Count, writer,
             s => data.FrameEdits.ForEach(f => f.Serialize(s, data.GameVersion)));
 
+        blockCount += WriteBlock(BlockType.FrameReplace, data.FrameReplacements.Count, writer,
+            s => data.FrameReplacements.ForEach(f => f.Serialize(s, data.GameVersion)));
+
         blockCount += WriteBlock(BlockType.AnimCmdEdits, data.AnimCmdEdits.Count, writer,
             s => data.AnimCmdEdits.ForEach(c => c.Serialize(s, data.GameVersion)));
 

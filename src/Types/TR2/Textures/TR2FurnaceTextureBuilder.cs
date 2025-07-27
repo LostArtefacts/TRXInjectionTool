@@ -22,6 +22,7 @@ public class TR2FurnaceTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(furnace));
 
         FixPassport(furnace, data);
+        FixPushButton(data);
 
         return new() { data };
     }

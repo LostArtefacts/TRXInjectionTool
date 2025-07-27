@@ -63,4 +63,5 @@ public enum BlockType
     StaticObjects   = 29,
     CinematicFrames = 30,
     ObjectTypeEdits = 31,
+    FrameReplace    = 32,
 }

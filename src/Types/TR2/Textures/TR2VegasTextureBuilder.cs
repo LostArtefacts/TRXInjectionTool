@@ -19,6 +19,7 @@ public class TR2VegasTextureBuilder : TextureBuilder
         FixTV(level, data);
 
         FixPassport(level, data);
+        FixPushButton(data);
 
         return new() { data };
     }

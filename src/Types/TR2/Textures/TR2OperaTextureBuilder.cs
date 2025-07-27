@@ -19,6 +19,7 @@ public class TR2OperaTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
 
         FixPassport(opera, data);
+        FixPushButton(data);
 
         return new() { data };
     }

@@ -39,6 +39,7 @@ public class InjectionData
     public List<TRVisPortalEdit> VisPortalEdits { get; set; } = new();
     public List<TRItemEdit> ItemEdits { get; set; } = new();
     public List<TRFrameRotEdit> FrameEdits { get; set; } = new();
+    public List<TRFrameReplacement> FrameReplacements { get; set; } = new();
     public List<TRAnimCmdEdit> AnimCmdEdits { get; set; } = new();
     public List<TRCameraEdit> CameraEdits { get; set; } = new();
     public List<TRSpriteEdit> SpriteEdits { get; set; } = new();

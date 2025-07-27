@@ -22,6 +22,7 @@ public class TR2VeniceTextureBuilder : TextureBuilder
             FixStaticMeshPosition(venice.StaticMeshes, TR2Type.Architecture4, new() { Z = 27 }));
 
         FixPassport(venice, data);
+        FixPushButton(data);
 
         return new() { data };
     }

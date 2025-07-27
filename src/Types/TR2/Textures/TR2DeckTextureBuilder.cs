@@ -22,6 +22,7 @@ public class TR2DeckTextureBuilder : TextureBuilder
         FixRoom80(level, data);
 
         FixPassport(level, data);
+        FixPushButton(data);
 
         return new() { data };
     }

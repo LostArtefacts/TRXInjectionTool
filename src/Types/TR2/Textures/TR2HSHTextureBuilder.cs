@@ -23,6 +23,7 @@ public class TR2HSHTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
 
         FixPassport(house, data);
+        FixPushButton(data);
 
         return new() { data };
     }
