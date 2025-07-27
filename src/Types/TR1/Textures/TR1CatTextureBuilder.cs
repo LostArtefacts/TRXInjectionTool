@@ -8,16 +8,18 @@ namespace TRXInjectionTool.Types.TR1.Textures;
 
 public class TR1CatTextureBuilder : TextureBuilder
 {
+    public override string ID => "cat_textures";
+
     public override List<InjectionData> Build()
     {
         TR1Level cat = _control1.Read($"Resources/{TR1LevelNames.CAT}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "cat_textures");
-        CreateDefaultTests(data, TR1LevelNames.CAT);
+        InjectionData data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateFillers(cat));
         data.RoomEdits.AddRange(CreateRefacings(cat));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(FixVases(cat));
+        data.RoomEdits.AddRange(FixCatPositions(cat));
 
         FixTransparentTextures(cat, data);
         FixPassport(cat, data);
@@ -108,11 +110,43 @@ public class TR1CatTextureBuilder : TextureBuilder
             }));
     }
 
+    private static IEnumerable<TRRoomStatic3DEdit> FixCatPositions(TR1Level cat)
+    {
+        var map = new Dictionary<short, short>
+        {
+            [6] = 0,
+            [23] = 0,
+        };
+        foreach (var (room, mesh) in map)
+        {
+            cat.Rooms[room].StaticMeshes[mesh].Y += 128;
+        }
+
+        return map.Select(kvp => new TRRoomStatic3DEdit
+        {
+            RoomIndex = kvp.Key,
+            MeshIndex = kvp.Value,
+            StaticMesh = cat.Rooms[kvp.Key].StaticMeshes[kvp.Value],
+        });
+    }
+
     private static void FixTransparentTextures(TR1Level cat, InjectionData data)
     {
         FixTransparentPixels(cat, data,
             cat.Rooms[2].Mesh.Rectangles[128], Color.FromArgb(188, 140, 64));
         FixTransparentPixels(cat, data,
             cat.Rooms[7].Mesh.Rectangles[19], Color.FromArgb(188, 140, 64));
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.CAT}");
+        ResetLevel(level, 1);
+        FixCatStatue(level);
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR1LevelNames.CAT);
+
+        return data;
     }
 }

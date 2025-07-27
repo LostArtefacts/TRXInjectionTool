@@ -386,6 +386,107 @@ public abstract class TextureBuilder : InjectionBuilder
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
     }
 
+    protected static void FixCatStatue(TRLevelBase level)
+    {
+        var khamoon = _control1.Read($"Resources/{TR1LevelNames.KHAMOON}");
+
+        var statue = khamoon.StaticMeshes[TR1Type.SceneryBase + 31];
+        var max = statue.Mesh.Vertices.Max(v => v.Y);
+        statue.Mesh.Vertices.ForEach(v => v.Y -= max);
+        statue.VisibilityBox.MaxX -= 64;
+        statue.VisibilityBox.MinX -= 64;
+        statue.CollisionBox.MaxX -= 64;
+        statue.CollisionBox.MinX -= 64;
+
+        new[] { 66, 81, 80, 62, 61, 79 }
+            .ToList().ForEach(v => statue.Mesh.Vertices[v].Y = 0);
+        
+        var vert = statue.Mesh.Vertices[65].Clone();
+        vert.Y = 0;
+        statue.Mesh.Vertices[84] = vert;
+
+        var verts = new List<List<ushort>>
+        {
+            new() { 65, 82, 67 },
+            new() { 65, 64, 86 },
+            new() { 65, 86, 82 },
+            new() { 79, 84, 65 },
+            new() { 65, 84, 64 },
+
+            new() { 70, 85, 72 },
+            new() { 70, 72, 71 },
+
+            new() { 66, 65, 64 },
+            new() { 65, 63, 64 },
+
+            new() { 58, 55, 39 },
+            new() { 55, 59, 39 },
+
+            new() { 60, 56, 40 },
+            new() { 56, 57, 40 },
+
+            new() { 73, 40, 76 },
+            new() { 76, 78, 73 },
+        };
+        statue.Mesh.TexturedTriangles.AddRange(verts.Select(v =>
+            new TRMeshFace
+            {
+                Type = TRFaceType.Triangle,
+                Texture = statue.Mesh.TexturedRectangles[55].Texture,
+                Vertices = v,
+            }));
+
+        statue.Mesh.TexturedTriangles[39].Texture = statue.Mesh.TexturedTriangles[40].Texture
+            = statue.Mesh.TexturedRectangles[43].Texture;
+        statue.Mesh.TexturedTriangles[41].Texture = statue.Mesh.TexturedTriangles[42].Texture
+            = statue.Mesh.TexturedRectangles[44].Texture;
+        statue.Mesh.TexturedTriangles[43].Texture = statue.Mesh.TexturedTriangles[44].Texture
+            = statue.Mesh.TexturedRectangles[52].Texture;
+
+        statue.Mesh.TexturedTriangles[24].Vertices = new() { 39, 75, 65 };
+        statue.Mesh.TexturedTriangles[27].Vertices = new() { 80, 62, 78 };
+        statue.Mesh.TexturedTriangles[28].Vertices = new() { 73, 78, 62 };
+        statue.Mesh.TexturedTriangles[29].Vertices = new() { 83, 85, 70 };
+        statue.Mesh.TexturedRectangles[48].Vertices = new() { 63, 68, 69, 64 };
+        statue.Mesh.TexturedRectangles[49].Vertices = new() { 68, 71, 72, 69 };
+
+        new[] { 43, 44, 45, 52, 55, 58 }
+            .OrderByDescending(i => i)
+            .ToList().ForEach(i => statue.Mesh.TexturedRectangles.RemoveAt(i));
+
+        var packer = new TR1TexturePacker(khamoon);
+        var regions = packer.GetMeshRegions(new[] { statue.Mesh })
+            .Values.SelectMany(v => v);
+        var originalInfos = khamoon.ObjectTextures.ToList();
+
+        if (level is TR1Level level1)
+        {
+            var levelPacker = new TR1TexturePacker(level1);
+            levelPacker.AddRectangles(regions);
+            levelPacker.Pack(true);
+            level1.StaticMeshes[TR1Type.SceneryBase + 31] = statue;
+        }
+        else if (level is TR2Level level2)
+        {
+            var levelPacker = new TR2TexturePacker(level2);
+            levelPacker.AddRectangles(regions);
+            levelPacker.Pack(true);
+            level2.StaticMeshes[TR2Type.SceneryBase + 37] = statue;
+            GenerateImages8(level2, level2.Palette.Select(c => c.ToTR1Color()).ToList());
+        }
+        else
+        {
+            throw new Exception();
+        }
+
+        level.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        statue.Mesh.TexturedFaces
+            .ToList().ForEach(f =>
+            {
+                f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+    }
+
     protected static void FixPassport(TRLevelBase level, InjectionData data)
     {
         Dictionary<uint, short> typeMap;

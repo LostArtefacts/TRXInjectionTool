@@ -139,6 +139,7 @@ public class TR2GymTextureBuilder : TextureBuilder
 
         FixHomeWindows(level, TR2LevelNames.ASSAULT);
         FixHomeStatues(level);
+        FixCatStatue(level);
         ImportGoldIdol(level);
 
         InjectionData data = InjectionData.Create(level, InjectionType.TextureFix, ID);

@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -8,11 +9,12 @@ namespace TRXInjectionTool.Types.TR1.Textures;
 
 public class TR1KhamoonTextureBuilder : TextureBuilder
 {
+    public override string ID => "khamoon_textures";
+
     public override List<InjectionData> Build()
     {
         TR1Level khamoon = _control1.Read($"Resources/{TR1LevelNames.KHAMOON}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "khamoon_textures");
-        CreateDefaultTests(data, TR1LevelNames.KHAMOON);
+        InjectionData data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateFillers(khamoon));
         data.RoomEdits.AddRange(CreateRefacings());
@@ -114,5 +116,17 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
             khamoon.Rooms[20].Mesh.Rectangles[77], Color.FromArgb(188, 140, 64));
         FixTransparentPixels(khamoon, data,
             khamoon.Rooms[20].Mesh.Rectangles[78], Color.FromArgb(188, 140, 64));
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.KHAMOON}");
+        ResetLevel(level, 1);
+        FixCatStatue(level);
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR1LevelNames.KHAMOON);
+
+        return data;
     }
 }

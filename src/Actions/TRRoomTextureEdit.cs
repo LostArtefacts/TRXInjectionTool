@@ -15,6 +15,7 @@ public abstract class TRRoomTextureEdit
         AddVertex,
         AddSprite,
         AddStatic3D,
+        EditStatic3D,
     }
 
     public abstract TRRoomTextureFixType FixType { get; }
@@ -168,6 +169,23 @@ public class TRRoomStatic3DCreate : TRRoomTextureEdit
         writer.Write(StaticMesh.Angle);
         writer.Write(StaticMesh.Intensity);
         writer.Write((ushort)ID);
+    }
+}
+
+public class TRRoomStatic3DEdit : TRRoomTextureEdit
+{
+    public override TRRoomTextureFixType FixType => TRRoomTextureFixType.EditStatic3D;
+    public int MeshIndex { get; set; }
+    public TR1RoomStaticMesh StaticMesh { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer)
+    {
+        writer.Write(MeshIndex);
+        writer.Write(StaticMesh.X);
+        writer.Write(StaticMesh.Y);
+        writer.Write(StaticMesh.Z);
+        writer.Write(StaticMesh.Angle);
+        writer.Write(StaticMesh.Intensity);
     }
 }
 

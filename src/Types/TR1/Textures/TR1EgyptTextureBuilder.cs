@@ -8,11 +8,12 @@ namespace TRXInjectionTool.Types.TR1.Textures;
 
 public class TR1EgyptTextureBuilder : TextureBuilder
 {
+    public override string ID => "egypt_textures";
+
     public override List<InjectionData> Build()
     {
         TR1Level egypt = _control1.Read($"Resources/{TR1LevelNames.EGYPT}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, "egypt_textures");
-        CreateDefaultTests(data, TR1LevelNames.EGYPT);
+        InjectionData data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
@@ -101,5 +102,17 @@ public class TR1EgyptTextureBuilder : TextureBuilder
             egypt.Rooms[25].Mesh.Rectangles[32], Color.FromArgb(188, 140, 64));
         FixTransparentPixels(egypt, data,
             egypt.Rooms[39].Mesh.Rectangles[125], Color.FromArgb(188, 140, 64));
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.EGYPT}");
+        ResetLevel(level, 1);
+        FixCatStatue(level);
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR1LevelNames.EGYPT);
+
+        return data;
     }
 }
