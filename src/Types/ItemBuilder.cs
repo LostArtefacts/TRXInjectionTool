@@ -60,6 +60,20 @@ public abstract class ItemBuilder : InjectionBuilder
         return edit;
     }
 
+    public static TRStaticMeshEdit FixEgyptPillar(TR1Level level)
+    {
+        var pillar = level.StaticMeshes[TR1Type.SceneryBase + 30];
+        pillar.CollisionBox.MinX += 64;
+        pillar.CollisionBox.MinZ += 64;
+        pillar.CollisionBox.MaxZ -= 64;
+        pillar.CollisionBox.MaxX -= 64;
+        return new()
+        {
+            TypeID = 30,
+            Mesh = pillar,
+        };
+    }
+
     public static TRVertexEdit CreateVertexShift(short index, short x = 0, short y = 0, short z = 0)
     {
         return new()

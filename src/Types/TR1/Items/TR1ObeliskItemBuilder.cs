@@ -131,5 +131,6 @@ public class TR1ObeliskItemBuilder : ItemBuilder
         }
 
         data.MeshEdits.Add(FixEgyptToppledChair(TR1Type.Furniture3, obelisk));
+        data.StaticMeshEdits.Add(FixEgyptPillar(obelisk));
     }
 }

@@ -38,6 +38,7 @@ public class TR1EgyptItemBuilder : ItemBuilder
         CreateDefaultTests(data, TR1LevelNames.EGYPT);
 
         data.MeshEdits.Add(FixEgyptToppledChair(TR1Type.Architecture7, egypt));
+        data.StaticMeshEdits.Add(FixEgyptPillar(egypt));
 
         return data;
     }

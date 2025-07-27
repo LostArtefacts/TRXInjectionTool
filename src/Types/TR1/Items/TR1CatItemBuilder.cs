@@ -44,6 +44,24 @@ public class TR1CatItemBuilder : ItemBuilder
         CreateDefaultTests(data, TR1LevelNames.CAT);
 
         data.MeshEdits.Add(FixEgyptToppledChair(TR1Type.Architecture7, cat));
+        data.StaticMeshEdits.Add(FixEgyptPillar(cat));
+
+        var chair = cat.StaticMeshes[TR1Type.SceneryBase + 12];
+        chair.CollisionBox.MinX += 64;
+        chair.CollisionBox.MaxZ -= 64;
+        data.StaticMeshEdits.Add(new()
+        {
+            TypeID = 12,
+            Mesh = chair,
+        });
+
+        chair = cat.StaticMeshes[TR1Type.SceneryBase + 37];
+        chair.CollisionBox.MaxZ -= 48;
+        data.StaticMeshEdits.Add(new()
+        {
+            TypeID = 37,
+            Mesh = chair,
+        });
 
         return data;
     }
