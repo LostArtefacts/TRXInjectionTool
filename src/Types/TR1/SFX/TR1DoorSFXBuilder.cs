@@ -10,10 +10,40 @@ public class TR1DoorSFXBuilder : InjectionBuilder
     {
         return new()
         {
+            FixGeneralDoor(TR1Type.Door3),
+            FixGeneralDoor(TR1Type.Door5),
             FixVilcabambaDoor(),
+            FixQualopecDoors(),
             FixMinesTrapdoor(),
             FixAtlantisTrapdoors(),
         };
+    }
+
+    private static InjectionData FixGeneralDoor(TR1Type type)
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        var model = level.Models[TR1Type.Door4];
+        ResetLevel(level);
+        level.Models[TR1Type.Door4] = model;
+
+        var data = InjectionData.Create(level, InjectionType.General, $"door{(int)type}_sfx", true);
+        data.Animations.Clear();
+        data.AnimFrames.Clear();
+        data.AnimChanges.Clear();
+        data.AnimDispatches.Clear();
+        data.Models.Clear();
+
+        foreach (int anim in new[] { 1, 3 })
+        {
+            data.AnimCmdEdits.Add(new()
+            {
+                TypeID = (int)type,
+                AnimIndex = anim,
+                RawCount = data.AnimCommands.Count / 2,
+                TotalCount = 1,
+            });
+        }
+        return data;
     }
 
     private static InjectionData FixVilcabambaDoor()
@@ -53,6 +83,44 @@ public class TR1DoorSFXBuilder : InjectionBuilder
             });
         }
 
+        return data;
+    }
+
+    private static InjectionData FixQualopecDoors()
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
+        var models = new TRDictionary<TR1Type, TRModel>
+        {
+            [TR1Type.Door1] = level.Models[TR1Type.Door1],
+            [TR1Type.Door2] = level.Models[TR1Type.Door2],
+            [TR1Type.Door3] = level.Models[TR1Type.Door3],
+        };
+        
+        ResetLevel(level);
+        level.Models = models;
+        foreach (var model in models.Values)
+        {
+            model.Animations[3].Commands.AddRange(model.Animations[2].Commands);
+            model.Animations[2].Commands.Clear();
+        }
+
+        var data = InjectionData.Create(level, InjectionType.General, "qualopec_door_sfx", true);
+        data.Animations.Clear();
+        data.AnimFrames.Clear();
+        data.AnimChanges.Clear();
+        data.AnimDispatches.Clear();
+        data.Models.Clear();
+
+        foreach (var type in models.Keys)
+        {
+            data.AnimCmdEdits.Add(new()
+            {
+                TypeID = (int)type,
+                AnimIndex = 3,
+                RawCount = data.AnimCommands.Count / 3,
+                TotalCount = 1,
+            });
+        }
         return data;
     }
 
