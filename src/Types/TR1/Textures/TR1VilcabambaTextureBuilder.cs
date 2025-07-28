@@ -1,5 +1,4 @@
-﻿using TRImageControl;
-using TRImageControl.Packing;
+﻿using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;

@@ -568,6 +568,93 @@ public abstract class TextureBuilder : InjectionBuilder
         data.FrameReplacements.AddRange(TRFrameReplacement.CreateFrom(level));
     }
 
+    protected static void FixWheelDoor(InjectionData data, string levelName)
+    {
+        var rig = _control2.Read($"Resources/{TR2LevelNames.RIG}");
+        var door = rig.Models[TR2Type.LiftingDoor1];
+        var knob = rig.Models[TR2Type.WheelKnob];
+
+        door.Animations[2].Frames[^1].Rotations[0].Y++;
+        door.Animations[2].Frames.Add(door.Animations[2].Frames[^1]);
+        door.Animations[2].Frames.RemoveAt(0);
+
+        knob.Animations[2].Frames[0].Rotations[0].Y = 0;
+        knob.Animations[2].Frames.Insert(0, knob.Animations[2].Frames[0]);
+        knob.Animations[2].Frames.RemoveAt(knob.Animations[2].Frames.Count - 1);
+
+        knob.Animations[2].Frames[0].OffsetX--;
+        knob.Animations[2].Frames[0].OffsetZ -= 2;
+
+        short[] offsetShifts = { 1, 2, 4, 8, 8, 8, 8 };
+        for (int i = 0; i < offsetShifts.Length; i++)
+        {
+            knob.Animations[2].Frames[^(offsetShifts.Length - i)].OffsetX -= offsetShifts[i];
+        }
+
+        knob.Animations[2].Frames[43].OffsetX = knob.Animations[2].Frames[44].OffsetX;
+        knob.Animations[2].Frames[45].OffsetX = knob.Animations[2].Frames[46].OffsetX;
+
+        foreach (var frame in door.Animations.SelectMany(a => a.Frames))
+        {
+            frame.OffsetY = -512;
+            frame.Bounds.MinY = -1024;
+            frame.Bounds.MaxY = 0;
+        }
+
+        ResetLevel(rig);
+        rig.Models = new()
+        {
+            [levelName == TR2LevelNames.DORIA ?  TR2Type.Door2 : TR2Type.LiftingDoor1] = door,
+            [TR2Type.WheelKnob] = knob,
+        };
+
+        var replacements = TRFrameReplacement.CreateFrom(rig).ToList();
+        var knobReplacement = replacements.Find(r => r.ModelID == (uint)TR2Type.WheelKnob);
+        knobReplacement.Frames.Remove(0);
+        knobReplacement.Frames.Remove(1);
+        data.FrameReplacements.AddRange(replacements);
+    }
+
+    protected static void FixSlidingOffshoreDoor(InjectionData data, string levelName)
+    {
+        var rig = _control2.Read($"Resources/{TR2LevelNames.RIG}");
+        var door = rig.Models[TR2Type.Door5];
+        var maxY = door.Meshes[1].Vertices.Max(v => v.Y);
+        data.MeshEdits.Add(new()
+        {
+            ModelID = (uint)TR2Type.Door5,
+            MeshIndex = 1,
+            VertexEdits = door.Meshes[1].Vertices.Where(v => v.Y == maxY)
+                .Select(v => new TRVertexEdit
+                {
+                    Index = (short)door.Meshes[1].Vertices.IndexOf(v),
+                    Change = new() { Y = 1 },
+                }).ToList(),
+        });
+
+        foreach (var frame in door.Animations.SelectMany(a => a.Frames))
+        {
+            frame.OffsetY = -512;
+            frame.OffsetZ += 6;
+            frame.Bounds.MinY = -1024;
+            frame.Bounds.MaxY = 0;
+            frame.Bounds.MinZ += 6;
+            frame.Bounds.MaxZ += 6;
+        }
+
+        rig.Models = new()
+        {
+            [TR2Type.Door5] = door,
+        };
+        data.FrameReplacements.AddRange(TRFrameReplacement.CreateFrom(rig));
+
+        if (levelName == TR2LevelNames.RIG)
+        {
+            rig.Entities[79].Z += 1024;
+            data.ItemEdits.Add(ItemBuilder.SetAngle(rig, 79, 0));
+        }
+    }
+
     protected class TextureSource
     {
         public short Room { get; set; }

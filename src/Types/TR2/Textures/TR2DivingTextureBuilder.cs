@@ -21,6 +21,8 @@ public class TR2DivingTextureBuilder : TextureBuilder
 
         FixPassport(level, data);
         FixPushButton(data);
+        FixWheelDoor(data, TR2LevelNames.DA);
+        FixSlidingOffshoreDoor(data, TR2LevelNames.DA);
 
         return new() { data };
     }

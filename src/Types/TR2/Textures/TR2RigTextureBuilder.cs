@@ -22,6 +22,8 @@ public class TR2RigTextureBuilder : TextureBuilder
 
         FixPassport(level, data);
         FixPushButton(data);
+        FixWheelDoor(data, TR2LevelNames.RIG);
+        FixSlidingOffshoreDoor(data, TR2LevelNames.RIG);
 
         return new() { data };
     }
