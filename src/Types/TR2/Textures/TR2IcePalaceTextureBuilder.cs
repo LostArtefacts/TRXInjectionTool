@@ -16,9 +16,24 @@ public class TR2IcePalaceTextureBuilder : TextureBuilder
         CreateDefaultTests(data, TR2LevelNames.CHICKEN);
 
         data.RoomEdits.AddRange(CreateVertexShifts(level));
+        data.RoomEdits.AddRange(CreateShifts(level));
         data.RoomEdits.AddRange(CreateFillers(level));
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.RoomEdits.AddRange(CreateRotations());
+
+        data.VisPortalEdits.Add(new()
+        {
+            BaseRoom = 121,
+            LinkRoom = 50,
+            PortalIndex = 3,
+            VertexChanges = new()
+            {
+                new(),
+                new() { Y = 768, },
+                new() { Y = 768, },
+                new(),
+            }
+        });
 
         FixPassport(level, data);
 
@@ -40,6 +55,60 @@ public class TR2IcePalaceTextureBuilder : TextureBuilder
                 RoomIndex = 31,
                 VertexIndex = level.Rooms[31].Mesh.Rectangles[133].Vertices[3],
                 VertexChange = new() { Y = 256 },
+            },
+            new()
+            {
+                RoomIndex = 92,
+                VertexIndex = level.Rooms[92].Mesh.Rectangles[135].Vertices[1],
+                VertexChange = new() { Y = 256 },
+                ShadeChange = -1638,
+            },
+            new()
+            {
+                RoomIndex = 92,
+                VertexIndex = level.Rooms[92].Mesh.Rectangles[130].Vertices[0],
+                VertexChange = new() { Y = 256 },
+                ShadeChange = -1638,
+            },
+            new()
+            {
+                RoomIndex = 121,
+                VertexIndex = level.Rooms[121].Mesh.Rectangles[135].Vertices[1],
+                VertexChange = new() { Y = 256 },
+                ShadeChange = -1638,
+            },
+            new()
+            {
+                RoomIndex = 121,
+                VertexIndex = level.Rooms[121].Mesh.Rectangles[130].Vertices[0],
+                VertexChange = new() { Y = 256 },
+                ShadeChange = -1638,
+            },
+        };
+    }
+
+    private static List<TRRoomTextureMove> CreateShifts(TR2Level level)
+    {
+        return new()
+        {
+            new()
+            {
+                RoomIndex = 121,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                TargetIndex = 138,
+                VertexRemap = new()
+                {
+                    new()
+                    {
+                        Index = 0,
+                        NewVertexIndex = level.Rooms[121].Mesh.Rectangles[135].Vertices[1],
+                    },
+                    new()
+                    {
+                        Index = 1,
+                        NewVertexIndex = level.Rooms[121].Mesh.Rectangles[130].Vertices[0],
+                    }
+                }
             },
         };
     }
@@ -73,6 +142,10 @@ public class TR2IcePalaceTextureBuilder : TextureBuilder
             Reface(level, 31, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1356, 144),
             Reface(level, 31, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1356, 147),
             Reface(level, 31, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1356, 150),
+            Reface(level, 52, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedQuad, 1376, 6),
+            Reface(level, 66, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1346, 55),
+            Reface(level, 124, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 1488, 4),
+            Reface(level, 124, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedQuad, 1376, 6),
         };
     }
 
@@ -80,7 +153,12 @@ public class TR2IcePalaceTextureBuilder : TextureBuilder
     {
         return new()
         {
+            Rotate(49, TRMeshFaceType.TexturedTriangle, 0, 2),
             Rotate(52, TRMeshFaceType.TexturedTriangle, 3, 2),
+            Rotate(52, TRMeshFaceType.TexturedTriangle, 6, 2),
+            Rotate(120, TRMeshFaceType.TexturedTriangle, 0, 2),
+            Rotate(124, TRMeshFaceType.TexturedTriangle, 3, 2),
+            Rotate(124, TRMeshFaceType.TexturedTriangle, 6, 2),
         };
     }
 }

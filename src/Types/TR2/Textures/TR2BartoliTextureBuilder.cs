@@ -40,41 +40,89 @@ public class TR2BartoliTextureBuilder : TextureBuilder
             Reface(level, 56, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1623, 14),
             Reface(level, 56, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1623, 33),
             Reface(level, 56, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1643, 34),
+            Reface(level, 121, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1589, 78),
+            Reface(level, 121, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1589, 87),
+            Reface(level, 121, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1589, 98),
+            Reface(level, 121, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1589, 107),
+            Reface(level, 121, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1588, 114),
+            Reface(level, 121, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1588, 116),
+            Reface(level, 121, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1588, 117),
             Reface(level, 127, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1744, 57),
             Reface(level, 131, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1735, 7),
             Reface(level, 145, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1579, 40),
         };
     }
 
-    private static List<TRRoomVertexMove> CreateVertexShifts(TR2Level level)
+    private static List<TRRoomTextureEdit> CreateVertexShifts(TR2Level level)
     {
-        var result = new List<TRRoomVertexMove>
+        var vert = level.Rooms[121].Mesh.Vertices[level.Rooms[121].Mesh.Rectangles[13].Vertices[2]];
+        vert.Vertex.Y += 256;
+
+        var result = new List<TRRoomTextureEdit>
         {
-            new()
+            new TRRoomVertexCreate
+            {
+                RoomIndex = 121,
+                Vertex = new()
+                {
+                    Lighting = vert.Lighting,
+                    Vertex = vert.Vertex,
+                },
+            },
+            new TRRoomTextureMove
+            {
+                RoomIndex = 121,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                TargetIndex = 12,
+                VertexRemap = new()
+                {
+                    new()
+                    {
+                        Index = 1,
+                        NewVertexIndex = (ushort)level.Rooms[121].Mesh.Vertices.Count,
+                    },
+                }
+            },
+            new TRRoomTextureMove
+            {
+                RoomIndex = 121,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                TargetIndex = 13,
+                VertexRemap = new()
+                {
+                    new()
+                    {
+                        Index = 2,
+                        NewVertexIndex = (ushort)level.Rooms[121].Mesh.Vertices.Count,
+                    },
+                }
+            },
+
+            new TRRoomVertexMove
             {
                 RoomIndex = 17,
                 VertexIndex = level.Rooms[17].Mesh.Rectangles[4].Vertices[2],
                 VertexChange = new() { Y = 1024 },
             },
-            new()
+            new TRRoomVertexMove
             {
                 RoomIndex = 17,
                 VertexIndex = level.Rooms[17].Mesh.Rectangles[4].Vertices[3],
                 VertexChange = new() { Y = 1024 },
             },
-            new()
+            new TRRoomVertexMove
             {
                 RoomIndex = 17,
                 VertexIndex = level.Rooms[17].Mesh.Rectangles[5].Vertices[2],
                 VertexChange = new() { Y = -768 },
             },
-            new()
+            new TRRoomVertexMove
             {
                 RoomIndex = 17,
                 VertexIndex = level.Rooms[17].Mesh.Rectangles[5].Vertices[3],
                 VertexChange = new() { Y = -768 },
             },
-            new()
+            new TRRoomVertexMove
             {
                 RoomIndex = 108,
                 VertexIndex = level.Rooms[108].Mesh.Rectangles[9].Vertices[2],
@@ -90,6 +138,16 @@ public class TR2BartoliTextureBuilder : TextureBuilder
                 VertexChange = new() { Y = 256 },
             });
         result.AddRange(columnShifts);
+
+        columnShifts = new[] { 13, 10, 7, 2 }
+            .Select(f => new TRRoomVertexMove
+            {
+                RoomIndex = 121,
+                VertexIndex = level.Rooms[121].Mesh.Rectangles[f].Vertices[3],
+                VertexChange = new() { Y = 256 },
+            });
+        result.AddRange(columnShifts);
+
         return result;
     }
 
@@ -100,6 +158,9 @@ public class TR2BartoliTextureBuilder : TextureBuilder
             Rotate(46, TRMeshFaceType.TexturedQuad, 48, 3),
             Rotate(73, TRMeshFaceType.TexturedQuad, 119, 3),
             Rotate(143, TRMeshFaceType.TexturedQuad, 116, 3),
+            Rotate(121, TRMeshFaceType.TexturedQuad, 114, 2),
+            Rotate(121, TRMeshFaceType.TexturedQuad, 116, 2),
+            Rotate(121, TRMeshFaceType.TexturedQuad, 117, 2),
             Rotate(127, TRMeshFaceType.TexturedQuad, 57, 3),
             Rotate(131, TRMeshFaceType.TexturedQuad, 7, 2),
             Rotate(146, TRMeshFaceType.TexturedQuad, 52, 3),

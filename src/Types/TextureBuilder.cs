@@ -272,7 +272,15 @@ public abstract class TextureBuilder : InjectionBuilder
         GenerateImages8(baseLevel, baseLevel.Palette.Select(c => c.ToTR1Color()).ToList());
     }
 
-    private static TRImage GetImage(ushort texture, TR2Level level)
+    protected static TRImage GetImage(ushort texture, TR1Level level)
+    {
+        var texInfo = level.ObjectTextures[texture];
+        var page = level.Images8[texInfo.Atlas];
+        return new TRImage(page.Pixels, level.Palette)
+            .Export(texInfo.Bounds);
+    }
+
+    protected static TRImage GetImage(ushort texture, TR2Level level)
     {
         var texInfo = level.ObjectTextures[texture];
         var page = level.Images16[texInfo.Atlas];
@@ -280,7 +288,16 @@ public abstract class TextureBuilder : InjectionBuilder
             .Export(texInfo.Bounds);
     }
 
-    private static void ImportImage(ushort texture, TRImage img, TR2Level level)
+    protected static void ImportImage(ushort texture, TRImage img, TR1Level level)
+    {
+        var texInfo = level.ObjectTextures[texture];
+        var page = level.Images8[texInfo.Atlas];
+        var image = new TRImage(page.Pixels, level.Palette);
+        image.Import(img, texInfo.Position);
+        level.Images8[texInfo.Atlas].Pixels = image.ToRGB(level.Palette);
+    }
+
+    protected static void ImportImage(ushort texture, TRImage img, TR2Level level)
     {
         var texInfo = level.ObjectTextures[texture];
         var page = level.Images16[texInfo.Atlas];

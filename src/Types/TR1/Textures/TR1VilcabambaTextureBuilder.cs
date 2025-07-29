@@ -1,4 +1,5 @@
-﻿using TRImageControl.Packing;
+﻿using System.Drawing;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -212,14 +213,16 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
                 f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
             });
 
-        var p = new List<ushort> {11,15,17,18 };
-        var f = statue.Mesh.TexturedRectangles.FindIndex(v => v.Vertices.All(p.Contains));
         statue.Mesh.TexturedRectangles.Add(new()
         {
             Type = TRFaceType.Rectangle,
             Texture = statue.Mesh.TexturedRectangles[9].Texture,
             Vertices = new() { 20, 23, 22, 21 }
         });
+
+        var img = GetImage(statue.Mesh.TexturedRectangles[13].Texture, level);
+        img.Write((c, x, y) => c.A == 0 ? Color.FromArgb(52, 52, 40) : c);
+        ImportImage(statue.Mesh.TexturedRectangles[13].Texture, img, level);
 
         var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR1LevelNames.VILCABAMBA);

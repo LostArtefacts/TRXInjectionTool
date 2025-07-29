@@ -93,6 +93,7 @@ public class TR1StrongholdTextureBuilder : TextureBuilder
         return new()
         {
             Rotate(6, TRMeshFaceType.TexturedQuad, 462, 3),
+            Rotate(27, TRMeshFaceType.TexturedTriangle, 3, 1),
         };
     }
 

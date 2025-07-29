@@ -67,6 +67,9 @@ public class TR2TibetTextureBuilder : TextureBuilder
             Reface(level, 12, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1292, 78),
             Reface(level, 28, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 1361, 1),
             Reface(level, 40, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1288, 157),
+            Reface(level, 71, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1411, 5),
+            Reface(level, 72, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 1321, 8),
+            Reface(level, 72, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1411, 192),
         };
     }
 
@@ -86,6 +89,12 @@ public class TR2TibetTextureBuilder : TextureBuilder
             Rotate(15, TRMeshFaceType.TexturedTriangle, 3, 2),
             Rotate(15, TRMeshFaceType.TexturedTriangle, 4, 2),
             Rotate(28, TRMeshFaceType.TexturedTriangle, 1, 1),
+            Rotate(71, TRMeshFaceType.TexturedQuad, 5, 2),
+            Rotate(72, TRMeshFaceType.TexturedQuad, 114, 2),
+            Rotate(72, TRMeshFaceType.TexturedQuad, 142, 2),
+            Rotate(72, TRMeshFaceType.TexturedQuad, 169, 2),
+            Rotate(72, TRMeshFaceType.TexturedQuad, 192, 1),
+            Rotate(72, TRMeshFaceType.TexturedQuad, 212, 2),
         };
     }
 }
