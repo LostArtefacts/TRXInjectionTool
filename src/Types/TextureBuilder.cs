@@ -80,6 +80,38 @@ public abstract class TextureBuilder : InjectionBuilder
         return null;
     }
 
+    public static TRRoomTextureCreate CreateFace(short roomIdx, short sourceRoom, ushort sourceIndex,
+        TRMeshFaceType faceType, ushort[] vertices)
+    {
+        return new()
+        {
+            RoomIndex = roomIdx,
+            FaceType = faceType,
+            SourceRoom = sourceRoom,
+            SourceIndex = (short)sourceIndex,
+            Vertices = new(vertices),
+        };
+    }
+
+    protected static TRRoomVertexCreate CreateVertex(short roomIdx, TR2Room room, TR2RoomVertex vertex)
+    {
+        room.Mesh.Vertices.Add(vertex.Clone() as TR2RoomVertex);
+        return new()
+        {
+            RoomIndex = roomIdx,
+            Vertex = new()
+            {
+                Lighting = vertex.Lighting,
+                Vertex = new()
+                {
+                    X = vertex.Vertex.X,
+                    Y = (short)(vertex.Vertex.Y + 256),
+                    Z = vertex.Vertex.Z,
+                },
+            },
+        };
+    }
+
     protected static TRMeshEdit FixStaticMeshPosition<T>(TRDictionary<T, TRStaticMesh> meshes, T id, TRVertex change)
         where T : Enum
     {

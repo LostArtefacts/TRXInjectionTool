@@ -73,6 +73,19 @@ public static class TRModelExtensions
         mesh.CollRadius = (int)Math.Ceiling((inner + outer) / 2d);
     }
 
+    public static void Rotate(this TRFace face, int rots)
+    {
+        for (int i = 0; i < rots; i++)
+        {
+            ushort first = face.Vertices[0];
+            for (int j = 0; j < face.Vertices.Count - 1; j++)
+            {
+                face.Vertices[j] = face.Vertices[j + 1];
+            }
+            face.Vertices[^1] = first;
+        }
+    }
+
     public static void Serialize(this LM.TRModel model, TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write((int)model.ID, TRObjectType.Game, version);

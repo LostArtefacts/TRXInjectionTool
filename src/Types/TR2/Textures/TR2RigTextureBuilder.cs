@@ -6,7 +6,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Textures;
 
-public class TR2RigTextureBuilder : TextureBuilder
+public partial class TR2RigTextureBuilder : TextureBuilder
 {
     public override string ID => "rig_textures";
 
@@ -19,6 +19,8 @@ public class TR2RigTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateShifts(level));
         data.RoomEdits.AddRange(CreateFillers(level));
         data.RoomEdits.AddRange(CreateRefacings(level));
+        data.RoomEdits.AddRange(CreateRotations());
+        data.RoomEdits.AddRange(FixCatwalks(level));
         FixThinWall(level, data);
         FixTransparentTextures(level, data);
         FixPassport(level, data);
@@ -114,8 +116,17 @@ public class TR2RigTextureBuilder : TextureBuilder
         return new()
         {
             Reface(level, 11, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1622, 137),
+            Reface(level, 33, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 1736, 0),
             Reface(level, 35, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1702, 42),
             Reface(level, 81, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1702, 33),
+        };
+    }
+
+    private static List<TRRoomTextureRotate> CreateRotations()
+    {
+        return new()
+        {
+            Rotate(33, TRMeshFaceType.TexturedTriangle, 0, 2),
         };
     }
 
