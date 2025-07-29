@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Drawing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -19,7 +20,7 @@ public class TR2RigTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(level));
         data.RoomEdits.AddRange(CreateRefacings(level));
         FixThinWall(level, data);
-
+        FixTransparentTextures(level, data);
         FixPassport(level, data);
         FixPushButton(data);
         FixWheelDoor(data, TR2LevelNames.RIG);
@@ -202,5 +203,11 @@ public class TR2RigTextureBuilder : TextureBuilder
                 }
             }
         });
+    }
+
+    private static void FixTransparentTextures(TR2Level level, InjectionData data)
+    {
+        FixTransparentPixels(level, data,
+            level.Rooms[96].Mesh.Rectangles[27], Color.FromArgb(246, 238, 213));
     }
 }

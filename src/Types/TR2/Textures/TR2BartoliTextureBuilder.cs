@@ -1,4 +1,5 @@
-﻿using TRImageControl;
+﻿using System.Drawing;
+using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
@@ -21,7 +22,7 @@ public class TR2BartoliTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.MeshEdits.Add(
             FixStaticMeshPosition(bartoli.StaticMeshes, TR2Type.Architecture4, new() { Z = 27 }));
-
+        FixTransparentTextures(bartoli, data);
         FixPassport(bartoli, data);
 
         return new() { data };
@@ -164,5 +165,11 @@ public class TR2BartoliTextureBuilder : TextureBuilder
         CreateDefaultTests(data, TR2LevelNames.BARTOLI);
 
         return data;
+    }
+
+    private static void FixTransparentTextures(TR2Level level, InjectionData data)
+    {
+        FixTransparentPixels(level, data,
+            level.Rooms[107].Mesh.Rectangles[60], Color.FromArgb(139, 131, 41));
     }
 }

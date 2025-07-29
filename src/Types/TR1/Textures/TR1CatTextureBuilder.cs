@@ -136,6 +136,8 @@ public class TR1CatTextureBuilder : TextureBuilder
             cat.Rooms[2].Mesh.Rectangles[128], Color.FromArgb(188, 140, 64));
         FixTransparentPixels(cat, data,
             cat.Rooms[7].Mesh.Rectangles[19], Color.FromArgb(188, 140, 64));
+        FixTransparentPixels(cat, data,
+            cat.Rooms[95].Mesh.Rectangles[7], Color.FromArgb(252, 228, 140));
     }
 
     private InjectionData CreateBaseData()

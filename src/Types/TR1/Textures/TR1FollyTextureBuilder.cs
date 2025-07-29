@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Drawing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -17,7 +18,7 @@ public class TR1FollyTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(folly));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(folly));
-
+        FixTransparentTextures(folly, data);
         FixPassport(folly, data);
 
         return new() { data };
@@ -124,5 +125,11 @@ public class TR1FollyTextureBuilder : TextureBuilder
                 }
             },
         };
+    }
+
+    private static void FixTransparentTextures(TR1Level level, InjectionData data)
+    {
+        FixTransparentPixels(level, data,
+            level.Rooms[25].Mesh.Rectangles[12], Color.FromArgb(112, 96, 72));
     }
 }

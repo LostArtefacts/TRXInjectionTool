@@ -1,4 +1,5 @@
-﻿using TRImageControl;
+﻿using System.Drawing;
+using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
@@ -17,7 +18,7 @@ public class TR2GymTextureBuilder : TextureBuilder
         InjectionData data = CreateBaseData();
 
         TR2Level gym = _control2.Read($"Resources/{TR2LevelNames.ASSAULT}");
-        FixLaraTransparency(gym, data);
+        FixTransparentTextures(gym, data);
 
         data.RoomEdits.AddRange(CreateVertexShifts(gym));
         data.RoomEdits.AddRange(CreateShifts(gym));
@@ -186,5 +187,12 @@ public class TR2GymTextureBuilder : TextureBuilder
             {
                 f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
             });
+    }
+
+    private static void FixTransparentTextures(TR2Level level, InjectionData data)
+    {
+        FixLaraTransparency(level, data);
+        FixTransparentPixels(level, data,
+            level.Rooms[55].Mesh.Rectangles[70], Color.FromArgb(148, 32, 0));
     }
 }

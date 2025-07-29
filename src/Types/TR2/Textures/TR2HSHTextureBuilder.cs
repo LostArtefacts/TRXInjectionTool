@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Drawing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -14,7 +15,7 @@ public class TR2HSHTextureBuilder : TextureBuilder
         InjectionData data = CreateBaseData();
 
         TR2Level house = _control2.Read($"Resources/{TR2LevelNames.HOME}");
-        FixLaraTransparency(house, data);
+        FixTransparentTextures(house, data);
 
         data.RoomEdits.AddRange(CreateVertexShifts(house));
         data.RoomEdits.AddRange(CreateShifts(house));
@@ -209,6 +210,13 @@ public class TR2HSHTextureBuilder : TextureBuilder
             Rotate(34, TRMeshFaceType.TexturedQuad, 38, 3),
             Rotate(54, TRMeshFaceType.TexturedQuad, 15, 3),
         };
+    }
+
+    private static void FixTransparentTextures(TR2Level level, InjectionData data)
+    {
+        FixLaraTransparency(level, data);
+        FixTransparentPixels(level, data,
+            level.Rooms[52].Mesh.Rectangles[70], Color.FromArgb(148, 32, 0));
     }
 
     private InjectionData CreateBaseData()

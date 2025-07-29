@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Drawing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -20,7 +21,7 @@ public class TR2VeniceTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.MeshEdits.Add(
             FixStaticMeshPosition(venice.StaticMeshes, TR2Type.Architecture4, new() { Z = 27 }));
-
+        FixTransparentTextures(venice, data);
         FixPassport(venice, data);
         FixPushButton(data);
 
@@ -96,5 +97,11 @@ public class TR2VeniceTextureBuilder : TextureBuilder
             Rotate(36, TRMeshFaceType.TexturedQuad, 22, 2),
             Rotate(36, TRMeshFaceType.TexturedQuad, 88, 2),
         };
+    }
+
+    private static void FixTransparentTextures(TR2Level level, InjectionData data)
+    {
+        FixTransparentPixels(level, data,
+            level.Rooms[0].Mesh.Rectangles[56], Color.FromArgb(139, 131, 41));
     }
 }
