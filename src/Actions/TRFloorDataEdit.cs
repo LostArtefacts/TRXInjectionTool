@@ -35,6 +35,7 @@ public enum FDFixType
     SectorOverwrite,
     GlideCameraFix,
     ZoneFix,
+    PortalOverwrite,
 }
 
 public abstract class FDFix
@@ -189,6 +190,21 @@ public class FDZoneFix : FDFix
         writer.Write(ZoneOverwrite.FlipOffZone.Fly);
         writer.Write(ZoneOverwrite.FlipOnZone.Ground.Values);
         writer.Write(ZoneOverwrite.FlipOnZone.Fly);
+    }
+}
+
+public class FDPortalOverwrite : FDFix
+{
+    public override FDFixType FixType => FDFixType.PortalOverwrite;
+    public short Wall { get; set; } = -1;
+    public short Sky { get; set; } = -1;
+    public short Pit { get; set; } = -1;
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write(Wall);
+        writer.Write(Sky);
+        writer.Write(Pit);
     }
 }
 

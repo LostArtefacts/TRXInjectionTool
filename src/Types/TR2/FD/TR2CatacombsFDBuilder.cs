@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRLevelControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -15,6 +16,7 @@ public class TR2CatacombsFDBuilder : FDBuilder
         CreateDefaultTests(data, TR2LevelNames.COT);
         data.FloorEdits.AddRange(FixMaskRoomFlipmap(catacombs));
         data.FloorEdits.AddRange(FixStartMusicTriggers(catacombs));
+        FixYetiRoom(catacombs, data);
 
         return new() { data };
     }
@@ -73,5 +75,39 @@ public class TR2CatacombsFDBuilder : FDBuilder
             ConvertTrigger(catacombs, 74, 2, 1, FDTrigType.Pad),
             ConvertTrigger(catacombs, 74, 2, 2, FDTrigType.Pad),
         };
+    }
+
+    private static void FixYetiRoom(TR2Level level, InjectionData data)
+    {
+        data.FloorEdits.AddRange(new[] { 0, 11 }.Select(z =>
+        {
+            var sector = TRRoomSectorExt.CloneFrom(level.Rooms[41].GetSector(7, z, TRUnit.Sector));
+            sector.FDIndex = 0;
+            sector.Ceiling = TRConsts.NoHeight;
+            sector.Floor = TRConsts.NoHeight;
+            return new TRFloorDataEdit
+            {
+                RoomIndex = 41,
+                X = 7,
+                Z = (ushort)z,
+                Fixes = new()
+                {
+                    new FDSectorOverwrite { Sector = sector },
+                    new FDPortalOverwrite(),
+                }
+            };
+        }));
+
+        var mesh = level.Rooms[41].Mesh;
+        data.RoomEdits.Add(TextureBuilder.CreateFace(41, 50, 96, TRMeshFaceType.TexturedQuad, new[]
+        {
+            mesh.Rectangles[115].Vertices[1], mesh.Rectangles[135].Vertices[0],
+            mesh.Rectangles[134].Vertices[3], mesh.Rectangles[115].Vertices[2],
+        }));
+        data.RoomEdits.Add(TextureBuilder.CreateFace(41, 50, 96, TRMeshFaceType.TexturedQuad, new[]
+        {
+            mesh.Rectangles[117].Vertices[1], mesh.Rectangles[96].Vertices[0],
+            mesh.Rectangles[96].Vertices[3], mesh.Rectangles[116].Vertices[2],
+        }));
     }
 }
