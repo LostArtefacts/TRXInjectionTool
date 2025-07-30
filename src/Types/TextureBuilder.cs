@@ -93,7 +93,7 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
-    protected static TRRoomVertexCreate CreateVertex(short roomIdx, TR2Room room, TR2RoomVertex vertex)
+    protected static TRRoomVertexCreate CreateVertex(short roomIdx, TR2Room room, TR2RoomVertex vertex, short lighting = -1)
     {
         room.Mesh.Vertices.Add(vertex.Clone() as TR2RoomVertex);
         return new()
@@ -101,7 +101,7 @@ public abstract class TextureBuilder : InjectionBuilder
             RoomIndex = roomIdx,
             Vertex = new()
             {
-                Lighting = vertex.Lighting,
+                Lighting = lighting == -1 ? vertex.Lighting : lighting,
                 Vertex = new()
                 {
                     X = vertex.Vertex.X,
@@ -109,6 +109,22 @@ public abstract class TextureBuilder : InjectionBuilder
                     Z = vertex.Vertex.Z,
                 },
             },
+        };
+    }
+
+    protected static TRRoomVertxFlagChange SetLastVertexFlags(short roomIdx, TR2Room room)
+    {
+        return SetVertexFlags(roomIdx, room, (ushort)(room.Mesh.Vertices.Count - 1));
+    }
+
+    protected static TRRoomVertxFlagChange SetVertexFlags(short roomIdx, TR2Room room, ushort vtxIdx)
+    {
+        var vertex = room.Mesh.Vertices[vtxIdx];
+        return new()
+        {
+            RoomIndex = roomIdx,
+            VertexIndex = vtxIdx,
+            Flags = vertex.Attributes,
         };
     }
 

@@ -16,6 +16,7 @@ public abstract class TRRoomTextureEdit
         AddSprite,
         AddStatic3D,
         EditStatic3D,
+        SetVertexFlags,
     }
 
     public abstract TRRoomTextureFixType FixType { get; }
@@ -91,6 +92,20 @@ public class TRRoomVertexMove : TRRoomTextureEdit
         writer.Write(VertexChange.Y);
         writer.Write(VertexChange.Z);
         writer.Write(ShadeChange);
+    }
+}
+
+public class TRRoomVertxFlagChange : TRRoomTextureEdit
+{
+    public override TRRoomTextureFixType FixType => TRRoomTextureFixType.SetVertexFlags;
+    public ushort VertexIndex { get; set; }
+    public ushort Flags { get; set; }
+    public short Adder { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer)
+    {
+        writer.Write(VertexIndex);
+        writer.Write(Flags);
     }
 }
 
