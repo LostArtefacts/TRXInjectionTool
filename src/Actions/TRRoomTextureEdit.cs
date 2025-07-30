@@ -99,6 +99,13 @@ public class TRRoomVertexRemap
     public short Index { get; set; }
     public ushort NewVertexIndex { get; set; }
 
+    public TRRoomVertexRemap() { }
+    public TRRoomVertexRemap(short index, ushort newIndex)
+    {
+        Index = index;
+        NewVertexIndex = newIndex;
+    }
+
     public void Serialize(TRLevelWriter writer)
     {
         writer.Write(Index);

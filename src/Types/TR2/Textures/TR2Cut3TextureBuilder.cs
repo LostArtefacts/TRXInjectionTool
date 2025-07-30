@@ -5,7 +5,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Textures;
 
-public class TR2Cut3TextureBuilder : TextureBuilder
+public partial class TR2Cut3TextureBuilder : TextureBuilder
 {
     public override string ID => "cut3_textures";
 
@@ -17,6 +17,7 @@ public class TR2Cut3TextureBuilder : TextureBuilder
 
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.RoomEdits.AddRange(CreateRotations());
+        data.RoomEdits.AddRange(FixCatwalks(level));
 
         return new() { data };
     }

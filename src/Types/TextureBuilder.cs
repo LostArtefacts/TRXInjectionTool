@@ -112,6 +112,17 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
+    protected static TRRoomTextureMove CreateQuadShift(short roomIdx, short targetIdx, List<TRRoomVertexRemap> remap)
+    {
+        return new()
+        {
+            RoomIndex = roomIdx,
+            FaceType = TRMeshFaceType.TexturedQuad,
+            TargetIndex = targetIdx,
+            VertexRemap = remap,
+        };
+    }
+
     protected static TRMeshEdit FixStaticMeshPosition<T>(TRDictionary<T, TRStaticMesh> meshes, T id, TRVertex change)
         where T : Enum
     {

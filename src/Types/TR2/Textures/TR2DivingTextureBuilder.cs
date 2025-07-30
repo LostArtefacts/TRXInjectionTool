@@ -7,7 +7,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Textures;
 
-public class TR2DivingTextureBuilder : TextureBuilder
+public partial class TR2DivingTextureBuilder : TextureBuilder
 {
     public override string ID => "diving_textures";
 
@@ -18,6 +18,7 @@ public class TR2DivingTextureBuilder : TextureBuilder
 
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.RoomEdits.AddRange(CreateRotations());
+        data.RoomEdits.AddRange(FixCatwalks(level));
 
         FixPassport(level, data);
         FixPushButton(data);
@@ -34,6 +35,7 @@ public class TR2DivingTextureBuilder : TextureBuilder
             Reface(level, 28, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1965, 1),
             Reface(level, 30, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1916, 4),
             Reface(level, 30, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1916, 7),
+            Reface(level, 52, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 1985, 4),
             Reface(level, 77, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1946, 39),
         };
     }
