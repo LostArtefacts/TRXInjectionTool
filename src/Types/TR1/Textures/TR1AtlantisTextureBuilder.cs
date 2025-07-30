@@ -5,7 +5,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Textures;
 
-public class TR1AtlantisTextureBuilder : TextureBuilder
+public partial class TR1AtlantisTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
@@ -17,6 +17,7 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(atlantis));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(atlantis));
+        data.RoomEdits.AddRange(FixCatwalks(atlantis));
         FixPlatformDoorArea(data, atlantis);
         FixPassport(atlantis, data);
 
@@ -282,6 +283,25 @@ public class TR1AtlantisTextureBuilder : TextureBuilder
             Reface(atlantis, 88, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 8, 10),
             Reface(atlantis, 90, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 8, 6),
             Reface(atlantis, 62, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 8, 7),
+
+            Reface(atlantis, 7, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 101),
+            Reface(atlantis, 7, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 393),
+            Reface(atlantis, 9, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 102),
+            Reface(atlantis, 9, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 68),
+            Reface(atlantis, 9, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 77),
+            Reface(atlantis, 9, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 82),
+            Reface(atlantis, 9, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 274),
+            Reface(atlantis, 9, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 282),
+            Reface(atlantis, 9, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 286),
+            Reface(atlantis, 95, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 68),
+            Reface(atlantis, 95, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 77),
+            Reface(atlantis, 95, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 82),
+            Reface(atlantis, 95, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 274),
+            Reface(atlantis, 95, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 102),
+            Reface(atlantis, 95, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 282),
+            Reface(atlantis, 95, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 2, 286),
+            Reface(atlantis, 96, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 101),
+            Reface(atlantis, 96, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 34, 393),
         };
     }
 
