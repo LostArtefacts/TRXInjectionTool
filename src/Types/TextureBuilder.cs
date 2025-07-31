@@ -93,7 +93,7 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
-    protected static TRRoomVertexCreate CreateVertex(short roomIdx, TR1Room room, TR1RoomVertex vertex, short lighting = -1)
+    protected static TRRoomVertexCreate CreateVertex(short roomIdx, TR1Room room, TR1RoomVertex vertex, short lighting = -1, short shift = 256)
     {
         room.Mesh.Vertices.Add(vertex.Clone() as TR1RoomVertex);
         return new()
@@ -105,7 +105,7 @@ public abstract class TextureBuilder : InjectionBuilder
                 Vertex = new()
                 {
                     X = vertex.Vertex.X,
-                    Y = (short)(vertex.Vertex.Y + 256),
+                    Y = (short)(vertex.Vertex.Y + shift),
                     Z = vertex.Vertex.Z,
                 },
             },
@@ -155,6 +155,17 @@ public abstract class TextureBuilder : InjectionBuilder
             FaceType = TRMeshFaceType.TexturedQuad,
             TargetIndex = targetIdx,
             VertexRemap = remap,
+        };
+    }
+
+    protected static TRVisPortalEdit CreatePortalFix(short baseRoom, short linkRoom, ushort index, List<TRVertex> changes)
+    {
+        return new()
+        {
+            BaseRoom = baseRoom,
+            LinkRoom = linkRoom,
+            PortalIndex = index,
+            VertexChanges = changes,
         };
     }
 
