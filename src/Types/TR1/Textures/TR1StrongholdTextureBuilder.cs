@@ -20,6 +20,7 @@ public class TR1StrongholdTextureBuilder : TextureBuilder
 
         FixRoom13(stronghold, data);
         FixHubRoom(stronghold, data);
+        FixRoom18(stronghold, data);
         FixPassport(stronghold, data);
 
         return new() { data };
@@ -93,6 +94,8 @@ public class TR1StrongholdTextureBuilder : TextureBuilder
         return new()
         {
             Rotate(6, TRMeshFaceType.TexturedQuad, 462, 3),
+            Rotate(18, TRMeshFaceType.TexturedTriangle, 9, 2),
+            Rotate(18, TRMeshFaceType.TexturedTriangle, 15, 2),
             Rotate(27, TRMeshFaceType.TexturedTriangle, 3, 1),
         };
     }
@@ -1039,5 +1042,200 @@ public class TR1StrongholdTextureBuilder : TextureBuilder
                 }
             }
         };
+    }
+
+    private static void FixRoom18(TR1Level level, InjectionData data)
+    {
+        data.VisPortalEdits.Add(new()
+        {
+            BaseRoom = 16,
+            LinkRoom = 18,
+            PortalIndex = 2,
+            VertexChanges = new()
+            {
+                new() { Y = -1024 },
+                new(),
+                new(),
+                new() { Y = -1024 },
+            },
+        });
+        data.VisPortalEdits.Add(new()
+        {
+            BaseRoom = 18,
+            LinkRoom = 16,
+            PortalIndex = 0,
+            VertexChanges = new()
+            {
+                new(),
+                new() { Y = -1024 },
+                new() { Y = -1024 },
+                new(),
+            },
+        });
+
+        var mesh = level.Rooms[18].Mesh;
+        foreach (var (face, vtx, shift) in new List<(short Face, short Vtx, short Shift)>
+        {
+            (7, 2, -2048), (7, 3, -2048),
+            (5, 2, -2560), (5, 3, -2560),
+            (3, 1, -2048), (3, 2, -2048),
+            (1, 2, -512),  (1, 3, -512),
+        })
+        {
+            data.RoomEdits.Add(new TRRoomVertexMove
+            {
+                RoomIndex = 18,
+                VertexIndex = mesh.Rectangles[face].Vertices[vtx],
+                VertexChange = new() { Y = shift },
+            });
+        }
+
+        data.RoomEdits.Add(CreateFace(18, 18, 1, TRMeshFaceType.TexturedQuad, new[]
+        {
+            mesh.Rectangles[1].Vertices[3], mesh.Rectangles[1].Vertices[2],
+            mesh.Rectangles[0].Vertices[1], mesh.Rectangles[0].Vertices[0],
+        }));
+        data.RoomEdits.Add(CreateFace(18, 18, 35, TRMeshFaceType.TexturedTriangle, new[]
+        {
+            mesh.Rectangles[7].Vertices[1], mesh.Rectangles[6].Vertices[1],
+            mesh.Rectangles[7].Vertices[2],
+        }));
+        data.RoomEdits.Add(CreateFace(18, 18, 32, TRMeshFaceType.TexturedQuad, new[]
+        {
+            mesh.Rectangles[5].Vertices[2], mesh.Rectangles[5].Vertices[1],
+            mesh.Rectangles[4].Vertices[2], mesh.Rectangles[4].Vertices[1],
+        }));
+        data.RoomEdits.Add(CreateFace(18, 18, 28, TRMeshFaceType.TexturedQuad, new[]
+        {
+            mesh.Rectangles[3].Vertices[1], mesh.Rectangles[3].Vertices[0],
+            mesh.Rectangles[2].Vertices[2], mesh.Rectangles[2].Vertices[1],
+        }));
+        data.RoomEdits.Add(CreateFace(18, 18, 25, TRMeshFaceType.TexturedQuad, new[]
+        {
+            mesh.Rectangles[1].Vertices[2], mesh.Rectangles[1].Vertices[1],
+            mesh.Rectangles[0].Vertices[2], mesh.Rectangles[0].Vertices[1],
+        }));
+
+        foreach (var face in new[] { 25, 28, 32, 36 })
+        {
+            data.RoomEdits.Add(new TRRoomTextureReface
+            {
+                RoomIndex = 18,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                SourceRoom = 18,
+                SourceFaceType = TRMeshFaceType.TexturedQuad,
+                SourceIndex = 20,
+                TargetIndex = (short)face,
+            });
+        }
+
+        foreach (var vtx in mesh.Vertices.Where(v => v.Vertex.Y == level.Rooms[18].Info.YBottom))
+        {
+            data.RoomEdits.Add(new TRRoomVertexMove
+            {
+                RoomIndex = 18,
+                VertexIndex = (ushort)mesh.Vertices.IndexOf(vtx),
+                ShadeChange = (short)(8192 - vtx.Lighting),
+            });
+        }
+
+        foreach (var face in mesh.Rectangles.Where(r => r.Texture == mesh.Rectangles[37].Texture))
+        {
+            data.RoomEdits.Add(CreateFace(18, 18, 37, TRMeshFaceType.TexturedQuad, new[]
+            {
+                face.Vertices[1], face.Vertices[0], face.Vertices[3], face.Vertices[2]
+            }));
+        }
+
+        foreach (var (left, top, right, slantLeft, slantRight) in
+            new List<(short Left, short Top, short Right, short SlantLeft, short SlantRight)>
+        {
+            (190, 188, 230, 186, 226),
+            (298, 296, 338, 294, 334),
+            (407, 405, 448, 403, 444),
+        })
+        {
+            data.RoomEdits.Add(CreateFace(18, 18, 37, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[top].Vertices[2], mesh.Rectangles[top].Vertices[3],
+                mesh.Rectangles[right].Vertices[2], mesh.Rectangles[left].Vertices[3],
+            }));
+            data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[right].Vertices[3], mesh.Rectangles[left].Vertices[2],
+                mesh.Rectangles[left].Vertices[3], mesh.Rectangles[right].Vertices[2],
+            }));
+            data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[slantLeft].Vertices[3], mesh.Rectangles[slantRight].Vertices[2],
+                mesh.Rectangles[slantRight].Vertices[3], mesh.Rectangles[slantLeft].Vertices[2],
+            }));
+
+            data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[top].Vertices[1], mesh.Rectangles[top].Vertices[0],
+                mesh.Rectangles[top].Vertices[3], mesh.Rectangles[top].Vertices[2]
+            }));
+            data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[slantRight].Vertices[1], mesh.Rectangles[slantLeft].Vertices[0],
+                mesh.Rectangles[slantLeft].Vertices[1], mesh.Rectangles[slantRight].Vertices[0]
+            }));
+        }
+
+        foreach (var (left, top, right, slantLeft, slantRight) in
+            new List<(short Left, short Top, short Right, short SlantLeft, short SlantRight)>
+        {
+            (412, 365, 367, 417, 372),
+            (15, 257, 14, 307, 263),
+            (9, 149, 8, 199, 155),
+        })
+        {
+            if (left == 412)
+            {
+                data.RoomEdits.Add(CreateFace(18, 18, 37, TRMeshFaceType.TexturedQuad, new[]
+                {
+                    mesh.Rectangles[top].Vertices[0], mesh.Rectangles[top].Vertices[1],
+                    mesh.Rectangles[right].Vertices[2], mesh.Rectangles[left].Vertices[3],
+                }));
+                data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+                {
+                    mesh.Rectangles[right].Vertices[3], mesh.Rectangles[left].Vertices[2],
+                    mesh.Rectangles[left].Vertices[3], mesh.Rectangles[right].Vertices[2],
+                }));
+            }
+            else
+            {
+                data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+                {
+                    mesh.Rectangles[top].Vertices[0], mesh.Rectangles[top].Vertices[1],
+                    mesh.Triangles[right].Vertices[2], mesh.Triangles[left].Vertices[2],
+                }));
+                data.RoomEdits.Add(CreateFace(18, 18, 15, TRMeshFaceType.TexturedTriangle, new[]
+                {
+                    mesh.Triangles[left].Vertices[1], mesh.Triangles[left].Vertices[0], mesh.Triangles[left].Vertices[2]
+                }));
+                data.RoomEdits.Add(CreateFace(18, 18, 15, TRMeshFaceType.TexturedTriangle, new[]
+                {
+                    mesh.Triangles[right].Vertices[2], mesh.Triangles[right].Vertices[1], mesh.Triangles[right].Vertices[0]
+                }));
+            }
+            data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[slantLeft].Vertices[3], mesh.Rectangles[slantRight].Vertices[2],
+                mesh.Rectangles[slantRight].Vertices[3], mesh.Rectangles[slantLeft].Vertices[2],
+            }));
+
+            data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[top].Vertices[1], mesh.Rectangles[top].Vertices[0],
+                mesh.Rectangles[top].Vertices[3], mesh.Rectangles[top].Vertices[2]
+            }));
+            data.RoomEdits.Add(CreateFace(18, 18, 188, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[slantRight].Vertices[1], mesh.Rectangles[slantLeft].Vertices[0],
+                mesh.Rectangles[slantLeft].Vertices[1], mesh.Rectangles[slantRight].Vertices[0]
+            }));
+        }
     }
 }

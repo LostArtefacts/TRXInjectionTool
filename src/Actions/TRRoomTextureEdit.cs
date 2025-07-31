@@ -82,7 +82,7 @@ public class TRRoomVertexMove : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.MoveVertex;
     public ushort VertexIndex { get; set; }
-    public TRVertex VertexChange { get; set; }
+    public TRVertex VertexChange { get; set; } = new();
     public short ShadeChange { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer)
