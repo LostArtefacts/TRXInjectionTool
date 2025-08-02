@@ -12,12 +12,14 @@ public class TR2DoorSFXBuilder : InjectionBuilder
         {
             FixGeneralDoor(TR2Type.Door2),
             FixGeneralDoor(TR2Type.Door3),
+            FixGeneralDoor(TR2Type.Door5),
             FixGeneralDoor(TR2Type.LiftingDoor1),
 
             FixWall(),
             FixOpera(),
             FixPlatformDoors(),
             FixLQDoors(),
+            FixXianDoors(),
             FixPortcullises(),
         };
     }
@@ -170,6 +172,22 @@ public class TR2DoorSFXBuilder : InjectionBuilder
             TotalCount = 1,
         });
 
+        return data;
+    }
+
+    private static InjectionData FixXianDoors()
+    {
+        var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.General, "xian_sfx");
+        foreach (var type in new[] { TR2Type.LiftingDoor1, TR2Type.LiftingDoor2 })
+        {
+            data.AnimCmdEdits.Add(new()
+            {
+                TypeID = (int)type,
+                AnimIndex = 4,
+                RawCount = 0,
+                TotalCount = 0,
+            });
+        }
         return data;
     }
 
