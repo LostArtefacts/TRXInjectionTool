@@ -1,5 +1,6 @@
 ﻿using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.FD;
@@ -8,6 +9,7 @@ public class TR1SanctuaryFDBuilder : FDBuilder
 {
     public override List<InjectionData> Build()
     {
+        var level = _control1.Read($"Resources/{TR1LevelNames.SANCTUARY}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "sanctuary_fd");
         CreateDefaultTests(data, TR1LevelNames.SANCTUARY);
         data.FloorEdits = new()
@@ -21,8 +23,17 @@ public class TR1SanctuaryFDBuilder : FDBuilder
             MakeMusicOneShot(0, 9, 15),
             MakeMusicOneShot(0, 9, 16),
             MakeMusicOneShot(0, 9, 17),
+            AdjustDoorCamera(level),
         };
 
         return new() { data };
+    }
+
+    private static TRFloorDataEdit AdjustDoorCamera(TR1Level level)
+    {
+        var trigger = GetTrigger(level, 9, 1, 17);
+        trigger.Actions.Find(a => a.CamAction != null)
+            .CamAction.Once = false;
+        return MakeTrigger(level, 9, 1, 17, trigger);
     }
 }

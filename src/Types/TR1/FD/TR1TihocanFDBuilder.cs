@@ -13,10 +13,8 @@ public class TR1TihocanFDBuilder : FDBuilder
         TR1Level tihocan = _control1.Read($"Resources/{TR1LevelNames.TIHOCAN}");
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "tihocan_fd");
         CreateDefaultTests(data, TR1LevelNames.TIHOCAN);
-        data.FloorEdits = new()
-        {
-            MakeRatTrigger(tihocan),
-        };
+        data.FloorEdits.Add(MakeRatTrigger(tihocan));
+        data.FloorEdits.Add(AdjustDoorCamera(tihocan));
 
         return new() { data };
     }
@@ -28,5 +26,13 @@ public class TR1TihocanFDBuilder : FDBuilder
         Debug.Assert(trigger != null);
 
         return MakeTrigger(tihocan, 62, 2, 7, trigger.Clone() as FDTriggerEntry);
+    }
+
+    private static TRFloorDataEdit AdjustDoorCamera(TR1Level level)
+    {
+        var trigger = GetTrigger(level, 108, 1, 3);
+        trigger.Actions.Find(a => a.CamAction != null)
+            .CamAction.Once = false;
+        return MakeTrigger(level, 108, 1, 3, trigger);
     }
 }
