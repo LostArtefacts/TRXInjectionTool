@@ -13,6 +13,7 @@ public class TR2BarkhangFDBuilder : FDBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.FDFix, "barkhang_fd");
         CreateDefaultTests(data, TR2LevelNames.MONASTERY);
         FixSlopeSoftlock(barkhang, data);
+        data.StaticMeshEdits.AddRange(FixBridgeCollision(barkhang));
 
         return new() { data };
     }
@@ -34,5 +35,21 @@ public class TR2BarkhangFDBuilder : FDBuilder
             VertexIndex = mesh.Rectangles[133].Vertices[3],
             VertexChange = new() { Y = 512 }
         });
+    }
+
+    private static IEnumerable<TRStaticMeshEdit> FixBridgeCollision(TR2Level level)
+    {
+        return new[] { 21, 22, 23 }
+            .Select(id => new TRStaticMeshEdit
+            {
+                TypeID = id,
+                Mesh = new()
+                {
+                    CollisionBox = new(),
+                    VisibilityBox = level.StaticMeshes[(TR2Type)((int)TR2Type.SceneryBase + id)].VisibilityBox,
+                    NonCollidable = true,
+                    Visible = true,
+                }
+            });
     }
 }

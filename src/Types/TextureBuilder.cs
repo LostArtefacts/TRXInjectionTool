@@ -761,6 +761,64 @@ public abstract class TextureBuilder : InjectionBuilder
         }
     }
 
+    protected static void FixPlaceholderBridges(TR2Level level, string levelName,
+        TRDictionary<TR2Type, TRStaticMesh> bridges)
+    {
+        // Get rid of bad geometry placeholder textures
+        var supportBridge = bridges.Keys.First();
+        var verts1 = new ushort[] { 18, 19, 26, 27 };
+        var verts2 = new ushort[] { 18, 19, 22, 23 };
+        bridges[supportBridge].Mesh.TexturedRectangles.RemoveAll(f =>
+            f.Vertices.All(verts1.Contains) || f.Vertices.All(verts2.Contains));
+
+        var packer = new TR2TexturePacker(level);
+        var regions = packer.GetMeshRegions(bridges.Values.Select(s => s.Mesh))
+            .Values.SelectMany(v => v);
+        var originalInfos = level.ObjectTextures.ToList();
+        ResetLevel(level, 1);
+
+        packer = new(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        level.StaticMeshes = bridges;
+        level.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        bridges.Values.SelectMany(s => s.Mesh.TexturedFaces)
+            .ToList().ForEach(f => f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]));
+
+        foreach (var (type, bridge) in bridges)
+        {
+            var mesh = bridge.Mesh;
+            bridge.NonCollidable = levelName == TR2LevelNames.MONASTERY || type != supportBridge;
+            if (type == supportBridge && levelName == TR2LevelNames.MONASTERY)
+            {
+                // Fix the supports extending too far into the bridge itself
+                foreach (var v in new[] { 3, 7, 11, 15 })
+                {
+                    mesh.Vertices[v].Y += 32;
+                }
+                foreach (var v in new[] { 0, 4, 8, 12 })
+                {
+                    mesh.Vertices[v].Y += 10;
+                }
+            }
+
+            // Fix missing double-sided faces
+            var singleSided = type == supportBridge
+                ? mesh.TexturedRectangles.FindAll(f => f.Vertices.All(v => v > 15))
+                : mesh.TexturedRectangles.ToList();
+            mesh.TexturedRectangles.AddRange(singleSided.Select(f =>
+                new TRMeshFace
+                {
+                    Type = TRFaceType.Rectangle,
+                    Texture = f.Texture,
+                    Vertices = level.ObjectTextures[f.Texture].Size.Height == 64
+                        ? new() { f.Vertices[1], f.Vertices[0], f.Vertices[3], f.Vertices[2] }
+                        : new() { f.Vertices[3], f.Vertices[2], f.Vertices[1], f.Vertices[0] }
+                }));
+        }
+    }
+
     protected class TextureSource
     {
         public short Room { get; set; }

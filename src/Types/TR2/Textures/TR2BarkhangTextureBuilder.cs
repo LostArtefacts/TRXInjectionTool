@@ -12,8 +12,7 @@ public class TR2BarkhangTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR2Level barkhang = _control2.Read($"Resources/{TR2LevelNames.MONASTERY}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.TextureFix, ID);
-        CreateDefaultTests(data, TR2LevelNames.MONASTERY);
+        InjectionData data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateVertexShifts(barkhang));
         data.RoomEdits.AddRange(CreateShifts(barkhang));
@@ -111,5 +110,36 @@ public class TR2BarkhangTextureBuilder : TextureBuilder
             Rotate(70, TRMeshFaceType.TexturedQuad, 112, 2),
             Rotate(87, TRMeshFaceType.TexturedTriangle, 57, 2),
         };
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.MONASTERY}");
+        FixPlaceholderBridges(level, TR2LevelNames.MONASTERY, new()
+        {
+            [TR2Type.SceneryBase + 21] = level.StaticMeshes[TR2Type.SceneryBase + 21],
+            [TR2Type.SceneryBase + 22] = level.StaticMeshes[TR2Type.SceneryBase + 22],
+            [TR2Type.SceneryBase + 23] = level.StaticMeshes[TR2Type.SceneryBase + 23],
+        });
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR2LevelNames.MONASTERY);
+
+        {
+            level = _control2.Read($"Resources/{TR2LevelNames.MONASTERY}");
+            var mesh = level.Rooms[40].Mesh;
+            data.RoomEdits.Add(CreateFace(40, 113, 84, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[7].Vertices[1], mesh.Rectangles[27].Vertices[0],
+                mesh.Rectangles[27].Vertices[3], mesh.Rectangles[7].Vertices[2],
+            }));
+            data.RoomEdits.Add(CreateFace(40, 113, 84, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[20].Vertices[1], mesh.Rectangles[8].Vertices[0],
+                mesh.Rectangles[8].Vertices[3], mesh.Rectangles[20].Vertices[2],
+            }));
+        }
+
+        return data;
     }
 }

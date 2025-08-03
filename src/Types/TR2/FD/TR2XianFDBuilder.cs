@@ -15,6 +15,7 @@ public class TR2XianFDBuilder : FDBuilder
         CreateDefaultTests(data, TR2LevelNames.XIAN);
         data.FloorEdits.AddRange(FixDeathTiles(xian));
         data.FloorEdits.AddRange(FixChamberKeySoftlock(xian));
+        data.StaticMeshEdits.AddRange(FixBridgeCollision(xian));
 
         return new() { data };
     }
@@ -114,5 +115,21 @@ public class TR2XianFDBuilder : FDBuilder
         };
 
         return edits;
+    }
+
+    private static IEnumerable<TRStaticMeshEdit> FixBridgeCollision(TR2Level level)
+    {
+        return new[] { 31, 32 }
+            .Select(id => new TRStaticMeshEdit
+            {
+                TypeID = id,
+                Mesh = new()
+                {
+                    CollisionBox = new(),
+                    VisibilityBox = level.StaticMeshes[(TR2Type)((int)TR2Type.SceneryBase + id)].VisibilityBox,
+                    NonCollidable = true,
+                    Visible = true,
+                }
+            });
     }
 }

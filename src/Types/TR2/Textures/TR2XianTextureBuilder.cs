@@ -12,8 +12,7 @@ public class TR2XianTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR2Level level = _control2.Read($"Resources/{TR2LevelNames.XIAN}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.TextureFix, ID);
-        CreateDefaultTests(data, TR2LevelNames.XIAN);
+        InjectionData data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateVertexShifts(level));
         data.RoomEdits.AddRange(CreateShifts(level));
@@ -369,5 +368,48 @@ public class TR2XianTextureBuilder : TextureBuilder
             Rotate(92, TRMeshFaceType.TexturedQuad, 269, 1),
             Rotate(190, TRMeshFaceType.TexturedQuad, 37, 3),
         };
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.XIAN}");
+        FixPlaceholderBridges(level, TR2LevelNames.XIAN, new()
+        {
+            [TR2Type.SceneryBase + 30] = level.StaticMeshes[TR2Type.SceneryBase + 30],
+            [TR2Type.SceneryBase + 31] = level.StaticMeshes[TR2Type.SceneryBase + 31],
+            [TR2Type.SceneryBase + 32] = level.StaticMeshes[TR2Type.SceneryBase + 32],
+        });
+        
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR2LevelNames.XIAN);
+
+        {
+            level = _control2.Read($"Resources/{TR2LevelNames.XIAN}");
+            var mesh = level.Rooms[8].Mesh;
+            data.RoomEdits.Add(CreateFace(8, 8, 181, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[11].Vertices[3], mesh.Rectangles[42].Vertices[0],
+                mesh.Rectangles[42].Vertices[3], mesh.Rectangles[8].Vertices[2],                
+            }));
+            data.RoomEdits.Add(CreateFace(8, 8, 181, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[181].Vertices[3], mesh.Rectangles[179].Vertices[0],
+                mesh.Rectangles[179].Vertices[3], mesh.Rectangles[181].Vertices[0],
+            }));
+
+            mesh = level.Rooms[38].Mesh;
+            data.RoomEdits.Add(CreateFace(38, 8, 181, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[38].Vertices[0], mesh.Rectangles[38].Vertices[3],
+                mesh.Rectangles[62].Vertices[1], mesh.Rectangles[13].Vertices[2],
+            }));
+            data.RoomEdits.Add(CreateFace(38, 8, 181, TRMeshFaceType.TexturedQuad, new[]
+            {
+                mesh.Rectangles[22].Vertices[3], mesh.Rectangles[22].Vertices[2],
+                mesh.Rectangles[2].Vertices[3], mesh.Triangles[4].Vertices[1],
+            }));
+        }
+
+        return data;
     }
 }
