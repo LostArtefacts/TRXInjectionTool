@@ -129,80 +129,15 @@ public class TR1LaraAnimBuilder : LaraBuilder
         }
 
         // Running jump right forward
-        tr1Lara.Animations[17].Changes.Add(new()
-        {
-            StateID = (ushort)InjState.Twist,
-            Dispatches = new()
-            {
-                new()
-                {
-                    Low = 0,
-                    High = 4,
-                    NextAnimation = (short)InjAnim.RunJumpRollStart,
-                    NextFrame = 0,
-                }
-            }
-        });
+        AddChange(tr1Lara, 17, InjState.Twist, 0, 4, InjAnim.RunJumpRollStart, 0);
         // Running jump left forward
-        tr1Lara.Animations[19].Changes.Add(new()
-        {
-            StateID = (ushort)InjState.Twist,
-            Dispatches = new()
-            {
-                new()
-                {
-                    Low = 0,
-                    High = 4,
-                    NextAnimation = (short)InjAnim.RunJumpRollStart,
-                    NextFrame = 0,
-                }
-            }
-        });
+        AddChange(tr1Lara, 19, InjState.Twist, 0, 4, InjAnim.RunJumpRollStart, 0);
         // Standing jump back
-        tr1Lara.Animations[75].Changes.Add(new()
-        {
-            StateID = (ushort)InjState.Twist,
-            Dispatches = new()
-            {
-                new()
-                {
-                    Low = 0,
-                    High = 4,
-                    NextAnimation = (short)InjAnim.JumpBackRollStart,
-                    NextFrame = 0,
-                }
-            }
-        });
+        AddChange(tr1Lara, 75, InjState.Twist, 0, 4, InjAnim.JumpBackRollStart, 0);
         // Standing jump forward
-        tr1Lara.Animations[77].Changes.Add(new()
-        {
-            StateID = (ushort)InjState.Twist,
-            Dispatches = new()
-            {
-                new()
-                {
-                    Low = 0,
-                    High = 4,
-                    NextAnimation = (short)InjAnim.JumpFwdRollStart,
-                    NextFrame = 0,
-                }
-            }
-        });
+        AddChange(tr1Lara, 77, InjState.Twist, 0, 4, InjAnim.JumpFwdRollStart, 0);
         // Freefall to somersault
-        tr1Lara.Animations[153].Changes.Add(new()
-        {
-            StateID = (ushort)InjState.Twist,
-            Dispatches = new()
-            {
-                new()
-                {
-                    Low = 0,
-                    High = 9,
-                    NextAnimation = (short)InjAnim.Somersault,
-                    NextFrame = 0,
-                }
-            }
-        });
+        AddChange(tr1Lara, 153, InjState.Twist, 0, 9, InjAnim.Somersault, 0);
     }
 
     static void ImportUWRoll(TRModel tr1Lara)
@@ -224,23 +159,11 @@ public class TR1LaraAnimBuilder : LaraBuilder
 
         (uwRollStart.Commands.Find(c => c is TRSFXCommand) as TRSFXCommand).Environment = TRSFXEnvironment.Any;
 
-        int[] changeAnims = new int[] { 86, 87, 108 }; // Swimming, gliding and UW idle
-        foreach (int changeAnim in changeAnims)
+        // Swimming, gliding and UW idle
+        foreach (int changeAnim in new[] { 86, 87, 108 })
         {
-            tr1Lara.Animations[changeAnim].Changes.Add(new()
-            {
-                StateID = (ushort)InjState.UWRoll,
-                Dispatches = new()
-                {
-                    new()
-                    {
-                        Low = 0,
-                        High = (short)(tr1Lara.Animations[changeAnim].FrameEnd + 1),
-                        NextAnimation = (short)InjAnim.UWRollStart,
-                        NextFrame = 0,
-                    }
-                }
-            });
+            AddChange(tr1Lara, changeAnim, InjState.UWRoll, 0,
+                (short)(tr1Lara.Animations[changeAnim].FrameEnd + 1), InjAnim.UWRollStart, 0);
         }
     }
 
@@ -331,76 +254,14 @@ public class TR1LaraAnimBuilder : LaraBuilder
 
         tr1Lara.Animations[(int)InjAnim.UWToStand].FrameEnd = 31; // Default is 33, but for some reason this causes Hair to cause a crash - Item_GetFrames div by 0?
 
-        // Additional state changes
-        {
-            // Step left into surf swim left
-            TRAnimation anim = tr1Lara.Animations[65];
-            anim.Changes.Add(new()
-            {
-                StateID = 48,
-                Dispatches = new()
-                {
-                    new()
-                    {
-                        Low = 0,
-                        High = 25,
-                        NextAnimation = 143,
-                        NextFrame = 0,
-                    }
-                }
-            });
-
-            // Step right into surf swim right
-            anim = tr1Lara.Animations[67];
-            anim.Changes.Add(new()
-            {
-                StateID = 49,
-                Dispatches = new()
-                {
-                    new()
-                    {
-                        Low = 0,
-                        High = 25,
-                        NextAnimation = 144,
-                        NextFrame = 0,
-                    }
-                }
-            });
-
-            // Surf swim left into step left
-            anim = tr1Lara.Animations[143];
-            anim.Changes.Add(new()
-            {
-                StateID = 22,
-                Dispatches = new()
-                {
-                    new()
-                    {
-                        Low = 0,
-                        High = 45,
-                        NextAnimation = 65,
-                        NextFrame = 0,
-                    }
-                }
-            });
-
-            // Surf swim right into step right
-            anim = tr1Lara.Animations[144];
-            anim.Changes.Add(new()
-            {
-                StateID = 21,
-                Dispatches = new()
-                {
-                    new()
-                    {
-                        Low = 0,
-                        High = 45,
-                        NextAnimation = 67,
-                        NextFrame = 0,
-                    }
-                }
-            });
-        }
+        // Step left into surf swim left
+        AddChange(tr1Lara, 65, 48, 0, 25, 143, 0);
+        // Step right into surf swim right
+        AddChange(tr1Lara, 67, 49, 0, 25, 144, 0);
+        // Surf swim left into step left
+        AddChange(tr1Lara, 143, 22, 0, 45, 65, 0);
+        // Surf swim right into step right
+        AddChange(tr1Lara, 144, 21, 0, 45, 67, 0);
 
         // Change Lara's underwater lever animation to match TR2.
         tr1Lara.Animations[129].Commands.Add(new TREmptyHandsCommand());

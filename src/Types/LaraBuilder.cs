@@ -104,50 +104,11 @@ public abstract class LaraBuilder : InjectionBuilder
         });
 
         // Arabian-to-jump
-        anim.Changes.Add(new()
-        {
-            StateID = 15,
-            Dispatches = new()
-            {
-                new()
-                {
-                    Low = 33,
-                    High = 37,
-                    NextAnimation = 73,
-                    NextFrame = 6,
-                }
-            },
-        });
+        AddChange(anim, 15, 33, 37, 73, 6);
         // Arabian-to-roll
-        anim.Changes.Add(new()
-        {
-            StateID = 45,
-            Dispatches = new()
-            {
-                new()
-                {
-                    Low = 33,
-                    High = 37,
-                    NextAnimation = 146,
-                    NextFrame = 1,
-                }
-            }
-        });
+        AddChange(anim, 45, 33, 37, 146, 1);
         // Arabian-loop
-        anim.Changes.Add(new()
-        {
-            StateID = (ushort)ResponsiveState,
-            Dispatches = new()
-            {
-                new()
-                {
-                    Low = 32,
-                    High = 32,
-                    NextAnimation = animID,
-                    NextFrame = 2,
-                }
-            }
-        });
+        AddChange(anim, ResponsiveState, 32, 32, animID, 2);
     }
 
     protected static void ImportControlledDrop(TRModel lara, short continueAnimID)
@@ -184,47 +145,32 @@ public abstract class LaraBuilder : InjectionBuilder
         upStartAnim.Commands.Add(new TREmptyHandsCommand());
         backStartAnim.Commands.Add(new TREmptyHandsCommand());
 
-        var hangAnim = lara.Animations[96];
         // Marker for engine that hanging is responsive
-        hangAnim.Changes.Add(new()
-        {
-            StateID = (ushort)ResponsiveState,
-            Dispatches = new()
-            {
-                new()
-                {
-                    NextAnimation = 96,
-                    NextFrame = 21,
-                    Low = 21,
-                    High = 22,
-                }
-            },
-        });
+        AddChange(lara, 96, ResponsiveState, 21, 22, 96, 21);
         // Hang to jump up
-        hangAnim.Changes.Add(new()
-        {
-            StateID = 28,
-            Dispatches = new()
-            {
-                new()
-                {
-                    NextAnimation = startAnimID,
-                    Low = 21,
-                    High = 22,
-                }
-            },
-        });
+        AddChange(lara, 96, 28, 21, 22, startAnimID, 0);
         // Hang to jump back
-        hangAnim.Changes.Add(new()
+        AddChange(lara, 96, 25, 21, 22, startAnimID + 2, 0);
+    }
+
+    protected static void AddChange
+        (TRModel lara, int animIdx, object goalStateID, short low, short high, object nextAnimIdx, short nextFrame)
+        => AddChange(lara.Animations[animIdx], goalStateID, low, high, nextAnimIdx, nextFrame);
+
+    protected static void AddChange
+        (TRAnimation anim, object goalStateID, short low, short high, object nextAnimIdx, short nextFrame)
+    {
+        anim.Changes.Add(new()
         {
-            StateID = 25,
+            StateID = Convert.ToUInt16(goalStateID),
             Dispatches = new()
             {
                 new()
                 {
-                    NextAnimation = (short)(startAnimID + 2),
-                    Low = 21,
-                    High = 22,
+                    Low = low,
+                    High = high,
+                    NextAnimation = Convert.ToInt16(nextAnimIdx),
+                    NextFrame = nextFrame,
                 }
             },
         });
