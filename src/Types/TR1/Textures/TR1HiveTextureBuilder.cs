@@ -17,6 +17,7 @@ public class TR1HiveTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
 
         FixPassport(hive, data);
+        FixBigPod(data, TR1LevelNames.HIVE);
 
         return new() { data };
     }

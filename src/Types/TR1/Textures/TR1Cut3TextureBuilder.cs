@@ -15,6 +15,7 @@ public class TR1Cut3TextureBuilder : TextureBuilder
 
         data.RoomEdits.AddRange(CreateRotations());
         FixPlatformDoorArea(data, cut3);
+        FixBigPod(data, TR1LevelNames.MINES_CUT);
 
         return new() { data };
     }

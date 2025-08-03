@@ -2,6 +2,7 @@
 using System.Drawing;
 using TRImageControl;
 using TRImageControl.Packing;
+using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -580,6 +581,57 @@ public abstract class TextureBuilder : InjectionBuilder
             {
                 f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
             });
+    }
+
+    protected static void FixBigPod(InjectionData data, string levelName)
+    {
+        var targetType = levelName == TR1LevelNames.MINES_CUT || levelName == TR1LevelNames.ATLANTIS_CUT
+            ? TR1Type.AtlanteanEgg
+            : TR1Type.AdamEgg;
+        var level = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
+        level.Models = new()
+        {
+            [targetType] = level.Models[TR1Type.AdamEgg],
+        };
+        foreach (var frame in level.Models[targetType].Animations.SelectMany(a => a.Frames))
+        {
+            frame.Bounds.MinX -= 254;
+            frame.Bounds.MaxX -= 254;
+            frame.OffsetX -= 254;
+
+            frame.Bounds.MinZ += 262;
+            frame.Bounds.MaxZ += 262;
+            frame.OffsetZ += 262;
+
+            frame.Bounds.MinY += 72;
+            frame.Bounds.MaxY += 72;
+            frame.OffsetY += 72;
+        }
+
+        data.FrameReplacements.AddRange(TRFrameReplacement.CreateFrom(level));
+
+        var tarLevel = _control1.Read($"Resources/{levelName}");
+        foreach (var item in tarLevel.Entities.Where(e => e.TypeID == targetType))
+        {
+            var x = (item.X & ~TRConsts.WallMask) + TRConsts.Step2;
+            var z = (item.Z & ~TRConsts.WallMask) + TRConsts.Step2;
+            if (x == item.X && z == item.Z)
+            {
+                continue;
+            }
+            item.X = x;
+            item.Z = z;
+            var idx = (short)tarLevel.Entities.IndexOf(item);
+            if (idx == 47 && levelName == TR1LevelNames.HIVE)
+            {
+                item.X += TRConsts.Step1;
+            }
+            data.ItemEdits.Add(new()
+            {
+                Index = idx,
+                Item = item,
+            });
+        }
     }
 
     protected static void FixPassport(TRLevelBase level, InjectionData data)

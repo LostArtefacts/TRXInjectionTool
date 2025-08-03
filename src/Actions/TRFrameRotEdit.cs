@@ -50,30 +50,38 @@ public class TRFrameReplacement
         }
     }
 
+    public static IEnumerable<TRFrameReplacement> CreateFrom(TR1Level level)
+    {
+        var tempData = InjectionData.Create(level, InjectionType.General, string.Empty);
+        return level.Models.Select(kvp => Create(tempData, kvp.Value, (uint)kvp.Key));
+    }
+
     public static IEnumerable<TRFrameReplacement> CreateFrom(TR2Level level)
     {
         var tempData = InjectionData.Create(level, InjectionType.General, string.Empty);
-        foreach (var (type, model) in level.Models)
+        return level.Models.Select(kvp => Create(tempData, kvp.Value, (uint)kvp.Key));
+    }
+
+    private static TRFrameReplacement Create(InjectionData tempData, TRModel model, uint type)
+    {
+        var replacer = new TRFrameReplacement
         {
-            var replacer = new TRFrameReplacement
-            {
-                ModelID = (uint)type,
-            };
-            var flatModel = tempData.Models.Find(m => m.ID == replacer.ModelID);
-            var idx = tempData.Models.IndexOf(flatModel);
-            var nextFramesetOffset = idx == tempData.Models.Count - 1
-                ? tempData.AnimFrames.Count
-                : (int)(tempData.Models[idx + 1].FrameOffset / 2);
-            for (int i = 0; i < model.Animations.Count; i++)
-            {
-                var animIdx = flatModel.Animation + i;
-                var offset = (int)(tempData.Animations[animIdx].FrameOffset / 2);
-                var nextOffset = i == model.Animations.Count - 1
-                    ? nextFramesetOffset
-                    : (int)(tempData.Animations[animIdx + 1].FrameOffset / 2);
-                replacer.Frames[i] = tempData.AnimFrames.GetRange(offset, nextOffset - offset);
-            }
-            yield return replacer;
+            ModelID = (uint)type,
+        };
+        var flatModel = tempData.Models.Find(m => m.ID == replacer.ModelID);
+        var idx = tempData.Models.IndexOf(flatModel);
+        var nextFramesetOffset = idx == tempData.Models.Count - 1
+            ? tempData.AnimFrames.Count
+            : (int)(tempData.Models[idx + 1].FrameOffset / 2);
+        for (int i = 0; i < model.Animations.Count; i++)
+        {
+            var animIdx = flatModel.Animation + i;
+            var offset = (int)(tempData.Animations[animIdx].FrameOffset / 2);
+            var nextOffset = i == model.Animations.Count - 1
+                ? nextFramesetOffset
+                : (int)(tempData.Animations[animIdx + 1].FrameOffset / 2);
+            replacer.Frames[i] = tempData.AnimFrames.GetRange(offset, nextOffset - offset);
         }
+        return replacer;
     }
 }

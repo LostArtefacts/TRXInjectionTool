@@ -19,6 +19,7 @@ public class TR1PyramidTextureBuilder : TextureBuilder
 
         FixRoom25(pyramid, data);
         FixPassport(pyramid, data);
+        FixBigPod(data, TR1LevelNames.PYRAMID);
 
         return new() { data };
     }

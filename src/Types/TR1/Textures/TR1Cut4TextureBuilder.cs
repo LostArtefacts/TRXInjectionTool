@@ -17,6 +17,7 @@ public class TR1Cut4TextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
 
         FixMissingDoors(cut4, data);
+        FixBigPod(data, TR1LevelNames.ATLANTIS_CUT);
 
         return new() { data };
     }

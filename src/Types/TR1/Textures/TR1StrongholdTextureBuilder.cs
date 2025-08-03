@@ -21,6 +21,7 @@ public class TR1StrongholdTextureBuilder : TextureBuilder
         FixRoom13(stronghold, data);
         FixHubRoom(stronghold, data);
         FixPassport(stronghold, data);
+        FixBigPod(data, TR1LevelNames.STRONGHOLD);
 
         return new() { data };
     }

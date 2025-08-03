@@ -19,6 +19,7 @@ public partial class TR1AtlantisTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateShifts(atlantis));
         data.RoomEdits.AddRange(FixCatwalks(atlantis));
         FixPlatformDoorArea(data, atlantis);
+        FixBigPod(data, TR1LevelNames.ATLANTIS);
         FixPassport(atlantis, data);
 
         return new() { data };
