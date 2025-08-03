@@ -4,16 +4,24 @@ namespace TRXInjectionTool.Types;
 
 public abstract class LaraBuilder : InjectionBuilder
 {
+    private static readonly string _extLaraPath = "Resources/lara_ext.phd";
+
     protected abstract short JumpSFX { get; }
     protected abstract short DryFeetSFX { get; }
     protected abstract short WetFeetSFX { get; }
     protected abstract short LandSFX { get; }
     protected abstract short ResponsiveState { get; }
 
+    public static TRModel GetLaraPoseModel()
+        => _control1.Read(_extLaraPath).Models[TR1Type.Lara];
+
+    public static TRModel GetLaraExtModel()
+        => _control1.Read(_extLaraPath).Models[TR1Type.LaraMiscAnim_H];
+
     protected void ImportNeutralTwist(TRModel lara, short animID, short stateID)
     {
-        var julyBeta = _control1.Read("Resources/TR1/1996-07-02.phd");
-        var anim = julyBeta.Models[TR1Type.Lara].Animations[61];
+        var laraExt = GetLaraExtModel();
+        var anim = laraExt.Animations[15];
         lara.Animations.Add(anim);
         anim.NextAnimation = 11;
         anim.StateID = (ushort)stateID;
@@ -128,10 +136,9 @@ public abstract class LaraBuilder : InjectionBuilder
 
     protected static void ImportControlledDrop(TRModel lara, short continueAnimID)
     {
-        var twistLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
-        var twistLara = twistLevel.Models[TR1Type.Lara];
-        var startAnim = twistLara.Animations[9];
-        var endAnim = twistLara.Animations[10];
+        var laraExt = GetLaraExtModel();
+        var startAnim = laraExt.Animations[9];
+        var endAnim = laraExt.Animations[10];
 
         lara.Animations.Add(startAnim);
         lara.Animations.Add(endAnim);
@@ -141,12 +148,11 @@ public abstract class LaraBuilder : InjectionBuilder
 
     protected void ImportHangToJump(TRModel lara, short startAnimID)
     {
-        var baseLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
-        var baseLara = baseLevel.Models[TR1Type.Lara];
-        var upStartAnim = baseLara.Animations[11];
-        var upEndAnim = baseLara.Animations[12];
-        var backStartAnim = baseLara.Animations[13];
-        var backEndAnim = baseLara.Animations[14];        
+        var laraExt = GetLaraExtModel();
+        var upStartAnim = laraExt.Animations[11];
+        var upEndAnim = laraExt.Animations[12];
+        var backStartAnim = laraExt.Animations[13];
+        var backEndAnim = laraExt.Animations[14];        
 
         lara.Animations.Add(upStartAnim);
         lara.Animations.Add(upEndAnim);

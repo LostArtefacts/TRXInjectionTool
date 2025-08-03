@@ -209,10 +209,8 @@ public class TR1LaraAnimBuilder : LaraBuilder
 
     static void ImportUWRoll(TRModel tr1Lara)
     {
-        // This is a trimmed down anim set, only the two we're interested in are present.
         // See PR 1272/1276
-        TR1Level animLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
-        TRModel tr2Lara = animLevel.Models[TR1Type.Lara];
+        TRModel tr2Lara = GetLaraExtModel();
 
         TRAnimation uwRollStart = tr2Lara.Animations[0];
         TRAnimation uwRollEnd = tr2Lara.Animations[1];
@@ -250,8 +248,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
 
     private static void ImproveTwists(TRModel tr2Lara)
     {
-        var twistLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
-        var twistLara = twistLevel.Models[TR1Type.Lara];
+        var twistLara = GetLaraExtModel();
 
         tr2Lara.Animations[(int)InjAnim.RunJumpRollStart] = twistLara.Animations[2];
         tr2Lara.Animations[(int)InjAnim.RunJumpRollEnd] = twistLara.Animations[3];

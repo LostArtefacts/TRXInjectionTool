@@ -78,8 +78,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
 
     private static void ImproveTwists(TRModel tr2Lara)
     {
-        var twistLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
-        var twistLara = twistLevel.Models[TR1Type.Lara];
+        var twistLara = GetLaraExtModel();
         tr2Lara.Animations[203] = twistLara.Animations[0];
         tr2Lara.Animations[205] = twistLara.Animations[1];
         tr2Lara.Animations[203].NextAnimation = 205;

@@ -10,8 +10,8 @@ public class TRXPoseBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
-        var level = _control1.Read($"Resources/pose.phd");
-        var poses = level.Models[TR1Type.Lara].Animations.Select(a => new Pose(a)).ToList();
+        var lara = LaraBuilder.GetLaraPoseModel();
+        var poses = lara.Animations.Select(a => new Pose(a)).ToList();
         
         string outputPath = $"Output/TRX/poses.json5";
         Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
