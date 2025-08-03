@@ -43,14 +43,12 @@ public class TR2LaraAnimBuilder : LaraBuilder
     public override List<InjectionData> Build()
     {
         TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
-        TR3Level jungle = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
         TRModel tr2Lara = wall.Models[TR2Type.Lara];
-        TRModel tr3Lara = jungle.Models[TR3Type.Lara];
 
         ResetLevel(wall);
         wall.Models[TR2Type.Lara] = tr2Lara;
         
-        ImportSlideToRun(tr2Lara, tr3Lara);
+        ImportSlideToRun(tr2Lara);
         ImproveTwists(tr2Lara);
         ImportNeutralTwist(tr2Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll);
         ImportControlledDrop(tr2Lara, (short)InjAnim.ControlledDropContinue);
@@ -60,20 +58,6 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ExportLaraWAD(wall);
 
         return new() { data };
-    }
-
-    private static void ImportSlideToRun(TRModel tr2Lara, TRModel tr3Lara)
-    {
-        TRAnimation anim = tr3Lara.Animations[246].Clone();
-        tr2Lara.Animations.Add(anim);
-
-        anim.Commands.RemoveAll(a => a is not TRSFXCommand);
-        (anim.Commands[0] as TRSFXCommand).SoundID = (short)TR2SFX.LaraWetFeet;
-
-        TRStateChange change = tr3Lara.Animations[70].Changes.Find(c => c.StateID == 1).Clone();
-        change.StateID = (ushort)InjState.Responsive;
-        change.Dispatches[0].NextAnimation = (short)InjAnim.SlideToRun;
-        tr2Lara.Animations[70].Changes.Add(change);
     }
 
     private static void ImproveTwists(TRModel tr2Lara)

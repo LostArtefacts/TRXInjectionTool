@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 
 namespace TRXInjectionTool.Types;
 
@@ -17,6 +18,21 @@ public abstract class LaraBuilder : InjectionBuilder
 
     public static TRModel GetLaraExtModel()
         => _control1.Read(_extLaraPath).Models[TR1Type.LaraMiscAnim_H];
+
+    protected void ImportSlideToRun(TRModel lara)
+    {
+        var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
+        var anim = tr3Lara.Animations[246].Clone();
+        lara.Animations.Add(anim);
+
+        anim.Commands.RemoveAll(a => a is not TRSFXCommand);
+        (anim.Commands[0] as TRSFXCommand).SoundID = WetFeetSFX;
+
+        var change = tr3Lara.Animations[70].Changes.Find(c => c.StateID == 1).Clone();
+        change.StateID = (ushort)ResponsiveState;
+        change.Dispatches[0].NextAnimation = (short)(lara.Animations.Count - 1);
+        lara.Animations[70].Changes.Add(change);
+    }
 
     protected void ImportNeutralTwist(TRModel lara, short animID, short stateID)
     {
