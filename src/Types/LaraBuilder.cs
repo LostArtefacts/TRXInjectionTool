@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using System.Diagnostics;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 
 namespace TRXInjectionTool.Types;
@@ -12,6 +13,27 @@ public abstract class LaraBuilder : InjectionBuilder
     protected abstract short WetFeetSFX { get; }
     protected abstract short LandSFX { get; }
     protected abstract short ResponsiveState { get; }
+
+    protected enum TR3LaraAnim
+    {
+        Sprint = 223,
+        RunToSprintLeft = 224,
+        RunToSprintRight = 225,
+        SprintSlideStandLeft = 228,
+        SprintSlideStandRight = 226,
+        SprintToRollLeft = 230,
+        SprintRollLeftToRun = 232,
+        SprintToRollRight = 308,
+        SprintRollRightToRun = 309,
+        SprintToRunLeft = 243,
+        SprintToRunRight = 244,
+    }
+
+    protected enum TR3LaraState
+    {
+        Sprint = 73,
+        SprintRoll = 74
+    }
 
     public static TRModel GetLaraPoseModel()
         => _control1.Read(_extLaraPath).Models[TR1Type.Lara];
@@ -151,6 +173,53 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(lara, 96, 28, 21, 22, startAnimID, 0);
         // Hang to jump back
         AddChange(lara, 96, 25, 21, 22, startAnimID + 2, 0);
+    }
+
+    protected void ImportSprint<A, S>(TRModel lara,
+        Dictionary<TR3LaraAnim, A> animMap, Dictionary<TR3LaraState, S> stateMap)
+        where A : Enum
+        where S : Enum
+    {
+        var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
+        foreach (var (tr3Idx, newIdx) in animMap)
+        {
+            var anim = tr3Lara.Animations[(int)tr3Idx].Clone();
+            var animIdx = Convert.ToInt16(newIdx);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+
+            anim.Commands.RemoveAll(a => a is not TRSFXCommand);
+            anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == 17)
+                .ToList().ForEach(s => s.SoundID = WetFeetSFX);
+
+            if (Enum.IsDefined(typeof(TR3LaraState), (int)anim.StateID))
+            {
+                anim.StateID = Convert.ToUInt16(stateMap[(TR3LaraState)anim.StateID]);
+            }
+            if (Enum.IsDefined(typeof(TR3LaraAnim), (int)anim.NextAnimation))
+            {
+                anim.NextAnimation = Convert.ToUInt16(animMap[(TR3LaraAnim)anim.NextAnimation]);
+            }
+
+            anim.Changes.RemoveAll(c => c.Dispatches.Any(d => !Enum.IsDefined(typeof(TR3LaraAnim), (int)d.NextAnimation)));
+            foreach (var change in anim.Changes)
+            {
+                if (Enum.IsDefined(typeof(TR3LaraState), (int)change.StateID))
+                {
+                    change.StateID = Convert.ToUInt16(stateMap[(TR3LaraState)change.StateID]);
+                }
+                foreach (var dispatch in change.Dispatches)
+                {
+                    if (Enum.IsDefined(typeof(TR3LaraAnim), (int)dispatch.NextAnimation))
+                    {
+                        dispatch.NextAnimation = Convert.ToInt16(animMap[(TR3LaraAnim)dispatch.NextAnimation]);
+                    }
+                }
+            }
+        }
+
+        AddChange(lara, 0, stateMap[TR3LaraState.Sprint], 0, 1, animMap[TR3LaraAnim.RunToSprintLeft], 0);
+        AddChange(lara, 0, stateMap[TR3LaraState.Sprint], 11, 12, animMap[TR3LaraAnim.RunToSprintRight], 0);
     }
 
     protected static void AddChange

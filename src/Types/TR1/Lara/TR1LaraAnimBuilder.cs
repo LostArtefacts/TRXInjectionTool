@@ -15,6 +15,27 @@ public class TR1LaraAnimBuilder : LaraBuilder
     private static readonly DateTimeOffset _wadZipPlaceholderDate
         = new(new DateTime(2025, 5, 15, 11, 0, 0), new TimeSpan());
 
+    private static readonly Dictionary<TR3LaraAnim, InjAnim> _sprintAnimMap = new()
+    {
+        [TR3LaraAnim.Sprint] = InjAnim.Sprint,
+        [TR3LaraAnim.RunToSprintLeft] = InjAnim.RunToSprintLeft,
+        [TR3LaraAnim.RunToSprintRight] = InjAnim.RunToSprintRight,
+        [TR3LaraAnim.SprintSlideStandLeft] = InjAnim.SprintSlideStandLeft,
+        [TR3LaraAnim.SprintSlideStandRight] = InjAnim.SprintSlideStandRight,
+        [TR3LaraAnim.SprintToRollLeft] = InjAnim.SprintToRollLeft,
+        [TR3LaraAnim.SprintRollLeftToRun] = InjAnim.SprintRollLeftToRun,
+        [TR3LaraAnim.SprintToRollRight] = InjAnim.SprintToRollRight,
+        [TR3LaraAnim.SprintRollRightToRun] = InjAnim.SprintRollRightToRun,
+        [TR3LaraAnim.SprintToRunLeft] = InjAnim.SprintToRunLeft,
+        [TR3LaraAnim.SprintToRunRight] = InjAnim.SprintToRunRight,
+    };
+
+    private static readonly Dictionary<TR3LaraState, InjState> _sprintStateMap = new()
+    {
+        [TR3LaraState.Sprint] = InjState.Sprint,
+        [TR3LaraState.SprintRoll] = InjState.SprintRoll,
+    };
+
     public override string ID => "tr1-lara-anims";
     protected override short JumpSFX => (short)TR1SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR1SFX.LaraFeet;
@@ -57,6 +78,17 @@ public class TR1LaraAnimBuilder : LaraBuilder
         HangToJumpUpContinue = 190,
         HangToJumpBack = 191,
         HangToJumpBackContinue = 192,
+        Sprint = 193,
+        RunToSprintLeft = 194,
+        RunToSprintRight = 195,
+        SprintSlideStandLeft = 196,
+        SprintSlideStandRight = 197,
+        SprintToRollLeft = 198,
+        SprintRollLeftToRun = 199,
+        SprintToRollRight = 200,
+        SprintRollRightToRun = 201,
+        SprintToRunLeft = 202,
+        SprintToRunRight = 203,
     };
 
     enum InjState : int
@@ -66,6 +98,8 @@ public class TR1LaraAnimBuilder : LaraBuilder
         Wade = 59,
         Responsive = 60,
         NeutralRoll = 61,
+        Sprint = 62,
+        SprintRoll = 63,
     };
 
     public override List<InjectionData> Build()
@@ -89,6 +123,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportNeutralTwist(tr1Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll);
         ImportControlledDrop(tr1Lara, (short)InjAnim.ControlledDropContinue);
         ImportHangToJump(tr1Lara, (short)InjAnim.HangToJumpUp);
+        ImportSprint(tr1Lara, _sprintAnimMap, _sprintStateMap);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);
