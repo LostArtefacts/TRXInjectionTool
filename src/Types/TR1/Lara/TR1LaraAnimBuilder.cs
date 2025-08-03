@@ -20,6 +20,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
     protected override short DryFeetSFX => (short)TR1SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR1SFX.LaraWetFeet;
     protected override short LandSFX => (short)TR1SFX.LaraLand;
+    protected override short ResponsiveState => (short)InjState.Responsive;
 
     enum InjAnim : int
     {
@@ -52,6 +53,10 @@ public class TR1LaraAnimBuilder : LaraBuilder
         JumpNeutralRoll = 186,
         ControlledDrop = 187,
         ControlledDropContinue = 188,
+        HangToJumpUp = 189,
+        HangToJumpUpContinue = 190,
+        HangToJumpBack = 191,
+        HangToJumpBackContinue = 192,
     };
 
     enum InjState : int
@@ -83,8 +88,9 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportTR2Gliding(tr1Lara, tr2Lara);
         ImportSlideToRun(tr1Lara, tr3Lara);
         ImproveTwists(tr1Lara);
-        ImportNeutralTwist(tr1Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll, (short)InjState.Responsive);
+        ImportNeutralTwist(tr1Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll);
         ImportControlledDrop(tr1Lara, (short)InjAnim.ControlledDropContinue);
+        ImportHangToJump(tr1Lara, (short)InjAnim.HangToJumpUp);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);

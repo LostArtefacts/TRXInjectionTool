@@ -19,6 +19,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
     protected override short DryFeetSFX => (short)TR2SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR2SFX.LaraWetFeet;
     protected override short LandSFX => (short)TR2SFX.LaraLand;
+    protected override short ResponsiveState => (short)InjState.Responsive;
 
     enum InjAnim : int
     {
@@ -27,6 +28,10 @@ public class TR2LaraAnimBuilder : LaraBuilder
         JumpNeutralRoll = 220,
         ControlledDrop = 221,
         ControlledDropContinue = 222,
+        HangToJumpUp = 223,
+        HangToJumpUpContinue = 224,
+        HangToJumpBack = 225,
+        HangToJumpBackContinue = 226,
     };
 
     enum InjState : int
@@ -47,8 +52,9 @@ public class TR2LaraAnimBuilder : LaraBuilder
         
         ImportSlideToRun(tr2Lara, tr3Lara);
         ImproveTwists(tr2Lara);
-        ImportNeutralTwist(tr2Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll, (short)InjState.Responsive);
+        ImportNeutralTwist(tr2Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll);
         ImportControlledDrop(tr2Lara, (short)InjAnim.ControlledDropContinue);
+        ImportHangToJump(tr2Lara, (short)InjAnim.HangToJumpUp);
 
         var data = InjectionData.Create(wall, InjectionType.LaraAnims, "lara_animations");
         ExportLaraWAD(wall);

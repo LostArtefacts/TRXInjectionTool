@@ -8,8 +8,9 @@ public abstract class LaraBuilder : InjectionBuilder
     protected abstract short DryFeetSFX { get; }
     protected abstract short WetFeetSFX { get; }
     protected abstract short LandSFX { get; }
+    protected abstract short ResponsiveState { get; }
 
-    protected void ImportNeutralTwist(TRModel lara, short animID, short stateID, short responsiveID)
+    protected void ImportNeutralTwist(TRModel lara, short animID, short stateID)
     {
         var julyBeta = _control1.Read("Resources/TR1/1996-07-02.phd");
         var anim = julyBeta.Models[TR1Type.Lara].Animations[61];
@@ -51,7 +52,7 @@ public abstract class LaraBuilder : InjectionBuilder
         // Compress-to-arabian
         lara.Animations[73].Changes.Add(new()
         {
-            StateID = (ushort)responsiveID,
+            StateID = (ushort)ResponsiveState,
             Dispatches = new()
             {
                 new()
@@ -111,7 +112,7 @@ public abstract class LaraBuilder : InjectionBuilder
         // Arabian-loop
         anim.Changes.Add(new()
         {
-            StateID = (ushort)responsiveID,
+            StateID = (ushort)ResponsiveState,
             Dispatches = new()
             {
                 new()
@@ -136,5 +137,74 @@ public abstract class LaraBuilder : InjectionBuilder
         lara.Animations.Add(endAnim);
         startAnim.NextAnimation = (ushort)continueAnimID;
         endAnim.NextAnimation = 95;
+    }
+
+    protected void ImportHangToJump(TRModel lara, short startAnimID)
+    {
+        var baseLevel = _control1.Read("Resources/TR1/Lara/twist.phd");
+        var baseLara = baseLevel.Models[TR1Type.Lara];
+        var upStartAnim = baseLara.Animations[11];
+        var upEndAnim = baseLara.Animations[12];
+        var backStartAnim = baseLara.Animations[13];
+        var backEndAnim = baseLara.Animations[14];        
+
+        lara.Animations.Add(upStartAnim);
+        lara.Animations.Add(upEndAnim);
+        upStartAnim.StateID = 28;
+        upStartAnim.NextAnimation = (ushort)(lara.Animations.Count - 1);
+        upEndAnim.NextAnimation = 28;
+
+        lara.Animations.Add(backStartAnim);
+        lara.Animations.Add(backEndAnim);
+        backStartAnim.NextAnimation = (ushort)(lara.Animations.Count - 1);
+        backEndAnim.NextAnimation = 76;
+
+        upStartAnim.Commands.Add(new TREmptyHandsCommand());
+        backStartAnim.Commands.Add(new TREmptyHandsCommand());
+
+        var hangAnim = lara.Animations[96];
+        // Marker for engine that hanging is responsive
+        hangAnim.Changes.Add(new()
+        {
+            StateID = (ushort)ResponsiveState,
+            Dispatches = new()
+            {
+                new()
+                {
+                    NextAnimation = 96,
+                    NextFrame = 21,
+                    Low = 21,
+                    High = 22,
+                }
+            },
+        });
+        // Hang to jump up
+        hangAnim.Changes.Add(new()
+        {
+            StateID = 28,
+            Dispatches = new()
+            {
+                new()
+                {
+                    NextAnimation = startAnimID,
+                    Low = 21,
+                    High = 22,
+                }
+            },
+        });
+        // Hang to jump back
+        hangAnim.Changes.Add(new()
+        {
+            StateID = 25,
+            Dispatches = new()
+            {
+                new()
+                {
+                    NextAnimation = (short)(startAnimID + 2),
+                    Low = 21,
+                    High = 22,
+                }
+            },
+        });
     }
 }
