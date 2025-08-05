@@ -14,6 +14,21 @@ public abstract class LaraBuilder : InjectionBuilder
     protected abstract short LandSFX { get; }
     protected abstract short ResponsiveState { get; }
 
+    protected enum LaraState
+    {
+        Stop = 2,
+        Pose = 4,
+        Death = 8,
+        Roll = 45,
+    }
+
+    protected enum LaraAnim
+    {
+        StandIdle = 103,
+        StandDeath = 138,
+        RollStart = 146,
+    }
+
     protected enum TR3LaraAnim
     {
         Sprint = 223,
@@ -222,9 +237,26 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(lara, 0, stateMap[TR3LaraState.Sprint], 11, 12, animMap[TR3LaraAnim.RunToSprintRight], 0);
     }
 
+    protected static void ImportIdlePose(TRModel lara)
+    {
+        var laraExt = GetLaraExtModel();
+        var poseAnims = laraExt.Animations.GetRange(16, 3);
+        poseAnims.ForEach(a => a.StateID = (ushort)LaraState.Pose);
+
+        lara.Animations.AddRange(poseAnims);
+        poseAnims[0].NextAnimation = (ushort)(lara.Animations.Count - 2);
+        poseAnims[1].NextAnimation = (ushort)(lara.Animations.Count - 2);
+        poseAnims[2].NextAnimation = (ushort)LaraAnim.StandIdle;
+
+        AddChange(lara, LaraAnim.StandIdle, LaraState.Pose, 0, 69, lara.Animations.Count - 3, 0);
+        AddChange(poseAnims[1], LaraState.Stop, 0, 42, lara.Animations.Count - 1, 0);
+        AddChange(poseAnims[1], LaraState.Death, 0, 42, LaraAnim.StandDeath, 0);
+        AddChange(poseAnims[1], LaraState.Roll, 0, 42, LaraAnim.RollStart, 0);
+    }
+
     protected static void AddChange
-        (TRModel lara, int animIdx, object goalStateID, short low, short high, object nextAnimIdx, short nextFrame)
-        => AddChange(lara.Animations[animIdx], goalStateID, low, high, nextAnimIdx, nextFrame);
+        (TRModel lara, object animIdx, object goalStateID, short low, short high, object nextAnimIdx, short nextFrame)
+        => AddChange(lara.Animations[Convert.ToInt32(animIdx)], goalStateID, low, high, nextAnimIdx, nextFrame);
 
     protected static void AddChange
         (TRAnimation anim, object goalStateID, short low, short high, object nextAnimIdx, short nextFrame)

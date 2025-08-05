@@ -89,6 +89,9 @@ public class TR1LaraAnimBuilder : LaraBuilder
         SprintRollRightToRun = 201,
         SprintToRunLeft = 202,
         SprintToRunRight = 203,
+        PoseStart = 204,
+        PoseContinue = 205,
+        PoseEnd = 206,
     };
 
     enum InjState : int
@@ -124,6 +127,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportControlledDrop(tr1Lara, (short)InjAnim.ControlledDropContinue);
         ImportHangToJump(tr1Lara, (short)InjAnim.HangToJumpUp);
         ImportSprint(tr1Lara, _sprintAnimMap, _sprintStateMap);
+        ImportIdlePose(tr1Lara);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);
