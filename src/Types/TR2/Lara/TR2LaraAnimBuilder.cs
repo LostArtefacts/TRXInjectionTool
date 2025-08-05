@@ -64,9 +64,12 @@ public class TR2LaraAnimBuilder : LaraBuilder
         SprintRollRightToRun = 235,
         SprintToRunLeft = 236,
         SprintToRunRight = 237,
-        PoseStart = 238,
-        PoseContinue = 239,
-        PoseEnd = 240,
+        PoseRightStart = 238,
+        PoseRightContinue = 239,
+        PoseRightEnd = 240,
+        PoseLeftStart = 241,
+        PoseLeftContinue = 242,
+        PoseLeftEnd = 243,
     };
 
     enum InjState : int
@@ -75,6 +78,10 @@ public class TR2LaraAnimBuilder : LaraBuilder
         NeutralRoll = 72,
         Sprint = 73,
         SprintRoll = 74,
+        PoseStart = 75,
+        PoseEnd = 76,
+        PoseLeft = 77,
+        PoseRight = 78,
     };
 
     public override List<InjectionData> Build()
@@ -91,7 +98,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportControlledDrop(tr2Lara, (short)InjAnim.ControlledDropContinue);
         ImportHangToJump(tr2Lara, (short)InjAnim.HangToJumpUp);
         ImportSprint(tr2Lara, _sprintAnimMap, _sprintStateMap);
-        ImportIdlePose(tr2Lara);
+        ImportIdlePose(tr2Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
 
         var data = InjectionData.Create(wall, InjectionType.LaraAnims, "lara_animations");
         ExportLaraWAD(wall);

@@ -237,21 +237,28 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(lara, 0, stateMap[TR3LaraState.Sprint], 11, 12, animMap[TR3LaraAnim.RunToSprintRight], 0);
     }
 
-    protected static void ImportIdlePose(TRModel lara)
+    protected static void ImportIdlePose<S>(TRModel lara, S startState, S endState, S leftState, S rightState)
+        where S : Enum
     {
         var laraExt = GetLaraExtModel();
-        var poseAnims = laraExt.Animations.GetRange(16, 3);
-        poseAnims.ForEach(a => a.StateID = (ushort)LaraState.Pose);
+        var states = new[] { rightState, leftState };
+        for (int i = 0; i < states.Length; i++)
+        {
+            var poseAnims = laraExt.Animations.GetRange(16 + i * 3, 3);
+            poseAnims[0].StateID = Convert.ToUInt16(startState);
+            poseAnims[1].StateID = (ushort)LaraState.Pose;
+            poseAnims[2].StateID = Convert.ToUInt16(endState);
 
-        lara.Animations.AddRange(poseAnims);
-        poseAnims[0].NextAnimation = (ushort)(lara.Animations.Count - 2);
-        poseAnims[1].NextAnimation = (ushort)(lara.Animations.Count - 2);
-        poseAnims[2].NextAnimation = (ushort)LaraAnim.StandIdle;
+            lara.Animations.AddRange(poseAnims);
+            poseAnims[0].NextAnimation = (ushort)(lara.Animations.Count - 2);
+            poseAnims[1].NextAnimation = (ushort)(lara.Animations.Count - 2);
+            poseAnims[2].NextAnimation = (ushort)LaraAnim.StandIdle;
 
-        AddChange(lara, LaraAnim.StandIdle, LaraState.Pose, 0, 69, lara.Animations.Count - 3, 0);
-        AddChange(poseAnims[1], LaraState.Stop, 0, 42, lara.Animations.Count - 1, 0);
-        AddChange(poseAnims[1], LaraState.Death, 0, 42, LaraAnim.StandDeath, 0);
-        AddChange(poseAnims[1], LaraState.Roll, 0, 42, LaraAnim.RollStart, 0);
+            AddChange(lara, LaraAnim.StandIdle, states[i], 0, 69, lara.Animations.Count - 3, 0);
+            AddChange(poseAnims[1], LaraState.Stop, 0, 42, lara.Animations.Count - 1, 0);
+            AddChange(poseAnims[1], LaraState.Death, 0, 42, LaraAnim.StandDeath, 0);
+            AddChange(poseAnims[1], LaraState.Roll, 0, 42, LaraAnim.RollStart, 0);
+        }
     }
 
     protected static void AddChange
