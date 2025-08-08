@@ -92,15 +92,15 @@ public class TR2CatacombsTextureBuilder : TextureBuilder
     private static IEnumerable<TRRoomTextureEdit> FixYetiRoom(TR2Level level)
     {
         var room = level.Rooms[41];
-        foreach (var root in new[] { 110, 90, 106, 86, 102, 82, 98, 77})
+        foreach (var root in new[] { 110, 90, 106, 86, 102, 82, 98, 77 })
         {
-            var floor = room.Mesh.Rectangles[root - 1];
+            // Face removal isn't feasible/manageable so we hide these redundant
+            // ones inside the adjacent blocks.
+            var adj = room.Mesh.Rectangles[root + 2 + (root & 1)];
             yield return CreateQuadShift(41, (short)root, new()
             {
-                new(0, floor.Vertices[2]),
-                new(1, floor.Vertices[3]),
-                new(2, floor.Vertices[0]),
-                new(3, floor.Vertices[1]),
+                new(2, adj.Vertices[1]),
+                new(3, adj.Vertices[0]),
             });
         }
 
