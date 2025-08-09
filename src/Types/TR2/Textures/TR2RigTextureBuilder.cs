@@ -27,6 +27,7 @@ public partial class TR2RigTextureBuilder : TextureBuilder
         FixPushButton(data);
         FixWheelDoor(data, TR2LevelNames.RIG);
         FixSlidingOffshoreDoor(data, TR2LevelNames.RIG);
+        FixPlaneStatics(level, data);
 
         return new() { data };
     }
@@ -220,5 +221,66 @@ public partial class TR2RigTextureBuilder : TextureBuilder
     {
         FixTransparentPixels(level, data,
             level.Rooms[96].Mesh.Rectangles[27], Color.FromArgb(246, 238, 213));
+    }
+
+    private static void FixPlaneStatics(TR2Level level, InjectionData data)
+    {
+        data.RoomEdits.Add(CreateQuadShift(92, 4, new()
+        {
+            new(0, level.Rooms[92].Mesh.Rectangles[4].Vertices[3]),
+            new(1, level.Rooms[92].Mesh.Rectangles[4].Vertices[2]),
+            new(2, level.Rooms[92].Mesh.Rectangles[4].Vertices[1]),
+            new(3, level.Rooms[92].Mesh.Rectangles[4].Vertices[0]),
+        }));
+        data.RoomEdits.Add(CreateQuadShift(92, 27, new()
+        {
+            new(0, level.Rooms[92].Mesh.Rectangles[27].Vertices[3]),
+            new(1, level.Rooms[92].Mesh.Rectangles[27].Vertices[2]),
+            new(2, level.Rooms[92].Mesh.Rectangles[27].Vertices[1]),
+            new(3, level.Rooms[92].Mesh.Rectangles[27].Vertices[0]),
+        }));
+
+        foreach (var face in new[] { 27, 5, 30, 7 })
+        {
+            data.RoomEdits.Add(CreateQuadShift(95, (short)face, new()
+            {
+                new(0, level.Rooms[95].Mesh.Rectangles[20].Vertices[1]),
+                new(1, level.Rooms[95].Mesh.Rectangles[20].Vertices[0]),
+                new(2, level.Rooms[95].Mesh.Rectangles[20].Vertices[3]),
+                new(3, level.Rooms[95].Mesh.Rectangles[20].Vertices[2]),
+            }));
+        }
+
+        data.RoomEdits.Add(CreateQuadShift(2, 212, new()
+        {
+            new(0, level.Rooms[2].Mesh.Rectangles[211].Vertices[1]),
+            new(1, level.Rooms[2].Mesh.Rectangles[211].Vertices[0]),
+            new(2, level.Rooms[2].Mesh.Rectangles[211].Vertices[3]),
+            new(3, level.Rooms[2].Mesh.Rectangles[211].Vertices[2]),
+        }));
+        data.RoomEdits.Add(CreateQuadShift(96, 33, new()
+        {
+            new(0, level.Rooms[96].Mesh.Rectangles[31].Vertices[1]),
+            new(1, level.Rooms[96].Mesh.Rectangles[31].Vertices[0]),
+            new(2, level.Rooms[96].Mesh.Rectangles[31].Vertices[3]),
+            new(3, level.Rooms[96].Mesh.Rectangles[31].Vertices[2]),
+        }));
+
+        data.MeshEdits.AddRange(new[] { 17, 18 }.Select(type =>
+            new TRMeshEdit
+            {
+                ModelID = (uint)((int)TR2Type.SceneryBase + type),
+                VertexEdits = new[] { 0, 2, 3, 5}.Select(i =>
+                    new TRVertexEdit
+                    {
+                        Index = (short)i,
+                        Change = new()
+                        {
+                            X = 3,
+                            Z = (short)((type == 17 && (i == 2 || i == 5)) ? 6 : 0),
+                            Y = (short)(i == 3 || i == 5 ? -1 : 0),
+                        }
+                    }).ToList(),            
+            }));
     }
 }
