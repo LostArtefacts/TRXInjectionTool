@@ -20,7 +20,7 @@ public class TR2VeniceTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(venice));
         data.RoomEdits.AddRange(CreateRotations());
         data.MeshEdits.Add(
-            FixStaticMeshPosition(venice.StaticMeshes, TR2Type.Architecture4, new() { Z = 27 }));
+            FixStaticMeshPosition(venice.StaticMeshes, TR2Type.Architecture4, new() { Z = 32 }));
         FixTransparentTextures(venice, data);
         FixPassport(venice, data);
         FixPushButton(data);

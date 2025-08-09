@@ -21,7 +21,7 @@ public class TR2BartoliTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateVertexShifts(bartoli));
         data.RoomEdits.AddRange(CreateRotations());
         data.MeshEdits.Add(
-            FixStaticMeshPosition(bartoli.StaticMeshes, TR2Type.Architecture4, new() { Z = 27 }));
+            FixStaticMeshPosition(bartoli.StaticMeshes, TR2Type.Architecture4, new() { Z = 32 }));
         FixTransparentTextures(bartoli, data);
         FixPassport(bartoli, data);
 

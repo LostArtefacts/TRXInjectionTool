@@ -37,27 +37,36 @@ public abstract class ItemBuilder : InjectionBuilder
 
     public static TRMeshEdit FixEgyptToppledChair(TR1Type type, TR1Level level)
     {
-        TRMesh mesh = level.StaticMeshes[type].Mesh;
-        TRMeshEdit edit = new()
+        var mesh = level.StaticMeshes[type].Mesh;
+        var max = mesh.Vertices.Max(v => v.Y);
+        var min = mesh.Vertices.Min(v => v.Y);
+        return new()
         {
             ModelID = (uint)type,
-            MeshIndex = 0,
-            VertexEdits = new(),
-        };
-
-        for (short i = 0; i < mesh.Vertices.Count; i++)
-        {
-            edit.VertexEdits.Add(new()
+            VertexEdits = Enumerable.Range(0, mesh.Vertices.Count).Select(i =>
             {
-                Index = i,
-                Change = new()
+                var y = mesh.Vertices[i].Y;
+                var edit = new TRVertexEdit
                 {
-                    Y = 66,
-                }
-            });
-        }
+                    Index = (short)i,
+                    Change = new()
+                    {
+                        Y = (short)((y == min || y == max) ? (-max - 1) : (-max))
+                    }
+                };
 
-        return edit;
+                if (i == 6)
+                {
+                    edit.Change.Z = 1;
+                }
+                else if (i == 7)
+                {
+                    edit.Change.Z = -3;
+                }
+
+                return edit;
+            }).ToList(),
+        };
     }
 
     public static TRStaticMeshEdit FixEgyptPillar(TR1Level level)
