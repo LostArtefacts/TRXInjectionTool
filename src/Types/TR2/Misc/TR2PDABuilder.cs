@@ -6,11 +6,18 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Misc;
 
-public class TR2PDABuilder : InjectionBuilder
+public class TR2PDABuilder : InjectionBuilder, IPublisher
 {
     public override string ID => "tr2-pda";
 
     public override List<InjectionData> Build()
+    {
+        var level = CreateLevel();
+        var data = InjectionData.Create(level, InjectionType.General, "pda_model");
+        return new() { data };
+    }
+
+    private static TR2Level CreateLevel()
     {
         var pdaLevel = CreatePDALevel();
         var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
@@ -25,9 +32,12 @@ public class TR2PDABuilder : InjectionBuilder
 
         GenerateImages8(wall, wall.Palette.Select(c => c.ToTR1Color()).ToList());
 
-        ExportLevelZip(wall, ID);
-
-        var data = InjectionData.Create(wall, InjectionType.General, "pda_model");
-        return new() { data };
+        return wall;
     }
+
+    public TRLevelBase Publish()
+        => CreateLevel();
+
+    public string GetPublishedName()
+        => "pda.tr2";
 }

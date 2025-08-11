@@ -11,10 +11,6 @@ namespace TRXInjectionTool.Types.TR1.Lara;
 
 public class TR1LaraAnimBuilder : LaraBuilder
 {
-    private static readonly string _wadZipPath = "../../Resources/Published/tr1-lara-anim-ext.zip";
-    private static readonly DateTimeOffset _wadZipPlaceholderDate
-        = new(new DateTime(2025, 5, 15, 11, 0, 0), new TimeSpan());
-
     private static readonly Dictionary<TR3LaraAnim, InjAnim> _sprintAnimMap = new()
     {
         [TR3LaraAnim.Sprint] = InjAnim.Sprint,
@@ -37,6 +33,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
     };
 
     public override string ID => "tr1-lara-anims";
+    public override TRGameVersion GameVersion => TRGameVersion.TR1;
     protected override short JumpSFX => (short)TR1SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR1SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR1SFX.LaraWetFeet;
@@ -114,8 +111,14 @@ public class TR1LaraAnimBuilder : LaraBuilder
 
     public override List<InjectionData> Build()
     {
-        List<InjectionData> dataGroup = new();
+        var level = CreateLevel();
+        var data = InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations");
 
+        return new() { data };
+    }
+
+    private TR1Level CreateLevel()
+    {
         TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
         ResetLevel(caves);
@@ -137,12 +140,13 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportIdlePose(tr1Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr1Lara);
 
-        InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
-        dataGroup.Add(data);
+        return caves;
+    }
 
-        ExportLaraWAD(caves);
-
-        return dataGroup;
+    public override byte[] Publish()
+    {
+        var level = CreateLevel();
+        return ExportLaraWAD(level);
     }
 
     static void ImportJumpTwist(TRModel tr1Lara, TRModel tr2Lara)
@@ -655,7 +659,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         };
     }
 
-    private static void ExportLaraWAD(TR1Level level)
+    private static byte[] ExportLaraWAD(TR1Level level)
     {
         // Generate the injection's effect on a regular level to allow TRLE builders to utilise
         // the new animations while also being able to edit the defaults. This is a stripped back
@@ -684,25 +688,19 @@ public class TR1LaraAnimBuilder : LaraBuilder
             .SelectMany(m => m.TexturedFaces)
             .ToList().ForEach(f => f.Texture = texMap[f.Texture]);
 
-        ExportZip(level);
-        using ZipArchive archive = ZipFile.Open(_wadZipPath, ZipArchiveMode.Update);
-        foreach (ZipArchiveEntry entry in archive.Entries)
-        {
-            // Prevent the zip changing despite the contents having not. C# provides no way to do this on create.
-            entry.LastWriteTime = _wadZipPlaceholderDate;
-        }
+        return ExportZip(level);
     }
 
-    private static void ExportZip(TR1Level level)
+    private static byte[] ExportZip(TR1Level level)
     {
-        using FileStream stream = new(_wadZipPath, FileMode.Create);
+        using MemoryStream stream = new();
         using ZipArchive zip = new(stream, ZipArchiveMode.Create);
 
         {
             using MemoryStream ms = new();
             _control1.Write(level, ms);
             byte[] phdRaw = ms.ToArray();
-            ZipArchiveEntry entry = zip.CreateEntry("lara_anim_ext.phd", CompressionLevel.Optimal);
+            ZipArchiveEntry entry = zip.CreateEntry("lara.phd", CompressionLevel.Optimal);
             using Stream zipStream = entry.Open();
             zipStream.Write(phdRaw, 0, phdRaw.Length);
         }
@@ -745,6 +743,10 @@ public class TR1LaraAnimBuilder : LaraBuilder
                 zipStream.Write(xmlRaw, 0, xmlRaw.Length);
             }
         }
+
+        zip.Dispose();
+        stream.Flush();
+        return stream.ToArray();
     }
 
     private static XmlElement SFXToXML(XmlDocument doc, TR1SFX id, TR1SoundEffect sfx)

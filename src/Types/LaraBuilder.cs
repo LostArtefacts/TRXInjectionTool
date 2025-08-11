@@ -8,6 +8,7 @@ public abstract class LaraBuilder : InjectionBuilder
 {
     private static readonly string _extLaraPath = "Resources/lara_ext.phd";
 
+    public abstract TRGameVersion GameVersion { get; }
     protected abstract short JumpSFX { get; }
     protected abstract short DryFeetSFX { get; }
     protected abstract short WetFeetSFX { get; }
@@ -58,6 +59,8 @@ public abstract class LaraBuilder : InjectionBuilder
 
     public static TRModel GetLaraExtModel()
         => _control1.Read(_extLaraPath).Models[TR1Type.LaraMiscAnim_H];
+
+    public abstract byte[] Publish();
 
     protected void ImportSlideToRun(TRModel lara)
     {

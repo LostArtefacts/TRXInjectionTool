@@ -8,6 +8,8 @@ namespace TRXInjectionTool.Types.TR2.Misc;
 
 public class TR2FontBuilder : FontBuilder
 {
+    public override string ID => "tr2-font";
+
     public TR2FontBuilder()
         : base(TRGameVersion.TR2) { }
 
@@ -23,8 +25,9 @@ public class TR2FontBuilder : FontBuilder
         GenerateImages8(wall, basePalette);
 
         wall.Sprites[TR2Type.FontGraphics_S_H] = font;
-
-        _control2.Write(wall, MakeOutputPath(TRGameVersion.TR2, $"Debug/{ID}.tr2"));
         return wall;
     }
+
+    public override string GetPublishedName()
+        => "font.tr2";
 }

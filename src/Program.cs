@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Types;
 
 namespace TRXInjectionTool;
 
@@ -118,7 +119,11 @@ internal class Program
                     Console.ResetColor();
                 }
             }
+
+            AssetPublisher.OnBuilderRun(builder);
         }
+
+        AssetPublisher.Publish();
         Console.WriteLine();
     }
 }

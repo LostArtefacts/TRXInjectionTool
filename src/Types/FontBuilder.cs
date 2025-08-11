@@ -7,15 +7,13 @@ using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types;
 
-public abstract class FontBuilder : InjectionBuilder
+public abstract class FontBuilder : InjectionBuilder, IPublisher
 {
     private static readonly string _resourceDirBase = "Resources/{0}/Font";
 
     protected readonly string _resourceDir;
     protected readonly List<GlyphDef> _glyphDefs;
     protected readonly Dictionary<string, TRImage> _imageCache;
-
-    public override string ID => "font";
 
     public FontBuilder(TRGameVersion gameVersion)
     {
@@ -44,6 +42,13 @@ public abstract class FontBuilder : InjectionBuilder
     }
 
     public override List<InjectionData> Build()
+    {
+        var level = CreateLevel();
+        var data = InjectionData.Create(level, InjectionType.General, ID);
+        return new() { data };
+    }
+
+    private TRLevelBase CreateLevel()
     {
         TRSpriteSequence font = new();
         List<TRTextileRegion> regions = new();
@@ -79,10 +84,13 @@ public abstract class FontBuilder : InjectionBuilder
             });
         }
 
-        TRLevelBase level = Pack(font, regions);
-        InjectionData data = InjectionData.Create(level, InjectionType.General, ID);
-        return new() { data };
+        return Pack(font, regions);
     }
 
     protected abstract TRLevelBase Pack(TRSpriteSequence font, List<TRTextileRegion> regions);
+
+    public TRLevelBase Publish()
+        => CreateLevel();
+
+    public abstract string GetPublishedName();
 }

@@ -10,10 +10,6 @@ namespace TRXInjectionTool.Types.TR2.Lara;
 
 public class TR2LaraAnimBuilder : LaraBuilder
 {
-    private static readonly string _wadZipPath = "../../Resources/Published/tr2-lara-anim-ext.zip";
-    private static readonly DateTimeOffset _wadZipPlaceholderDate
-        = new(new DateTime(2025, 7, 23, 19, 0, 0), new TimeSpan());
-
     private static readonly Dictionary<TR3LaraAnim, InjAnim> _sprintAnimMap = new()
     {
         [TR3LaraAnim.Sprint] = InjAnim.Sprint,
@@ -36,6 +32,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
     };
 
     public override string ID => "tr2-lara-anims";
+    public override TRGameVersion GameVersion => TRGameVersion.TR2;
     protected override short JumpSFX => (short)TR2SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR2SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR2SFX.LaraWetFeet;
@@ -86,6 +83,14 @@ public class TR2LaraAnimBuilder : LaraBuilder
 
     public override List<InjectionData> Build()
     {
+        var level = CreateLevel();
+        var data = InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations");
+
+        return new() { data };
+    }
+
+    private TR2Level CreateLevel()
+    {
         TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
         TRModel tr2Lara = wall.Models[TR2Type.Lara];
 
@@ -101,10 +106,13 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportIdlePose(tr2Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr2Lara);
 
-        var data = InjectionData.Create(wall, InjectionType.LaraAnims, "lara_animations");
-        ExportLaraWAD(wall);
+        return wall;
+    }
 
-        return new() { data };
+    public override byte[] Publish()
+    {
+        var level = CreateLevel();
+        return ExportLaraWAD(level);
     }
 
     private static void ImproveTwists(TRModel tr2Lara)
@@ -136,7 +144,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         tr2Lara.Animations[219].NextAnimation = 209;
     }
 
-    private static void ExportLaraWAD(TR2Level level)
+    private static byte[] ExportLaraWAD(TR2Level level)
     {
         // Generate the injection's effect on a regular level to allow TRLE builders to utilise
         // the new animations while also being able to edit the defaults. This is a stripped back
@@ -167,28 +175,26 @@ public class TR2LaraAnimBuilder : LaraBuilder
 
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
 
-        ExportZip(level);
-        using var archive = ZipFile.Open(_wadZipPath, ZipArchiveMode.Update);
-        foreach (var entry in archive.Entries)
-        {
-            // Prevent the zip changing despite the contents having not. C# provides no way to do this on create.
-            entry.LastWriteTime = _wadZipPlaceholderDate;
-        }
+        return ExportZip(level);
     }
 
-    private static void ExportZip(TR2Level level)
+    private static byte[] ExportZip(TR2Level level)
     {
-        using var stream = new FileStream(_wadZipPath, FileMode.Create);
+        var stream = new MemoryStream();
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create);
 
         {
             using var ms = new MemoryStream();
             _control2.Write(level, ms);
             byte[] phdRaw = ms.ToArray();
-            var entry = zip.CreateEntry("lara_anim_ext.tr2", CompressionLevel.Optimal);
+            var entry = zip.CreateEntry("lara.tr2", CompressionLevel.Optimal);
             using var zipStream = entry.Open();
             zipStream.Write(phdRaw, 0, phdRaw.Length);
         }
+
+        zip.Dispose();
+        stream.Flush();
+        return stream.ToArray();
     }
 
     private static void ResetLevel(TR2Level level)

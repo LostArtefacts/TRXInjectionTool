@@ -6,6 +6,8 @@ namespace TRXInjectionTool.Types.TR1.Misc;
 
 public class TR1FontBuilder : FontBuilder
 {
+    public override string ID => "tr1-font";
+
     public TR1FontBuilder()
         : base(TRGameVersion.TR1) { }
 
@@ -18,8 +20,9 @@ public class TR1FontBuilder : FontBuilder
         packer.Pack(true);
 
         caves.Sprites[TR1Type.FontGraphics_S_H] = font;
-
-        _control1.Write(caves, MakeOutputPath(TRGameVersion.TR1, $"Debug/{ID}.phd"));
         return caves;
     }
+
+    public override string GetPublishedName()
+        => "font.phd";
 }

@@ -1,57 +1,86 @@
-# Lara animation injections
+# TRX Assets
 
-TR1 and TR2 ship with a default injection file to replace Lara's entire
-animation set, `lara_animations.bin`. This is required to support jump-twist,
-responsive jumping, wading, slide-to-run and so on, with all relevant default
-animation state changes and commands updated.
+TR1 and TR2 ship with several default injections to fix or extend base-level
+data. These include enhancements such as Lara's additional animations, extended
+fonts, and the PDA model. While compatible as-is with custom levels, you may
+wish to adapt them for your own needs. Assets are available to download and
+import into **WadTool**:
 
-For custom levels, this means that if you modify Lara's animations but continue
-to use the provided injection file, your modifications will be overwritten. To
-resolve this, you can follow these steps.
+**Asset ZIP files:**  
+- https://lostartefacts.dev/pub/tr1-ext.zip  
+- https://lostartefacts.dev/pub/tr2-ext.zip  
 
-1. Download and extract the following zip files.
-    - https://lostartefacts.dev/pub/tr1-lara-anim-ext.zip
-    - https://lostartefacts.dev/pub/tr2-lara-anim-ext.zip
+---
 
-2. Open your level's WAD file in WadTool.
+## Common Steps for Importing Assets
 
-3. Open the `lara_anim_ext.phd`/`lara_anim_ext.tr2` file extracted from above as
-the source level in WadTool.
+1. Open your level's **WAD** file in **WadTool**.
+2. Open the extracted `.phd` or `.tr2` file for the asset as the
+**source level** in WadTool.
+3. Move the required asset from the source to the destination, replacing the
+existing one.
+4. Follow any **asset-specific extra steps** listed in the table below.
+5. Update your **TRX gameflow** to remove references to the asset's `.bin` file.
 
-4. Move Lara from the source to the destination to replace her animation set. If
-you have customised Lara's appearance, you can move the source object to a
-different slot and replace the meshes manually.
+---
 
-5. **TR1 Only** In TombEditor, go into your level settings and add a sound
-catalogue reference to the `wet-feet.xml` file extracted from above. This will
-add a reference to sound ID 15 (wet feet) and ID 17 (wading).
+## Asset Reference Table
 
-6. **TR1 Only** You will also need to point TombEditor to the extracted wet feet
-WAV files, or otherwise, provide your own samples for these SFX.
+<table>
+  <thead>
+    <tr>
+      <th>Asset</th>
+      <th>Source file</th>
+      <th><code>.bin</code> file</th>
+      <th>Extra steps</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr valign="top">
+      <td><strong>Lara animations</strong></td>
+      <td><code>lara.phd</code> / <code>lara.tr2</code></td>
+      <td><code>lara_animations.bin</code></td>
+      <td>
+        - If Lara's appearance is customised, move the source object to another slot and replace meshes manually.<br>
+        - <strong>TR1 only:</strong> In TombEditor, add <code>wet-feet.xml</code> from the zip file above to the sound catalogue (adds sound IDs 15 &amp; 17).<br>
+        - <strong>TR1 only:</strong> Point TombEditor to the extracted wet feet <code>.wav</code> files extracted from above, or otherwise, provide your own samples for these SFX.
+      </td>
+    </tr>
+    <tr valign="top">
+      <td><strong>Font</strong></td>
+      <td><code>font.phd</code> / <code>font.tr2</code></td>
+      <td><code>font.bin</code></td>
+      <td><em>None</em></td>
+    </tr>
+    <tr valign="top">
+      <td><strong>PDA model</strong></td>
+      <td><code>pda.phd</code> / <code>pda.tr2</code></td>
+      <td><code>pda_model.bin</code></td>
+      <td><em>None</em></td>
+    </tr>
+  </tbody>
+</table>
 
-7. Update your TR1X gameflow to remove the reference(s) to
-`lara_animations.bin`.
+---
 
-# PDA models
-The PDA model is used in-game for gameplay config options. The original model
-only has one mesh and no animation data, so if the default injection that ships
-with TRX is not used, the animation will not work correctly. The modified models
-can be downloaded below and added directly to your WAD to allow customisation.
+## Updating the Asset Files (Internal)
 
-- https://lostartefacts.dev/pub/tr1-pda.zip
-- https://lostartefacts.dev/pub/tr2-pda.zip
+Run any of the following to generate the source ZIP files above:
 
-##  Updating the asset files (internal)
+```
+TRXInjectionTool.exe tr1-lara-anims
+TRXInjectionTool.exe tr2-lara-anims
+TRXInjectionTool.exe tr1-font
+TRXInjectionTool.exe tr2-font
+TRXInjectionTool.exe tr1-pda
+TRXInjectionTool.exe tr2-pda
+```
 
-Run the following to generate the above zip files.
+## Poses
 
-- `TRXInjectionTool.exe tr1-lara-anims`
-- `TRXInjectionTool.exe tr1-pda`
-- `TRXInjectionTool.exe tr2-pda`
+Additional poses can be added to `Resources/lara_ext.phd` using WadTool and then
+the following should be run to generate the JSON file for the games.
 
-# Poses
-
-Additional poses can be added to `Resources/pose.phd` using WadTool and then the
-following should be run to generate the JSON file for the games.
-
-- `TRXInjectionTool.exe pose`
+```
+TRXInjectionTool.exe pose
+```
