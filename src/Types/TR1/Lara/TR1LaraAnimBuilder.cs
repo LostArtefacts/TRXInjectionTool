@@ -135,6 +135,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportHangToJump(tr1Lara, (short)InjAnim.HangToJumpUp);
         ImportSprint(tr1Lara, _sprintAnimMap, _sprintStateMap);
         ImportIdlePose(tr1Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
+        FixJumpToFreefall(tr1Lara);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.LaraAnims, "lara_animations");
         dataGroup.Add(data);

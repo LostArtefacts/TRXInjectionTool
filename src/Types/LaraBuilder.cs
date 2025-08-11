@@ -19,11 +19,14 @@ public abstract class LaraBuilder : InjectionBuilder
         Stop = 2,
         Pose = 4,
         Death = 8,
+        Freefall = 9,
         Roll = 45,
     }
 
     protected enum LaraAnim
     {
+        JumpForwardEndToFreefall = 49,
+        JumpForward = 77,
         StandIdle = 103,
         StandDeath = 138,
         RollStart = 146,
@@ -259,6 +262,13 @@ public abstract class LaraBuilder : InjectionBuilder
             AddChange(poseAnims[1], LaraState.Death, 0, 42, LaraAnim.StandDeath, 0);
             AddChange(poseAnims[1], LaraState.Roll, 0, 42, LaraAnim.RollStart, 0);
         }
+    }
+
+    protected static void FixJumpToFreefall(TRModel lara)
+    {
+        lara.Animations[(int)LaraAnim.JumpForward].Changes
+            .Find(c => c.StateID == (ushort)LaraState.Freefall)
+            .Dispatches.First().NextAnimation = (short)LaraAnim.JumpForwardEndToFreefall;
     }
 
     protected static void AddChange

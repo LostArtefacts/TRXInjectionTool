@@ -99,6 +99,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportHangToJump(tr2Lara, (short)InjAnim.HangToJumpUp);
         ImportSprint(tr2Lara, _sprintAnimMap, _sprintStateMap);
         ImportIdlePose(tr2Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
+        FixJumpToFreefall(tr2Lara);
 
         var data = InjectionData.Create(wall, InjectionType.LaraAnims, "lara_animations");
         ExportLaraWAD(wall);
