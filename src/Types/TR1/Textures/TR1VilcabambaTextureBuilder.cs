@@ -4,6 +4,7 @@ using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types.TR1.Textures;
 
@@ -219,6 +220,36 @@ public class TR1VilcabambaTextureBuilder : TextureBuilder
             Texture = statue.Mesh.TexturedRectangles[9].Texture,
             Vertices = new() { 20, 23, 22, 21 }
         });
+
+        foreach (var v in new[] { 15, 11, 14, 10 })
+        {
+            statue.Mesh.Lights.Add(statue.Mesh.Lights[v]);
+            statue.Mesh.Vertices.Add(statue.Mesh.Vertices[v].Clone());
+            statue.Mesh.Vertices[^1].Z += 15;
+            statue.Mesh.Vertices[^1].X += (short)(v % 2 == 0 ? 10 : -10);
+        }
+
+        statue.Mesh.TexturedRectangles[9].Vertices[2] = (ushort)(statue.Mesh.Vertices.Count - 4);
+        statue.Mesh.TexturedRectangles[9].Vertices[3] = (ushort)(statue.Mesh.Vertices.Count - 3);
+        statue.Mesh.TexturedRectangles[11].Vertices[1] = (ushort)(statue.Mesh.Vertices.Count - 1);
+        statue.Mesh.TexturedRectangles[11].Vertices[2] = (ushort)(statue.Mesh.Vertices.Count - 2);
+
+        statue.Mesh.TexturedRectangles[9].Rotate(1);
+        statue.Mesh.TexturedRectangles[10].Rotate(1);
+
+        var verts = new List<List<ushort>>
+        {
+            new() { 15, (ushort)(statue.Mesh.Vertices.Count - 4), 17 },
+            new() { (ushort)(statue.Mesh.Vertices.Count - 3), 11, 18 },
+            new() { (ushort)(statue.Mesh.Vertices.Count - 2), 14, 16 },
+            new() { 10, (ushort)(statue.Mesh.Vertices.Count - 1), 19 },
+        };
+        statue.Mesh.TexturedTriangles.AddRange(verts.Select(v => new TRMeshFace
+        {
+            Type = TRFaceType.Triangle,
+            Texture = statue.Mesh.TexturedRectangles[9].Texture,
+            Vertices = v,
+        }));
 
         var img = GetImage(statue.Mesh.TexturedRectangles[13].Texture, level);
         img.Write((c, x, y) => c.A == 0 ? Color.FromArgb(52, 52, 40) : c);
