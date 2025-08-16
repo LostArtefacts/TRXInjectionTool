@@ -6,7 +6,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Textures;
 
-public class TR2WreckTextureBuilder : TextureBuilder
+public partial class TR2WreckTextureBuilder : TextureBuilder
 {
     public override string ID => "wreck_textures";
 
@@ -18,6 +18,7 @@ public class TR2WreckTextureBuilder : TextureBuilder
 
         data.RoomEdits.AddRange(CreateShifts(level));
         data.RoomEdits.AddRange(CreateRotations());
+        data.RoomEdits.AddRange(FixCatwalks(level));
 
         FixTransparentPixels(level, data, level.Rooms[31].Mesh.Rectangles[23], Color.FromArgb(189, 222, 230));
         FixPassport(level, data);
