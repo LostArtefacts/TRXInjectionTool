@@ -223,7 +223,7 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(lara, 96, 25, 21, 22, startAnimID + 2, 0);
     }
 
-    protected void ImportSprint<A, S>(TRModel lara,
+    protected void ImportSprint<A, S>(TRModel lara, object slideToRunAnim,
         Dictionary<TR3LaraAnim, A> animMap, Dictionary<TR3LaraState, S> stateMap)
         where A : Enum
         where S : Enum
@@ -268,6 +268,7 @@ public abstract class LaraBuilder : InjectionBuilder
 
         AddChange(lara, 0, stateMap[TR3LaraState.Sprint], 0, 1, animMap[TR3LaraAnim.RunToSprintLeft], 0);
         AddChange(lara, 0, stateMap[TR3LaraState.Sprint], 11, 12, animMap[TR3LaraAnim.RunToSprintRight], 0);
+        AddChange(lara, slideToRunAnim, stateMap[TR3LaraState.Sprint], 14, 14, animMap[TR3LaraAnim.RunToSprintLeft], 0);
     }
 
     protected static void ImportIdlePose<S>(TRModel lara, S startState, S endState, S leftState, S rightState)

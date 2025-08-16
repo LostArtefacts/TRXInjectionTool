@@ -135,7 +135,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportNeutralTwist(tr1Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll);
         ImportControlledDrop(tr1Lara, (short)InjAnim.ControlledDropContinue);
         ImportHangToJump(tr1Lara, (short)InjAnim.HangToJumpUp);
-        ImportSprint(tr1Lara, _sprintAnimMap, _sprintStateMap);
+        ImportSprint(tr1Lara, InjAnim.SlideToRun, _sprintAnimMap, _sprintStateMap);
         ImportIdlePose(tr1Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr1Lara);
 
