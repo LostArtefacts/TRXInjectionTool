@@ -100,6 +100,7 @@ public abstract class LaraBuilder : InjectionBuilder
         var change = tr3Lara.Animations[70].Changes.Find(c => c.StateID == 1).Clone();
         change.StateID = (ushort)ResponsiveState;
         change.Dispatches[0].NextAnimation = (short)(lara.Animations.Count - 1);
+        change.Dispatches[0].NextFrame = 2;
         lara.Animations[70].Changes.Add(change);
     }
 
