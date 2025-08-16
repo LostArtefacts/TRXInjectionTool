@@ -67,31 +67,30 @@ public class TR1LaraAnimBuilder : LaraBuilder
         SwimToSprawl = 182,
         SwimToMedium = 183,
         SlideToRun = 184,
-        JumpTwistContinue = 185,
-        JumpNeutralRoll = 186,
-        ControlledDrop = 187,
-        ControlledDropContinue = 188,
-        HangToJumpUp = 189,
-        HangToJumpUpContinue = 190,
-        HangToJumpBack = 191,
-        HangToJumpBackContinue = 192,
-        Sprint = 193,
-        RunToSprintLeft = 194,
-        RunToSprintRight = 195,
-        SprintSlideStandLeft = 196,
-        SprintSlideStandRight = 197,
-        SprintToRollLeft = 198,
-        SprintRollLeftToRun = 199,
-        SprintToRollRight = 200,
-        SprintRollRightToRun = 201,
-        SprintToRunLeft = 202,
-        SprintToRunRight = 203,
-        PoseRightStart = 204,
-        PoseRightContinue = 205,
-        PoseRightEnd = 206,
-        PoseLeftStart = 207,
-        PoseLeftContinue = 208,
-        PoseLeftEnd = 209,
+        JumpNeutralRoll = 185,
+        ControlledDrop = 186,
+        ControlledDropContinue = 187,
+        HangToJumpUp = 188,
+        HangToJumpUpContinue = 189,
+        HangToJumpBack = 190,
+        HangToJumpBackContinue = 191,
+        Sprint = 192,
+        RunToSprintLeft = 193,
+        RunToSprintRight = 194,
+        SprintSlideStandLeft = 195,
+        SprintSlideStandRight = 196,
+        SprintToRollLeft = 197,
+        SprintRollLeftToRun = 198,
+        SprintToRollRight = 199,
+        SprintRollRightToRun = 200,
+        SprintToRunLeft = 201,
+        SprintToRunRight = 202,
+        PoseRightStart = 203,
+        PoseRightContinue = 204,
+        PoseRightEnd = 205,
+        PoseLeftStart = 206,
+        PoseLeftContinue = 207,
+        PoseLeftEnd = 208,
     };
 
     enum InjState : int
@@ -196,8 +195,8 @@ public class TR1LaraAnimBuilder : LaraBuilder
         // See PR 1272/1276
         TRModel tr2Lara = GetLaraExtModel();
 
-        TRAnimation uwRollStart = tr2Lara.Animations[0];
-        TRAnimation uwRollEnd = tr2Lara.Animations[1];
+        TRAnimation uwRollStart = tr2Lara.Animations[(int)ExtLaraAnim.UWRollStart];
+        TRAnimation uwRollEnd = tr2Lara.Animations[(int)ExtLaraAnim.UWRollEnd];
 
         uwRollStart.NextAnimation = (ushort)InjAnim.UWRollEnd;
         uwRollStart.NextFrame = 1;
@@ -218,28 +217,26 @@ public class TR1LaraAnimBuilder : LaraBuilder
         }
     }
 
-    private static void ImproveTwists(TRModel tr2Lara)
+    private static void ImproveTwists(TRModel lara)
     {
-        var twistLara = GetLaraExtModel();
+        var laraExt = GetLaraExtModel();
 
-        tr2Lara.Animations[(int)InjAnim.RunJumpRollStart] = twistLara.Animations[2];
-        tr2Lara.Animations[(int)InjAnim.RunJumpRollEnd] = twistLara.Animations[3];
-        tr2Lara.Animations[(int)InjAnim.JumpFwdRollStart] = twistLara.Animations[4];
-        tr2Lara.Animations[(int)InjAnim.JumpFwdRollEnd] = twistLara.Animations[5];
-        tr2Lara.Animations[(int)InjAnim.JumpBackRollStart] = twistLara.Animations[6];
-        tr2Lara.Animations[(int)InjAnim.JumpBackRollEnd] = twistLara.Animations[7];
-        tr2Lara.Animations.Add(twistLara.Animations[8]); // JumpTwistContinue
+        lara.Animations[(int)InjAnim.RunJumpRollStart] = laraExt.Animations[(int)ExtLaraAnim.RunJumpRollStart];
+        lara.Animations[(int)InjAnim.RunJumpRollEnd] = laraExt.Animations[(int)ExtLaraAnim.RunJumpRollEnd];
+        lara.Animations[(int)InjAnim.JumpFwdRollStart] = laraExt.Animations[(int)ExtLaraAnim.JumpFwdRollStart];
+        lara.Animations[(int)InjAnim.JumpFwdRollEnd] = laraExt.Animations[(int)ExtLaraAnim.JumpFwdRollEnd];
+        lara.Animations[(int)InjAnim.JumpBackRollStart] = laraExt.Animations[(int)ExtLaraAnim.JumpBackRollStart];
+        lara.Animations[(int)InjAnim.JumpBackRollEnd] = laraExt.Animations[(int)ExtLaraAnim.JumpBackRollEnd];
 
-        tr2Lara.Animations[(int)InjAnim.RunJumpRollStart].NextAnimation = (ushort)InjAnim.JumpTwistContinue;
-        tr2Lara.Animations[(int)InjAnim.RunJumpRollEnd].NextAnimation = 75;
-        tr2Lara.Animations[(int)InjAnim.RunJumpRollEnd].NextFrame = 39;
-        tr2Lara.Animations[(int)InjAnim.JumpFwdRollStart].NextAnimation = (ushort)InjAnim.JumpFwdRollEnd;
-        tr2Lara.Animations[(int)InjAnim.JumpFwdRollEnd].NextAnimation = 75;
-        tr2Lara.Animations[(int)InjAnim.JumpFwdRollEnd].NextFrame = 39;
-        tr2Lara.Animations[(int)InjAnim.JumpBackRollStart].NextAnimation = (ushort)InjAnim.JumpBackRollEnd;
-        tr2Lara.Animations[(int)InjAnim.JumpBackRollEnd].NextAnimation = 77;
-        tr2Lara.Animations[(int)InjAnim.JumpBackRollEnd].NextFrame = 39;
-        tr2Lara.Animations[(int)InjAnim.JumpTwistContinue].NextAnimation = (int)InjAnim.RunJumpRollEnd;
+        lara.Animations[(int)InjAnim.RunJumpRollStart].NextAnimation = (ushort)InjAnim.RunJumpRollEnd;
+        lara.Animations[(int)InjAnim.RunJumpRollEnd].NextAnimation = (ushort)LaraAnim.JumpBack;
+        lara.Animations[(int)InjAnim.RunJumpRollEnd].NextFrame = 39;
+        lara.Animations[(int)InjAnim.JumpFwdRollStart].NextAnimation = (ushort)InjAnim.JumpFwdRollEnd;
+        lara.Animations[(int)InjAnim.JumpFwdRollEnd].NextAnimation = (ushort)LaraAnim.JumpBack;
+        lara.Animations[(int)InjAnim.JumpFwdRollEnd].NextFrame = 39;
+        lara.Animations[(int)InjAnim.JumpBackRollStart].NextAnimation = (ushort)InjAnim.JumpBackRollEnd;
+        lara.Animations[(int)InjAnim.JumpBackRollEnd].NextAnimation = (ushort)LaraAnim.JumpForward;
+        lara.Animations[(int)InjAnim.JumpBackRollEnd].NextFrame = 39;
     }
 
     static void ImportWading(TRModel tr1Lara, TRModel tr2Lara)

@@ -27,6 +27,7 @@ public abstract class LaraBuilder : InjectionBuilder
     protected enum LaraAnim
     {
         JumpForwardEndToFreefall = 49,
+        JumpBack = 75,
         JumpForward = 77,
         StandIdle = 103,
         StandDeath = 138,
@@ -52,6 +53,31 @@ public abstract class LaraBuilder : InjectionBuilder
     {
         Sprint = 73,
         SprintRoll = 74
+    }
+
+    protected enum ExtLaraAnim
+    {
+        UWRollStart = 0,
+        UWRollEnd = 1,
+        RunJumpRollStart = 2,
+        RunJumpRollEnd = 3,
+        JumpFwdRollStart = 4,
+        JumpFwdRollEnd = 5,
+        JumpBackRollStart = 6,
+        JumpBackRollEnd = 7,
+        ControlledDrop = 8,
+        ControlledDropContinue = 9,
+        HangToJumpUp = 10,
+        HangToJumpUpContinue = 11,
+        HangToJumpBack = 12,
+        HangToJumpBackContinue = 13,
+        JumpNeutralRoll = 14,
+        PoseRightStart = 15,
+        PoseRightContinue = 16,
+        PoseRightEnd = 17,
+        PoseLeftStart = 18,
+        PoseLeftContinue = 19,
+        PoseLeftEnd = 20,
     }
 
     public static TRModel GetLaraPoseModel()
@@ -80,7 +106,7 @@ public abstract class LaraBuilder : InjectionBuilder
     protected void ImportNeutralTwist(TRModel lara, short animID, short stateID)
     {
         var laraExt = GetLaraExtModel();
-        var anim = laraExt.Animations[15];
+        var anim = laraExt.Animations[(int)ExtLaraAnim.JumpNeutralRoll];
         lara.Animations.Add(anim);
         anim.NextAnimation = 11;
         anim.StateID = (ushort)stateID;
@@ -157,8 +183,8 @@ public abstract class LaraBuilder : InjectionBuilder
     protected static void ImportControlledDrop(TRModel lara, short continueAnimID)
     {
         var laraExt = GetLaraExtModel();
-        var startAnim = laraExt.Animations[9];
-        var endAnim = laraExt.Animations[10];
+        var startAnim = laraExt.Animations[(int)ExtLaraAnim.ControlledDrop];
+        var endAnim = laraExt.Animations[(int)ExtLaraAnim.ControlledDropContinue];
 
         lara.Animations.Add(startAnim);
         lara.Animations.Add(endAnim);
@@ -169,10 +195,10 @@ public abstract class LaraBuilder : InjectionBuilder
     protected void ImportHangToJump(TRModel lara, short startAnimID)
     {
         var laraExt = GetLaraExtModel();
-        var upStartAnim = laraExt.Animations[11];
-        var upEndAnim = laraExt.Animations[12];
-        var backStartAnim = laraExt.Animations[13];
-        var backEndAnim = laraExt.Animations[14];        
+        var upStartAnim = laraExt.Animations[(int)ExtLaraAnim.HangToJumpUp];
+        var upEndAnim = laraExt.Animations[(int)ExtLaraAnim.HangToJumpUpContinue];
+        var backStartAnim = laraExt.Animations[(int)ExtLaraAnim.HangToJumpBack];
+        var backEndAnim = laraExt.Animations[(int)ExtLaraAnim.HangToJumpBackContinue];
 
         lara.Animations.Add(upStartAnim);
         lara.Animations.Add(upEndAnim);
@@ -250,7 +276,7 @@ public abstract class LaraBuilder : InjectionBuilder
         var states = new[] { rightState, leftState };
         for (int i = 0; i < states.Length; i++)
         {
-            var poseAnims = laraExt.Animations.GetRange(16 + i * 3, 3);
+            var poseAnims = laraExt.Animations.GetRange((int)ExtLaraAnim.PoseRightStart + i * 3, 3);
             poseAnims[0].StateID = Convert.ToUInt16(startState);
             poseAnims[1].StateID = (ushort)LaraState.Pose;
             poseAnims[2].StateID = Convert.ToUInt16(endState);
