@@ -17,19 +17,20 @@ public class TR2VegasTextureBuilder : TextureBuilder
 
         data.RoomEdits.AddRange(CreateRotations());
         FixTV(level, data);
+        FixDoors(level, data);
 
         FixPassport(level, data);
         FixPushButton(data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(4, TRMeshFaceType.TexturedQuad, 64, 1),
-        };
+        ];
     }
 
     private static void FixTV(TR2Level level, InjectionData data)
@@ -37,6 +38,26 @@ public class TR2VegasTextureBuilder : TextureBuilder
         var mesh = level.StaticMeshes[TR2Type.SceneryBase + 15].Mesh;
         FixTransparentPixels(level, data, mesh.TexturedRectangles[1], Color.FromArgb(148, 148, 148));
         FixTransparentPixels(level, data, mesh.TexturedRectangles[2], Color.FromArgb(148, 148, 148));
+    }
+
+    private static void FixDoors(TR2Level level, InjectionData data)
+    {
+        var mesh = level.Models[TR2Type.Door2].Meshes[0];
+        var types = new[] { TR2Type.Door1, TR2Type.Door2 };
+        var xShifts = new[] { 0, 3, 4, 7 };
+        data.MeshEdits.AddRange(types.Select(t => new TRMeshEdit
+        {
+            ModelID = (uint)t,
+            VertexEdits = [.. Enumerable.Range(0, mesh.Vertices.Count).Select(v => new TRVertexEdit
+            {
+                Index = (short)v,
+                Change = new()
+                {
+                    X = (short)(t == TR2Type.Door2 && xShifts.Contains(v) ? -2 : 0),
+                    Z = 4,
+                }
+            })],
+        }));
     }
 
     private InjectionData CreateBaseData()
