@@ -143,8 +143,14 @@ public class TR2GymTextureBuilder : TextureBuilder
         FixCatStatue(level);
         ImportGoldIdol(level);
 
+        level.Models[TR2Type.Winston].Animations.Clear();
+        level.Models[TR2Type.BreakableWindow1].Animations.Clear();
+
         InjectionData data = InjectionData.Create(level, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR2LevelNames.ASSAULT);
+
+        data.SetMeshOnlyModel((uint)TR2Type.Winston);
+        data.SetMeshOnlyModel((uint)TR2Type.BreakableWindow1);
 
         FixPushButton(data);
 

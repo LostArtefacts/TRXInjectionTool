@@ -56,8 +56,8 @@ public static class InjectionIO
     {
         WriteApplicabilityTests(data, writer);
 
-        List<Chunk> chunks = new()
-        {
+        List<Chunk> chunks =
+        [
             CreateChunk(ChunkType.TextureData, data, WriteTextureData),
             CreateChunk(ChunkType.TextureInfo, data, WriteTextureInfo),
             CreateChunk(ChunkType.MeshData, data, WriteMeshData),
@@ -66,7 +66,7 @@ public static class InjectionIO
             CreateChunk(ChunkType.SFXData, data, WriteSFXData),
             CreateChunk(ChunkType.CameraData, data, WriteCameraData),
             CreateChunk(ChunkType.DataEdits, data, WriteEdits),
-        };
+        ];
 
         chunks.RemoveAll(b => b.BlockCount == 0);
 
@@ -109,12 +109,10 @@ public static class InjectionIO
 
         if (data.Images.Count > 0)
         {
-            List<LC.TRTexImage8> img8s = new();
+            List<LC.TRTexImage8> img8s = [];
             if (data.Images8 == null)
             {
-                List<LC.TRColour> trPalette = data.Palette
-                    .Select(c => new LC.TRColour { Red = c.Red, Green = c.Green, Blue = c.Blue })
-                    .ToList();
+                List<LC.TRColour> trPalette = [.. data.Palette.Select(c => new LC.TRColour { Red = c.Red, Green = c.Green, Blue = c.Blue })];
                 img8s.AddRange(data.Images.Select(i => new LC.TRTexImage8 { Pixels = new TRImage(i.Pixels).ToRGB(trPalette) }));
             }
             else
@@ -160,7 +158,7 @@ public static class InjectionIO
         blockCount += WriteBlock(BlockType.MeshPointers, data.MeshPointers.Count, writer,
             s => s.Write(data.MeshPointers));
 
-        List<byte> meshData = new(data.Meshes.SelectMany(m => m.Serialize()));
+        List<byte> meshData = [.. data.Meshes.SelectMany(m => m.Serialize())];
         blockCount += WriteBlock(BlockType.ObjectMeshes, meshData.Count / 2, writer,
             s => s.Write(meshData));
 
@@ -197,7 +195,7 @@ public static class InjectionIO
         int blockCount = 0;
 
         blockCount += WriteBlock(BlockType.Objects, data.Models.Count, writer,
-            s => data.Models.ForEach(m => m.Serialize(s, data.GameVersion)));
+            s => data.Models.ForEach(m => m.Serialize(s, data.GameVersion, data.IsMeshOnlyModel(m.ID))));
 
         blockCount += WriteBlock(BlockType.StaticObjects, data.StaticObjects.Count, writer,
             s => data.StaticObjects.ForEach(m => s.Write(m.Serialize())));

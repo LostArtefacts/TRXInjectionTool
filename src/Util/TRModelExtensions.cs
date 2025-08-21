@@ -91,13 +91,13 @@ public static class TRModelExtensions
         }
     }
 
-    public static void Serialize(this LM.TRModel model, TRLevelWriter writer, TRGameVersion version)
+    public static void Serialize(this LM.TRModel model, TRLevelWriter writer, TRGameVersion version, bool isMeshOnly)
     {
         writer.Write((int)model.ID, TRObjectType.Game, version);
         writer.Write(model.NumMeshes);
         writer.Write(model.StartingMesh);
         writer.Write(model.MeshTree);
-        writer.Write(model.FrameOffset);
+        writer.Write(isMeshOnly ? uint.MaxValue : model.FrameOffset);
         writer.Write(model.Animation);
     }
 

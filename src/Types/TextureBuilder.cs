@@ -113,7 +113,7 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
-    protected static TRRoomVertexCreate CreateVertex(short roomIdx, TR2Room room, TR2RoomVertex vertex, short lighting = -1)
+    protected static TRRoomVertexCreate CreateVertex(short roomIdx, TR2Room room, TR2RoomVertex vertex, short lighting = -1, short shift = 256)
     {
         room.Mesh.Vertices.Add(vertex.Clone() as TR2RoomVertex);
         return new()
@@ -125,7 +125,7 @@ public abstract class TextureBuilder : InjectionBuilder
                 Vertex = new()
                 {
                     X = vertex.Vertex.X,
-                    Y = (short)(vertex.Vertex.Y + 256),
+                    Y = (short)(vertex.Vertex.Y + shift),
                     Z = vertex.Vertex.Z,
                 },
             },

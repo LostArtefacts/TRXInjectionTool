@@ -24,20 +24,20 @@ public class TR2DeckTextureBuilder : TextureBuilder
         FixPassport(level, data);
         FixPushButton(data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureMove> CreateShifts(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 84,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 TargetIndex = 51,
-                VertexRemap = new()
-                {
+                VertexRemap =
+                [
                     new()
                     {
                         Index = 2,
@@ -48,53 +48,76 @@ public class TR2DeckTextureBuilder : TextureBuilder
                         Index = 3,
                         NewVertexIndex = level.Rooms[84].Mesh.Rectangles[53].Vertices[2],
                     }
-                }
+                ]
             },
-        };
+            new()
+            {
+                RoomIndex = 36,
+                FaceType = TRMeshFaceType.TexturedTriangle,
+                TargetIndex = 14,
+                VertexRemap =
+                [
+                    new()
+                    {
+                        Index = 2,
+                        NewVertexIndex = level.Rooms[36].Mesh.Rectangles[54].Vertices[1],
+                    },
+                ]
+            },
+            CreateQuadShift(36, 56,
+            [
+                new(1, level.Rooms[36].Mesh.Rectangles[52].Vertices[0]),
+                new(2, level.Rooms[36].Mesh.Rectangles[52].Vertices[3]),
+            ]),
+            CreateQuadShift(36, 58,
+            [
+                new(2, level.Rooms[36].Mesh.Rectangles[52].Vertices[0]),
+            ])
+        ];
     }
 
     private static List<TRRoomTextureCreate> CreateFillers(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 84,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 SourceRoom = 84,
                 SourceIndex = 50,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     level.Rooms[84].Mesh.Rectangles[54].Vertices[1],
                     level.Rooms[84].Mesh.Rectangles[50].Vertices[0],
                     level.Rooms[84].Mesh.Rectangles[50].Vertices[3],
                     level.Rooms[84].Mesh.Rectangles[54].Vertices[2],
-                }
+                ]
             },
-        };
+        ];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
             Reface(level, 47, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1643, 164),
             Reface(level, 47, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1637, 166),
             Reface(level, 60, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1592, 79),
             Reface(level, 60, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1618, 138),
             Reface(level, 68, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1681, 117),
             Reface(level, 113, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1637, 1),
-        };
+        ];
     }
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(1, TRMeshFaceType.TexturedTriangle, 1, 2),
             Rotate(60, TRMeshFaceType.TexturedQuad, 138, 3),
             Rotate(85, TRMeshFaceType.TexturedTriangle, 1, 2),
-        };
+        ];
     }
 
     private static void FixRoom80(TR2Level level, InjectionData data)
@@ -134,8 +157,8 @@ public class TR2DeckTextureBuilder : TextureBuilder
             RoomIndex = 80,
             FaceType = TRMeshFaceType.TexturedQuad,
             TargetIndex = 49,
-            VertexRemap = new()
-            {
+            VertexRemap =
+            [
                 new()
                 {
                     Index = 0,
@@ -146,15 +169,15 @@ public class TR2DeckTextureBuilder : TextureBuilder
                     Index = 3,
                     NewVertexIndex = level.Rooms[80].Mesh.Rectangles[70].Vertices[1],
                 }
-            }
+            ]
         });
         data.RoomEdits.Add(new TRRoomTextureMove
         {
             RoomIndex = 80,
             FaceType = TRMeshFaceType.TexturedQuad,
             TargetIndex = 5,
-            VertexRemap = new()
-            {
+            VertexRemap =
+            [
                 new()
                 {
                     Index = 0,
@@ -165,7 +188,7 @@ public class TR2DeckTextureBuilder : TextureBuilder
                     Index = 3,
                     NewVertexIndex = (ushort)level.Rooms[80].Mesh.Vertices.Count,
                 }
-            }
+            ]
         });
 
         data.RoomEdits.Add(new TRRoomTextureCreate
@@ -174,13 +197,13 @@ public class TR2DeckTextureBuilder : TextureBuilder
             FaceType = TRMeshFaceType.TexturedQuad,
             SourceRoom = 80,
             SourceIndex = 49,
-            Vertices = new()
-            {
+            Vertices =
+            [
                 level.Rooms[80].Mesh.Rectangles[72].Vertices[1],
                 (ushort)(level.Rooms[80].Mesh.Vertices.Count + 1),
                 (ushort)level.Rooms[80].Mesh.Vertices.Count,
                 level.Rooms[80].Mesh.Rectangles[72].Vertices[2],
-            }
+            ]
         });
         data.RoomEdits.Add(new TRRoomTextureCreate
         {
@@ -188,14 +211,14 @@ public class TR2DeckTextureBuilder : TextureBuilder
             FaceType = TRMeshFaceType.TexturedQuad,
             SourceRoom = 80,
             SourceIndex = 49,
-            Vertices = new()
-            {
-                
+            Vertices =
+            [
+
                 level.Rooms[80].Mesh.Rectangles[4].Vertices[0],
                 level.Rooms[80].Mesh.Rectangles[4].Vertices[3],
                 (ushort)level.Rooms[80].Mesh.Vertices.Count,
                 (ushort)(level.Rooms[80].Mesh.Vertices.Count + 1),
-            }
+            ]
         });
 
         data.RoomEdits.Add(new TRRoomTextureCreate
@@ -204,14 +227,14 @@ public class TR2DeckTextureBuilder : TextureBuilder
             FaceType = TRMeshFaceType.TexturedQuad,
             SourceRoom = 80,
             SourceIndex = 49,
-            Vertices = new()
-            {
-                
+            Vertices =
+            [
+
                 level.Rooms[80].Mesh.Rectangles[1].Vertices[3],
                 (ushort)(level.Rooms[80].Mesh.Vertices.Count + 1),
                 level.Rooms[80].Mesh.Rectangles[71].Vertices[2],
                 level.Rooms[80].Mesh.Rectangles[71].Vertices[1],
-            }
+            ]
         });
         data.RoomEdits.Add(new TRRoomTextureCreate
         {
@@ -219,13 +242,13 @@ public class TR2DeckTextureBuilder : TextureBuilder
             FaceType = TRMeshFaceType.TexturedQuad,
             SourceRoom = 80,
             SourceIndex = 49,
-            Vertices = new()
-            {
+            Vertices =
+            [
                 level.Rooms[80].Mesh.Rectangles[1].Vertices[3],
                 level.Rooms[80].Mesh.Rectangles[1].Vertices[2],
                 level.Rooms[80].Mesh.Rectangles[3].Vertices[3],
                 (ushort)(level.Rooms[80].Mesh.Vertices.Count + 1),
-            }
+            ]
         });
     }
 }

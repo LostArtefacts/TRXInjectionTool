@@ -12,40 +12,48 @@ public class InjectionData
     public string Name { get; set; }
     public InjectionType InjectionType { get; set; }
     public LC.Model.TRGameVersion GameVersion { get; set; }
-    public List<ApplicabilityTest> ApplicabilityTests { get; set; } = new();
-    public List<LC.Model.TRTexImage32> Images { get; set; } = new();
+    public List<ApplicabilityTest> ApplicabilityTests { get; set; } = [];
+    public List<LC.Model.TRTexImage32> Images { get; set; } = [];
     public List<LC.Model.TRTexImage8> Images8 { get; set; }
-    public List<TRObjectTexture> ObjectTextures { get; set; } = new();
-    public List<TRSpriteSequence> SpriteSequences { get; set; } = new();
-    public List<TRSpriteTexture> SpriteTextures { get; set; } = new();
-    public List<TRMesh> Meshes { get; set; } = new();
-    public List<uint> MeshPointers { get; set; } = new();
-    public List<TRStateChange> AnimChanges { get; set; } = new();
-    public List<TRAnimDispatch> AnimDispatches { get; set; } = new();
-    public List<TRAnimCommand> AnimCommands { get; set; } = new();
-    public List<TRMeshTreeNode> MeshTrees { get; set; } = new();
-    public List<TRAnimation> Animations { get; set; } = new();
-    public List<ushort> AnimFrames { get; set; } = new();
-    public List<TRModel> Models { get; set; } = new();
-    public List<TRStaticMesh> StaticObjects { get; set; } = new();
-    public List<TRColour> Palette { get; set; } = new();
-    public List<TRSFXData> SFX { get; set; } = new();
-    public List<TRCinematicFrame> CinematicFrames { get; set; } = new();
-    public List<TRMeshEdit> MeshEdits { get; set; } = new();
-    public List<TRStaticMeshEdit> StaticMeshEdits { get; set; } = new();
-    public List<TRTextureOverwrite> TextureOverwrites { get; set; } = new();
-    public List<TRFloorDataEdit> FloorEdits { get; set; } = new();
-    public List<TRRoomTextureEdit> RoomEdits { get; set; } = new();
-    public List<TRVisPortalEdit> VisPortalEdits { get; set; } = new();
-    public List<TRItemEdit> ItemEdits { get; set; } = new();
-    public List<TRFrameRotEdit> FrameEdits { get; set; } = new();
-    public List<TRFrameReplacement> FrameReplacements { get; set; } = new();
-    public List<TRAnimCmdEdit> AnimCmdEdits { get; set; } = new();
-    public List<TRCameraEdit> CameraEdits { get; set; } = new();
-    public List<TRSpriteEdit> SpriteEdits { get; set; } = new();
-    public List<TRObjectTypeEdit> ObjectTypeEdits { get; set; } = new();
+    public List<TRObjectTexture> ObjectTextures { get; set; } = [];
+    public List<TRSpriteSequence> SpriteSequences { get; set; } = [];
+    public List<TRSpriteTexture> SpriteTextures { get; set; } = [];
+    public List<TRMesh> Meshes { get; set; } = [];
+    public List<uint> MeshPointers { get; set; } = [];
+    public List<TRStateChange> AnimChanges { get; set; } = [];
+    public List<TRAnimDispatch> AnimDispatches { get; set; } = [];
+    public List<TRAnimCommand> AnimCommands { get; set; } = [];
+    public List<TRMeshTreeNode> MeshTrees { get; set; } = [];
+    public List<TRAnimation> Animations { get; set; } = [];
+    public List<ushort> AnimFrames { get; set; } = [];
+    public List<TRModel> Models { get; set; } = [];
+    public List<TRStaticMesh> StaticObjects { get; set; } = [];
+    public List<TRColour> Palette { get; set; } = [];
+    public List<TRSFXData> SFX { get; set; } = [];
+    public List<TRCinematicFrame> CinematicFrames { get; set; } = [];
+    public List<TRMeshEdit> MeshEdits { get; set; } = [];
+    public List<TRStaticMeshEdit> StaticMeshEdits { get; set; } = [];
+    public List<TRTextureOverwrite> TextureOverwrites { get; set; } = [];
+    public List<TRFloorDataEdit> FloorEdits { get; set; } = [];
+    public List<TRRoomTextureEdit> RoomEdits { get; set; } = [];
+    public List<TRVisPortalEdit> VisPortalEdits { get; set; } = [];
+    public List<TRItemEdit> ItemEdits { get; set; } = [];
+    public List<TRFrameRotEdit> FrameEdits { get; set; } = [];
+    public List<TRFrameReplacement> FrameReplacements { get; set; } = [];
+    public List<TRAnimCmdEdit> AnimCmdEdits { get; set; } = [];
+    public List<TRCameraEdit> CameraEdits { get; set; } = [];
+    public List<TRSpriteEdit> SpriteEdits { get; set; } = [];
+    public List<TRObjectTypeEdit> ObjectTypeEdits { get; set; } = [];
+
+    private readonly HashSet<uint> _meshOnlyModels = [];
 
     private InjectionData() { }
+
+    public void SetMeshOnlyModel(uint id)
+        => _meshOnlyModels.Add(id);
+
+    public bool IsMeshOnlyModel(uint id)
+        => _meshOnlyModels.Contains(id);
 
     public static InjectionData Create(LC.Model.TRGameVersion version, InjectionType type, string name)
     {
@@ -96,19 +104,19 @@ public class InjectionData
             InjectionType = type,
             GameVersion = LC.Model.TRGameVersion.TR1,
             Name = name,
-            Animations = level.Animations.ToList(),
-            AnimChanges = level.StateChanges.ToList(),
-            AnimCommands = level.AnimCommands.ToList(),
-            AnimDispatches = level.AnimDispatches.ToList(),
-            AnimFrames = level.Frames.ToList(),
+            Animations = [.. level.Animations],
+            AnimChanges = [.. level.StateChanges],
+            AnimCommands = [.. level.AnimCommands],
+            AnimDispatches = [.. level.AnimDispatches],
+            AnimFrames = [.. level.Frames],
             Images = Convert(level.Images8, level.Palette),
-            Meshes = level.Meshes.ToList(),
-            MeshPointers = level.MeshPointers.ToList(),
-            MeshTrees = level.MeshTrees.ToList(),
-            Models = level.Models.ToList(),
-            StaticObjects = level.StaticMeshes.ToList(),
-            ObjectTextures = level.ObjectTextures.ToList(),
-            Palette = level.Palette.Select(c =>
+            Meshes = [.. level.Meshes],
+            MeshPointers = [.. level.MeshPointers],
+            MeshTrees = [.. level.MeshTrees],
+            Models = [.. level.Models],
+            StaticObjects = [.. level.StaticMeshes],
+            ObjectTextures = [.. level.ObjectTextures],
+            Palette = [.. level.Palette.Select(c =>
             {
                 return new TRColour
                 {
@@ -116,10 +124,10 @@ public class InjectionData
                     Green = (byte)(c.Green * 4),
                     Blue = (byte)(c.Blue * 4),
                 };
-            }).ToList(),
-            SpriteSequences = level.SpriteSequences.ToList(),
-            SpriteTextures = level.SpriteTextures.ToList(),
-            CinematicFrames = level.CinematicFrames.ToList(),
+            })],
+            SpriteSequences = [.. level.SpriteSequences],
+            SpriteTextures = [.. level.SpriteTextures],
+            CinematicFrames = [.. level.CinematicFrames],
         };
 
         for (int i = 0; i < sounds.Length; i++)
@@ -132,7 +140,7 @@ public class InjectionData
                 Chance = details.Chance,
                 Characteristics = details.Characteristics,
                 Volume = details.Volume,
-                Data = new(),
+                Data = [],
             });
 
             for (int j = 0; j < details.NumSounds; j++)
@@ -170,20 +178,20 @@ public class InjectionData
             InjectionType = type,
             GameVersion = LC.Model.TRGameVersion.TR2,
             Name = name,
-            Animations = level.Animations.ToList(),
-            AnimChanges = level.StateChanges.ToList(),
-            AnimCommands = level.AnimCommands.ToList(),
-            AnimDispatches = level.AnimDispatches.ToList(),
-            AnimFrames = level.Frames.ToList(),
+            Animations = [.. level.Animations],
+            AnimChanges = [.. level.StateChanges],
+            AnimCommands = [.. level.AnimCommands],
+            AnimDispatches = [.. level.AnimDispatches],
+            AnimFrames = [.. level.Frames],
             Images = Convert(level.Images16),
-            Images8 = level.NumImages == 0 ? null : level.Images8.Select(i => new LC.Model.TRTexImage8 { Pixels = i.Pixels }).ToList(),
-            Meshes = level.Meshes.ToList(),
-            MeshPointers = level.MeshPointers.ToList(),
-            MeshTrees = level.MeshTrees.ToList(),
-            Models = level.Models.ToList(),
-            StaticObjects = level.StaticMeshes.ToList(),
-            ObjectTextures = level.ObjectTextures.ToList(),
-            Palette = level.Palette.Select(c =>
+            Images8 = level.NumImages == 0 ? null : [.. level.Images8.Select(i => new LC.Model.TRTexImage8 { Pixels = i.Pixels })],
+            Meshes = [.. level.Meshes],
+            MeshPointers = [.. level.MeshPointers],
+            MeshTrees = [.. level.MeshTrees],
+            Models = [.. level.Models],
+            StaticObjects = [.. level.StaticMeshes],
+            ObjectTextures = [.. level.ObjectTextures],
+            Palette = [.. level.Palette.Select(c =>
             {
                 return new TRColour
                 {
@@ -191,10 +199,10 @@ public class InjectionData
                     Green = (byte)(c.Green * 4),
                     Blue = (byte)(c.Blue * 4),
                 };
-            }).ToList(),
-            SpriteSequences = level.SpriteSequences.ToList(),
-            SpriteTextures = level.SpriteTextures.ToList(),
-            CinematicFrames = level.CinematicFrames.ToList(),
+            })],
+            SpriteSequences = [.. level.SpriteSequences],
+            SpriteTextures = [.. level.SpriteTextures],
+            CinematicFrames = [.. level.CinematicFrames],
         };
 
         for (int i = 0; i < sounds.Length; i++)
@@ -216,25 +224,25 @@ public class InjectionData
 
     static byte[] GetSample(uint offset, uint endOffset, byte[] wavSamples)
     {
-        List<byte> data = new();
+        List<byte> data = [];
         for (uint i = offset; i < endOffset; i++)
         {
             data.Add(wavSamples[i]);
         }
-        return data.ToArray();
+        return [.. data];
     }
 
     private static void ResetLaraLevel(TRLevel level)
     {
         level.NumMeshData = 0;
-        level.Meshes = Array.Empty<TRMesh>();
+        level.Meshes = [];
         level.NumMeshPointers = 0;
-        level.MeshPointers = Array.Empty<uint>();
+        level.MeshPointers = [];
         level.NumMeshTrees = 0;
-        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
-        level.Images8 = Array.Empty<TRTexImage8>();
+        level.MeshTrees = [];
+        level.Images8 = [];
         level.NumImages = 0;
-        level.ObjectTextures = Array.Empty<TRObjectTexture>();
+        level.ObjectTextures = [];
         level.NumObjectTextures = 0;
         for (int i = 0; i < 256; i++)
         {
@@ -242,11 +250,11 @@ public class InjectionData
             c.Red = c.Green = c.Blue = 0;
         }
         level.NumMeshData = 0;
-        level.Meshes = Array.Empty<TRMesh>();
+        level.Meshes = [];
         level.NumMeshPointers = 0;
-        level.MeshPointers = Array.Empty<uint>();
+        level.MeshPointers = [];
         level.NumMeshTrees = 0;
-        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
+        level.MeshTrees = [];
         level.Models[0].MeshTree = 0;
         level.Models[0].StartingMesh = 0;
         level.Models[0].NumMeshes = 0;
@@ -255,15 +263,15 @@ public class InjectionData
     private static void ResetLaraLevel(TR2Level level)
     {
         level.NumMeshData = 0;
-        level.Meshes = Array.Empty<TRMesh>();
+        level.Meshes = [];
         level.NumMeshPointers = 0;
-        level.MeshPointers = Array.Empty<uint>();
+        level.MeshPointers = [];
         level.NumMeshTrees = 0;
-        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
-        level.Images8 = Array.Empty<TRTexImage8>();
-        level.Images16 = Array.Empty<TRTexImage16>();
+        level.MeshTrees = [];
+        level.Images8 = [];
+        level.Images16 = [];
         level.NumImages = 0;
-        level.ObjectTextures = Array.Empty<TRObjectTexture>();
+        level.ObjectTextures = [];
         level.NumObjectTextures = 0;
         for (int i = 0; i < 256; i++)
         {
@@ -273,11 +281,11 @@ public class InjectionData
             c4.Unused = c4.Red = c4.Green = c4.Blue = 0;
         }
         level.NumMeshData = 0;
-        level.Meshes = Array.Empty<TRMesh>();
+        level.Meshes = [];
         level.NumMeshPointers = 0;
-        level.MeshPointers = Array.Empty<uint>();
+        level.MeshPointers = [];
         level.NumMeshTrees = 0;
-        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
+        level.MeshTrees = [];
         level.Models[0].MeshTree = 0;
         level.Models[0].StartingMesh = 0;
         level.Models[0].NumMeshes = 0;
@@ -288,11 +296,11 @@ public class InjectionData
         // The game will detect that there is no mesh data associated with this injection
         // and hence retain the existing mesh data from the original level.
         level.NumMeshData = 0;
-        level.Meshes = Array.Empty<TRMesh>();
+        level.Meshes = [];
         level.NumMeshPointers = 0;
-        level.MeshPointers = Array.Empty<uint>();
+        level.MeshPointers = [];
         level.NumMeshTrees = 0;
-        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
+        level.MeshTrees = [];
 
         foreach (TRModel model in level.Models)
         {
@@ -307,11 +315,11 @@ public class InjectionData
         // The game will detect that there is no mesh data associated with this injection
         // and hence retain the existing mesh data from the original level.
         level.NumMeshData = 0;
-        level.Meshes = Array.Empty<TRMesh>();
+        level.Meshes = [];
         level.NumMeshPointers = 0;
-        level.MeshPointers = Array.Empty<uint>();
+        level.MeshPointers = [];
         level.NumMeshTrees = 0;
-        level.MeshTrees = Array.Empty<TRMeshTreeNode>();
+        level.MeshTrees = [];
 
         foreach (TRModel model in level.Models)
         {
@@ -323,14 +331,14 @@ public class InjectionData
 
     private static List<LC.Model.TRTexImage32> Convert(TRTexImage8[] originalImages, TRColour[] originalPalette)
     {
-        List<LC.Model.TRColour> palette = originalPalette.Select(p => new LC.Model.TRColour
+        List<LC.Model.TRColour> palette = [.. originalPalette.Select(p => new LC.Model.TRColour
         {
             Red = (byte)(p.Red * 4),
             Blue = (byte)(p.Blue * 4),
             Green = (byte)(p.Green * 4),
-        }).ToList();
+        })];
 
-        List<LC.Model.TRTexImage32> images = new();
+        List<LC.Model.TRTexImage32> images = [];
         foreach (TRTexImage8 img8 in originalImages)
         {
             TRImage image = new(img8.Pixels, palette);
@@ -344,8 +352,6 @@ public class InjectionData
 
     private static List<LC.Model.TRTexImage32> Convert(TRTexImage16[] originalImages)
     {
-        return originalImages
-            .Select(i => new LC.Model.TRTexImage32 { Pixels = new TRImage(i.Pixels).ToRGBA() })
-            .ToList();
+        return [.. originalImages.Select(i => new LC.Model.TRTexImage32 { Pixels = new TRImage(i.Pixels).ToRGBA() })];
     }
 }

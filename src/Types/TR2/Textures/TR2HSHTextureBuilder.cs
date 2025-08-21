@@ -230,8 +230,13 @@ public class TR2HSHTextureBuilder : TextureBuilder
         FixToilets(level, TR2LevelNames.HOME);
         FixHomeStatues(level);
 
+        level.Models[TR2Type.BreakableWindow1].Animations.Clear();
+
         InjectionData data = InjectionData.Create(level, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR2LevelNames.HOME);
+
+        data.SetMeshOnlyModel((uint)TR2Type.BreakableWindow1);
+
         return data;
     }
 }

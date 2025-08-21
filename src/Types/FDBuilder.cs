@@ -141,7 +141,7 @@ public abstract class FDBuilder : InjectionBuilder
         };
     }
 
-    protected static TRVisPortalEdit DeletePortal<R>(List<R> rooms, int baseRoomIndex, int portalIndex)
+    public static TRVisPortalEdit DeletePortal<R>(List<R> rooms, int baseRoomIndex, int portalIndex)
         where R : TRRoom
     {
         // "Nullify" the vertices - the game will then disable the portal.
