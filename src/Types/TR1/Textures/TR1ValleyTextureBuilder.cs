@@ -22,25 +22,25 @@ public class TR1ValleyTextureBuilder : TextureBuilder
         FixWolfTransparency(valley, data);
         FixPassport(valley, data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureCreate> CreateFillers(TR1Level valley)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 25,
                 FaceType = TRMeshFaceType.TexturedTriangle,
                 SourceRoom = 25,
                 SourceIndex = 89,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     valley.Rooms[25].Mesh.Rectangles[138].Vertices[3],
                     valley.Rooms[25].Mesh.Rectangles[138].Vertices[2],
                     valley.Rooms[25].Mesh.Triangles[89].Vertices[0],
-                }
+                ]
             },
             new()
             {
@@ -48,12 +48,12 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                 FaceType = TRMeshFaceType.TexturedTriangle,
                 SourceRoom = 25,
                 SourceIndex = 89,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     valley.Rooms[25].Mesh.Rectangles[125].Vertices[0],
                     valley.Rooms[25].Mesh.Rectangles[125].Vertices[3],
                     valley.Rooms[25].Mesh.Triangles[90].Vertices[0],
-                }
+                ]
             },
             new()
             {
@@ -61,13 +61,13 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                 FaceType = TRMeshFaceType.TexturedQuad,
                 SourceRoom = 23,
                 SourceIndex = 49,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     valley.Rooms[90].Mesh.Rectangles[50].Vertices[1],
                     valley.Rooms[90].Mesh.Rectangles[50].Vertices[0],
                     valley.Rooms[90].Mesh.Rectangles[69].Vertices[1],
                     valley.Rooms[90].Mesh.Rectangles[69].Vertices[0],
-                }
+                ]
             },
             new()
             {
@@ -75,13 +75,13 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                 FaceType = TRMeshFaceType.TexturedQuad,
                 SourceRoom = 23,
                 SourceIndex = 49,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     valley.Rooms[26].Mesh.Rectangles[1].Vertices[2],
                     valley.Rooms[26].Mesh.Rectangles[1].Vertices[1],
                     valley.Rooms[26].Mesh.Rectangles[0].Vertices[1],
                     valley.Rooms[26].Mesh.Rectangles[0].Vertices[0],
-                }
+                ]
             },
             new()
             {
@@ -89,12 +89,12 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                 FaceType = TRMeshFaceType.TexturedTriangle,
                 SourceRoom = 9,
                 SourceIndex = 0,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     valley.Rooms[9].Mesh.Rectangles[50].Vertices[3],
                     valley.Rooms[9].Mesh.Rectangles[50].Vertices[2],
                     valley.Rooms[9].Mesh.Rectangles[49].Vertices[0],
-                }
+                ]
             },
             new()
             {
@@ -102,12 +102,12 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                 FaceType = TRMeshFaceType.TexturedTriangle,
                 SourceRoom = 6,
                 SourceIndex = 17,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     valley.Rooms[6].Mesh.Rectangles[34].Vertices[0],
                     valley.Rooms[6].Mesh.Rectangles[34].Vertices[3],
                     valley.Rooms[6].Mesh.Rectangles[37].Vertices[1],
-                }
+                ]
             },
             new()
             {
@@ -115,20 +115,20 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                 FaceType = TRMeshFaceType.TexturedTriangle,
                 SourceRoom = 6,
                 SourceIndex = 17,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     valley.Rooms[6].Mesh.Rectangles[37].Vertices[2],
                     valley.Rooms[6].Mesh.Rectangles[37].Vertices[1],
                     valley.Rooms[6].Mesh.Rectangles[34].Vertices[3],
-                }
+                ]
             }
-        };
+        ];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings(TR1Level valley)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 6,
@@ -250,13 +250,14 @@ public class TR1ValleyTextureBuilder : TextureBuilder
             Reface(valley, 27, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 3, 93),
             Reface(valley, 5, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 0, 130),
             Reface(valley, 88, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 0, 130),
-        };
+            Reface(valley, 61, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 85, 13),
+        ];
     }
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(9, TRMeshFaceType.TexturedTriangle, 4, 2),
             Rotate(9, TRMeshFaceType.TexturedTriangle, 5, 1),
             Rotate(9, TRMeshFaceType.TexturedTriangle, 9, 1),
@@ -268,20 +269,27 @@ public class TR1ValleyTextureBuilder : TextureBuilder
             Rotate(27, TRMeshFaceType.TexturedTriangle, 26, 2),
             Rotate(27, TRMeshFaceType.TexturedTriangle, 27, 2),
             Rotate(66, TRMeshFaceType.TexturedTriangle, 5, 2),
-        };
+            Rotate(41, TRMeshFaceType.TexturedTriangle, 0, 2),
+            Rotate(41, TRMeshFaceType.TexturedTriangle, 2, 2),
+            Rotate(41, TRMeshFaceType.TexturedTriangle, 11, 2),
+            Rotate(61, TRMeshFaceType.TexturedTriangle, 13, 2),
+            Rotate(62, TRMeshFaceType.TexturedTriangle, 3, 2),
+            Rotate(62, TRMeshFaceType.TexturedTriangle, 8, 2),
+            Rotate(62, TRMeshFaceType.TexturedTriangle, 13, 2),
+        ];
     }
 
     private static List<TRRoomTextureMove> CreateShifts(TR1Level valley)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 27,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 TargetIndex = 135,
-                VertexRemap = new()
-                {
+                VertexRemap =
+                [
                     new()
                     {
                         NewVertexIndex = valley.Rooms[27].Mesh.Rectangles[134].Vertices[0]
@@ -291,15 +299,15 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                         Index = 3,
                         NewVertexIndex = valley.Rooms[27].Mesh.Rectangles[123].Vertices[0]
                     }
-                }
+                ]
             },
             new()
             {
                 RoomIndex = 51,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 TargetIndex = 165,
-                VertexRemap = new()
-                {
+                VertexRemap =
+                [
                     new()
                     {
                         NewVertexIndex = valley.Rooms[51].Mesh.Rectangles[151].Vertices[0]
@@ -309,15 +317,15 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                         Index = 1,
                         NewVertexIndex = valley.Rooms[51].Mesh.Rectangles[151].Vertices[3]
                     }
-                }
+                ]
             }
-        };
+        ];
     }
 
     private static List<TRRoomVertexMove> CreateVertexShifts(TR1Level valley)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 63,
@@ -330,6 +338,6 @@ public class TR1ValleyTextureBuilder : TextureBuilder
                 VertexIndex = valley.Rooms[63].Mesh.Rectangles[145].Vertices[3],
                 VertexChange = new() { Y = -768 }
             },
-        };
+        ];
     }
 }

@@ -9,6 +9,11 @@ namespace TRXInjectionTool.Util;
 
 public static class TRModelExtensions
 {
+    public static bool IsEquivalent(this TRVertex vertex, TRVertex testVertex)
+    {
+        return vertex.X == testVertex.X && vertex.Y == testVertex.Y && vertex.Z == testVertex.Z;
+    }
+
     public static TRBoundingBox GetBounds(this TRModel model)
     {
         TRBoundingBox box = new();

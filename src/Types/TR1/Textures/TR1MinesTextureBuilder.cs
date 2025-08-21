@@ -5,7 +5,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Textures;
 
-public class TR1MinesTextureBuilder : TextureBuilder
+public partial class TR1MinesTextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
@@ -18,36 +18,37 @@ public class TR1MinesTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(mines));
 
+        FixCabinRoom(mines, data);
         FixEnemyTextures(data);
         FixPassport(mines, data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureCreate> CreateFillers(TR1Level mines)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 35,
                 FaceType = TRMeshFaceType.TexturedTriangle,
                 SourceRoom = 35,
                 SourceIndex = 2,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     mines.Rooms[35].Mesh.Rectangles[4].Vertices[1],
                     mines.Rooms[35].Mesh.Rectangles[0].Vertices[0],
                     mines.Rooms[35].Mesh.Rectangles[0].Vertices[3],
-                }
+                ]
             },
-        };
+        ];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings(TR1Level mines)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 69,
@@ -74,13 +75,13 @@ public class TR1MinesTextureBuilder : TextureBuilder
             Reface(mines, 88, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 157, 10),
             Reface(mines, 87, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 87, 12),
             Reface(mines, 88, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, 87, 12),
-        };
+        ];
     }
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(23, TRMeshFaceType.TexturedTriangle, 8, 2),
             Rotate(23, TRMeshFaceType.TexturedTriangle, 6, 2),
             Rotate(24, TRMeshFaceType.TexturedTriangle, 0, 1),
@@ -95,21 +96,23 @@ public class TR1MinesTextureBuilder : TextureBuilder
             Rotate(88, TRMeshFaceType.TexturedTriangle, 10, 2),
             Rotate(88, TRMeshFaceType.TexturedTriangle, 13, 2),
             Rotate(92, TRMeshFaceType.TexturedTriangle, 1, 2),
+            Rotate(93, TRMeshFaceType.TexturedTriangle, 0, 2),
+            Rotate(97, TRMeshFaceType.TexturedTriangle, 0, 2),
             Rotate(98, TRMeshFaceType.TexturedTriangle, 1, 2),
-        };
+        ];
     }
 
     private static List<TRRoomTextureMove> CreateShifts(TR1Level mines)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 55,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 TargetIndex = 8,
-                VertexRemap = new()
-                {
+                VertexRemap =
+                [
                     new()
                     {
                         NewVertexIndex = mines.Rooms[55].Mesh.Rectangles[9].Vertices[3],
@@ -119,9 +122,9 @@ public class TR1MinesTextureBuilder : TextureBuilder
                         Index = 1,
                         NewVertexIndex = mines.Rooms[55].Mesh.Rectangles[9].Vertices[2],
                     },
-                }
+                ]
             }
-        };
+        ];
     }
 
     private static void FixEnemyTextures(InjectionData data)
@@ -147,58 +150,58 @@ public class TR1MinesTextureBuilder : TextureBuilder
 
         {
             // Skateboard kid
-            short[] meshIndices = new short[] { 1, 3, 4, 7, };
+            short[] meshIndices = [1, 3, 4, 7,];
             foreach (short meshIndex in meshIndices)
             {
                 data.MeshEdits.Add(new()
                 {
                     ModelID = (uint)TR1Type.SkateboardKid,
                     MeshIndex = meshIndex,
-                    FaceEdits = new()
-                    {
+                    FaceEdits =
+                    [
                         new()
                         {
                             FaceType = TRMeshFaceType.ColouredQuad,
                             MeshIndex = tone1,
-                            TargetFaceIndices = new() { 0 },
+                            TargetFaceIndices = [0],
                         }
-                   },
+                   ],
                 });
             }
         }
 
         {
             // Cowboy
-            short[] meshIndices = new short[] { 4, 7, };
+            short[] meshIndices = [4, 7,];
             foreach (short meshIndex in meshIndices)
             {
                 data.MeshEdits.Add(new()
                 {
                     ModelID = (uint)TR1Type.Cowboy,
                     MeshIndex = meshIndex,
-                    FaceEdits = new()
-                    {
+                    FaceEdits =
+                    [
                         new()
                         {
                             FaceType = TRMeshFaceType.ColouredQuad,
                             MeshIndex = tone1,
-                            TargetFaceIndices = new() { 0 },
+                            TargetFaceIndices = [0],
                         }
-                    },
+                    ],
                 });
             }
         }
 
         {
             // Baldy
-            data.MeshEdits.AddRange(new List<TRMeshEdit>
-            {
+            data.MeshEdits.AddRange(
+            [
                 new()
                 {
                     ModelID = (uint)TR1Type.Kold,
                     MeshIndex = 1,
-                    FaceEdits = new()
-                    {
+                    FaceEdits =
+                    [
                         new()
                         {
                             FaceType = TRMeshFaceType.ColouredQuad,
@@ -211,15 +214,15 @@ public class TR1MinesTextureBuilder : TextureBuilder
                             MeshIndex = tone2,
                             TargetFaceIndices = GetRange(4, 4),
                         },
-                    },
+                    ],
                 },
 
                 new()
                 {
                     ModelID = (uint)TR1Type.Kold,
                     MeshIndex = 2,
-                    FaceEdits = new()
-                    {
+                    FaceEdits =
+                    [
                         new()
                         {
                             FaceType = TRMeshFaceType.ColouredQuad,
@@ -232,39 +235,39 @@ public class TR1MinesTextureBuilder : TextureBuilder
                             MeshIndex = tone2,
                             TargetFaceIndices = GetRange(0, 15),
                         },
-                    },
+                    ],
                 },
 
                 new()
                 {
                     ModelID = (uint)TR1Type.Kold,
                     MeshIndex = 5,
-                    FaceEdits = new()
-                    {
+                    FaceEdits =
+                    [
                         new()
                         {
                             FaceType = TRMeshFaceType.ColouredQuad,
                             MeshIndex = tone2,
                             TargetFaceIndices = GetRange(0, 6),
                         },
-                    },
+                    ],
                 },
 
                 new()
                 {
                     ModelID = (uint)TR1Type.Kold,
                     MeshIndex = 8,
-                    FaceEdits = new()
-                    {
+                    FaceEdits =
+                    [
                         new()
                         {
                             FaceType = TRMeshFaceType.ColouredQuad,
                             MeshIndex = tone2,
                             TargetFaceIndices = GetRange(0, 6),
                         },
-                    },
+                    ],
                 },
-            });
+            ]);
         }
     }
 }
