@@ -12,7 +12,7 @@ public static class InjectionIO
     private static readonly InjectionVersion _version = new()
     {
         Magic = IOUtils.MakeTag('T', 'R', 'X', 'J'),
-        Iteration = 3,
+        Iteration = 4,
     };
 
     public static void Export(InjectionData data, string file)
