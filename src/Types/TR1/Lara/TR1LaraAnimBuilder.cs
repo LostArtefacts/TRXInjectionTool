@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.Diagnostics;
+using System.IO.Compression;
 using System.Text;
 using System.Xml;
 using TRImageControl.Packing;
@@ -30,6 +31,42 @@ public class TR1LaraAnimBuilder : LaraBuilder
     {
         [TR3LaraState.Sprint] = InjState.Sprint,
         [TR3LaraState.SprintRoll] = InjState.SprintRoll,
+    };
+
+    private static readonly Dictionary<TR2LaraAnim, InjAnim> _ladderAnimMap = new()
+    {
+        [TR2LaraAnim.StandToLadder] = InjAnim.StandToLadder,
+        [TR2LaraAnim.LadderUp] = InjAnim.LadderUp,
+        [TR2LaraAnim.LadderUpStopRight] = InjAnim.LadderUpStopRight,
+        [TR2LaraAnim.LadderUpStopLeft] = InjAnim.LadderUpStopLeft,
+        [TR2LaraAnim.LadderIdle] = InjAnim.LadderIdle,
+        [TR2LaraAnim.LadderUpStart] = InjAnim.LadderUpStart,
+        [TR2LaraAnim.LadderDownStopLeft] = InjAnim.LadderDownStopLeft,
+        [TR2LaraAnim.LadderDownStopRight] = InjAnim.LadderDownStopRight,
+        [TR2LaraAnim.LadderDown] = InjAnim.LadderDown,
+        [TR2LaraAnim.LadderDownStart] = InjAnim.LadderDownStart,
+        [TR2LaraAnim.LadderRight] = InjAnim.LadderRight,
+        [TR2LaraAnim.LadderLeft] = InjAnim.LadderLeft,
+        [TR2LaraAnim.LadderHang] = InjAnim.LadderHang,
+        [TR2LaraAnim.LadderHangToIdle] = InjAnim.LadderHangToIdle,
+        [TR2LaraAnim.LadderClimbOn] = InjAnim.LadderClimbOn,
+        [TR2LaraAnim.LadderBackFlipStart] = InjAnim.LadderBackFlipStart,
+        [TR2LaraAnim.LadderBackFlipContinue] = InjAnim.LadderBackFlipContinue,
+        [TR2LaraAnim.LadderUpHanging] = InjAnim.LadderUpHanging,
+        [TR2LaraAnim.LadderDownHanging] = InjAnim.LadderDownHanging,
+        [TR2LaraAnim.LadderToHangDown] = InjAnim.LadderToHangDown,
+        [TR2LaraAnim.LadderToHangRight] = InjAnim.LadderToHangRight,
+        [TR2LaraAnim.LadderToHangLeft] = InjAnim.LadderToHangLeft,
+    };
+
+    private static readonly Dictionary<TR2LaraState, InjState> _ladderStateMap = new()
+    {
+        [TR2LaraState.ClimbStance] = InjState.ClimbStance,
+        [TR2LaraState.Climbing] = InjState.Climbing,
+        [TR2LaraState.ClimbLeft] = InjState.ClimbLeft,
+        [TR2LaraState.ClimbEnd] = InjState.ClimbEnd,
+        [TR2LaraState.ClimbRight] = InjState.ClimbRight,
+        [TR2LaraState.ClimbDown] = InjState.ClimbDown,
     };
 
     public override string ID => "tr1-lara-anims";
@@ -91,6 +128,28 @@ public class TR1LaraAnimBuilder : LaraBuilder
         PoseLeftStart = 206,
         PoseLeftContinue = 207,
         PoseLeftEnd = 208,
+        StandToLadder = 209,
+        LadderUp = 210,
+        LadderUpStopRight = 211,
+        LadderUpStopLeft = 212,
+        LadderIdle = 213,
+        LadderUpStart = 214,
+        LadderDownStopLeft = 215,
+        LadderDownStopRight = 216,
+        LadderDown = 217,
+        LadderDownStart = 218,
+        LadderRight = 219,
+        LadderLeft = 220,
+        LadderHang = 221,
+        LadderHangToIdle = 222,
+        LadderClimbOn = 223,
+        LadderBackFlipStart = 224,
+        LadderBackFlipContinue = 225,
+        LadderUpHanging = 226,
+        LadderDownHanging = 227,
+        LadderToHangDown = 228,
+        LadderToHangRight = 229,
+        LadderToHangLeft = 230,
     };
 
     enum InjState : int
@@ -106,6 +165,12 @@ public class TR1LaraAnimBuilder : LaraBuilder
         PoseEnd = 65,
         PoseLeft = 66,
         PoseRight = 67,
+        ClimbStance = 68,
+        Climbing = 69,
+        ClimbLeft = 70,
+        ClimbEnd = 71,
+        ClimbRight = 72,
+        ClimbDown = 73,
     };
 
     public override List<InjectionData> Build()
@@ -138,6 +203,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportSprint(tr1Lara, InjAnim.SlideToRun, _sprintAnimMap, _sprintStateMap);
         ImportIdlePose(tr1Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr1Lara);
+        ImportClimbing(tr1Lara);
 
         return caves;
     }
@@ -638,6 +704,66 @@ public class TR1LaraAnimBuilder : LaraBuilder
 
         // Not essential, but easier to read in WADTool
         responsiveGlideChange.Dispatches.Sort((d1, d2) => d1.Low.CompareTo(d2.Low));
+    }
+
+    protected void ImportClimbing(TRModel lara)
+    {
+        var tr2Lara = _control2.Read($"Resources/{TR2LevelNames.GW}").Models[TR2Type.Lara];
+        foreach (var (tr2Idx, newIdx) in _ladderAnimMap)
+        {
+            var anim = tr2Lara.Animations[(int)tr2Idx].Clone();
+            var animIdx = Convert.ToInt16(newIdx);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+
+            anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == (short)TR2SFX.LaraWetFeet)
+                .ToList().ForEach(s => s.SoundID = WetFeetSFX);
+            anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == (short)TR2SFX.LaraTread)
+                .ToList().ForEach(s => s.SoundID = (short)TR1SFX.LaraWade);
+
+            if (Enum.IsDefined(typeof(TR2LaraState), (int)anim.StateID))
+            {
+                anim.StateID = Convert.ToUInt16(_ladderStateMap[(TR2LaraState)anim.StateID]);
+            }
+            if (Enum.IsDefined(typeof(TR2LaraAnim), (int)anim.NextAnimation))
+            {
+                anim.NextAnimation = Convert.ToUInt16(_ladderAnimMap[(TR2LaraAnim)anim.NextAnimation]);
+            }
+
+            anim.Changes.RemoveAll(c => c.Dispatches.Any(d => !Enum.IsDefined(typeof(TR2LaraAnim), (int)d.NextAnimation)));
+            foreach (var change in anim.Changes)
+            {
+                if (Enum.IsDefined(typeof(TR2LaraState), (int)change.StateID))
+                {
+                    change.StateID = Convert.ToUInt16(_ladderStateMap[(TR2LaraState)change.StateID]);
+                }
+                foreach (var dispatch in change.Dispatches)
+                {
+                    if (Enum.IsDefined(typeof(TR2LaraAnim), (int)dispatch.NextAnimation))
+                    {
+                        dispatch.NextAnimation = Convert.ToInt16(_ladderAnimMap[(TR2LaraAnim)dispatch.NextAnimation]);
+                    }
+                }
+            }
+        }
+
+        var changeAnims = new[] { LaraAnim.StandStill, LaraAnim.ReachToHang, LaraAnim.StandIdle };
+        foreach (var animIdx in changeAnims)
+        {
+            var anim = tr2Lara.Animations[(int)animIdx];
+            foreach (var change in anim.Changes
+                .Where(c => Enum.IsDefined(typeof(TR2LaraState), (int)c.StateID)))
+            {
+                var tr1Change = change.Clone();
+                lara.Animations[(int)animIdx].Changes.Add(tr1Change);
+                tr1Change.StateID = Convert.ToUInt16(_ladderStateMap[(TR2LaraState)change.StateID]);
+                foreach (var dispatch in tr1Change.Dispatches
+                    .Where(d => Enum.IsDefined(typeof(TR2LaraAnim), (int)d.NextAnimation)))
+                {
+                    dispatch.NextAnimation = Convert.ToInt16(_ladderAnimMap[(TR2LaraAnim)dispatch.NextAnimation]);
+                }
+            }
+        }
     }
 
     static void ResetLevel(TR1Level level)

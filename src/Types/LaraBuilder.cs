@@ -26,12 +26,50 @@ public abstract class LaraBuilder : InjectionBuilder
 
     protected enum LaraAnim
     {
+        StandStill = 11,
         JumpForwardEndToFreefall = 49,
         JumpBack = 75,
         JumpForward = 77,
+        ReachToHang = 96,
         StandIdle = 103,
         StandDeath = 138,
         RollStart = 146,
+    }
+
+    protected enum TR2LaraAnim
+    {
+        StandToLadder = 160,
+        LadderUp = 161,
+        LadderUpStopRight = 162,
+        LadderUpStopLeft = 163,
+        LadderIdle = 164,
+        LadderUpStart = 165,
+        LadderDownStopLeft = 166,
+        LadderDownStopRight = 167,
+        LadderDown = 168,
+        LadderDownStart = 169,
+        LadderRight = 170,
+        LadderLeft = 171,
+        LadderHang = 172,
+        LadderHangToIdle = 173,
+        LadderClimbOn = 174,
+        LadderBackFlipStart = 182,
+        LadderBackFlipContinue = 183,
+        LadderUpHanging = 187,
+        LadderDownHanging = 188,
+        LadderToHangDown = 194,
+        LadderToHangRight = 201,
+        LadderToHangLeft = 202,
+    }
+
+    protected enum TR2LaraState
+    {
+        ClimbStance = 56,
+        Climbing = 57,
+        ClimbLeft = 58,
+        ClimbEnd = 59,
+        ClimbRight = 60,
+        ClimbDown = 61,
     }
 
     protected enum TR3LaraAnim
