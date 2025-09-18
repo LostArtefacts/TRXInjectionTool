@@ -36,6 +36,7 @@ public enum FDFixType
     GlideCameraFix,
     ZoneFix,
     PortalOverwrite,
+    ClimbInsert,
 }
 
 public abstract class FDFix
@@ -205,6 +206,25 @@ public class FDPortalOverwrite : FDFix
         writer.Write(Wall);
         writer.Write(Sky);
         writer.Write(Pit);
+    }
+}
+
+public class FDClimbInsert : FDFix
+{
+    public override FDFixType FixType => FDFixType.ClimbInsert;
+    public bool PosX { get; set; }
+    public bool PosZ { get; set; }    
+    public bool NegX { get; set; }
+    public bool NegZ { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        var direction = 0;
+        direction |= Convert.ToInt32(PosZ) << 0;
+        direction |= Convert.ToInt32(PosX) << 1;
+        direction |= Convert.ToInt32(NegZ) << 2;
+        direction |= Convert.ToInt32(NegX) << 3;
+        writer.Write(direction);
     }
 }
 
