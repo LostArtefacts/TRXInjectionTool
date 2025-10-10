@@ -150,7 +150,7 @@ public abstract class LaraBuilder : InjectionBuilder
         anim.NextAnimation = 11;
         anim.StateID = (ushort)stateID;
 
-        anim.Commands.Add(new TRFXCommand { FrameNumber = 22 });
+        anim.Commands.Add(new TRFXCommand { FrameNumber = 23 });
         anim.Commands.Add(new TRSFXCommand
         {
             FrameNumber = 10,
