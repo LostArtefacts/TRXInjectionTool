@@ -340,6 +340,17 @@ public abstract class LaraBuilder : InjectionBuilder
             .Dispatches.First().NextAnimation = (short)LaraAnim.JumpForwardEndToFreefall;
     }
 
+    protected static void FixLadderClimbOn(TRModel lara)
+    {
+        var anim = lara.Animations[(int)TR2LaraAnim.LadderClimbOn];
+        var frames = new[] { 62, 77 };
+        anim.Commands.AddRange(frames.Select(f => new TRSFXCommand
+        {
+            FrameNumber = (short)f,
+            SoundID = (short)TR1SFX.LaraFeet,
+        }));
+    }
+
     protected static void AddChange
         (TRModel lara, object animIdx, object goalStateID, short low, short high, object nextAnimIdx, short nextFrame)
         => AddChange(lara.Animations[Convert.ToInt32(animIdx)], goalStateID, low, high, nextAnimIdx, nextFrame);

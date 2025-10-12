@@ -104,6 +104,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportSprint(tr2Lara, InjAnim.SlideToRun, _sprintAnimMap, _sprintStateMap);
         ImportIdlePose(tr2Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr2Lara);
+        FixLadderClimbOn(tr2Lara);
 
         return wall;
     }

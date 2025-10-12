@@ -709,6 +709,8 @@ public class TR1LaraAnimBuilder : LaraBuilder
     protected void ImportClimbing(TRModel lara)
     {
         var tr2Lara = _control2.Read($"Resources/{TR2LevelNames.GW}").Models[TR2Type.Lara];
+        FixLadderClimbOn(tr2Lara);
+
         foreach (var (tr2Idx, newIdx) in _ladderAnimMap)
         {
             var anim = tr2Lara.Animations[(int)tr2Idx].Clone();
