@@ -204,6 +204,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportIdlePose(tr1Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr1Lara);
         ImportClimbing(tr1Lara);
+        FixHandstandSFX(tr1Lara);
 
         return caves;
     }
@@ -709,7 +710,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
     protected void ImportClimbing(TRModel lara)
     {
         var tr2Lara = _control2.Read($"Resources/{TR2LevelNames.GW}").Models[TR2Type.Lara];
-        FixLadderClimbOn(tr2Lara);
+        FixLadderClimbOnSFX(tr2Lara);
 
         foreach (var (tr2Idx, newIdx) in _ladderAnimMap)
         {

@@ -34,6 +34,7 @@ public abstract class LaraBuilder : InjectionBuilder
         StandIdle = 103,
         StandDeath = 138,
         RollStart = 146,
+        ClimbOnHandstand = 159,
     }
 
     protected enum TR2LaraAnim
@@ -340,10 +341,21 @@ public abstract class LaraBuilder : InjectionBuilder
             .Dispatches.First().NextAnimation = (short)LaraAnim.JumpForwardEndToFreefall;
     }
 
-    protected static void FixLadderClimbOn(TRModel lara)
+    protected static void FixLadderClimbOnSFX(TRModel lara)
     {
         var anim = lara.Animations[(int)TR2LaraAnim.LadderClimbOn];
         var frames = new[] { 62, 77 };
+        anim.Commands.AddRange(frames.Select(f => new TRSFXCommand
+        {
+            FrameNumber = (short)f,
+            SoundID = (short)TR1SFX.LaraFeet,
+        }));
+    }
+
+    protected static void FixHandstandSFX(TRModel lara)
+    {
+        var anim = lara.Animations[(int)LaraAnim.ClimbOnHandstand];
+        var frames = new[] { 157, 188 };
         anim.Commands.AddRange(frames.Select(f => new TRSFXCommand
         {
             FrameNumber = (short)f,
