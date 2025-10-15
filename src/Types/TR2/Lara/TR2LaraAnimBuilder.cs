@@ -78,6 +78,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         PoseEnd = 76,
         PoseLeft = 77,
         PoseRight = 78,
+        Controlled = 79,
     };
 
     public override List<InjectionData> Build()

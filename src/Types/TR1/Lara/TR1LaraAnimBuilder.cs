@@ -150,6 +150,18 @@ public class TR1LaraAnimBuilder : LaraBuilder
         LadderToHangDown = 228,
         LadderToHangRight = 229,
         LadderToHangLeft = 230,
+        Unknown = 231,
+        SurfToWadeShallowUnused = 232,
+        FlareThrow = 233,
+        SwitchSmallDown = 234,
+        SwitchSmallUp = 235,
+        ButtonPush = 236,
+        FlarePickup = 237,
+        UWFlarePickup = 238,
+        Kick = 239,
+        ZiplineGrab = 240,
+        ZiplineRide = 241,
+        ZiplineFall = 242,
     };
 
     enum InjState : int
@@ -171,6 +183,12 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ClimbEnd = 71,
         ClimbRight = 72,
         ClimbDown = 73,
+        Test1 = 74,
+        Test2 = 75,
+        Test3 = 76,
+        FlarePickup = 77,
+        Kick = 78,
+        Zipline = 79,
     };
 
     public override List<InjectionData> Build()
@@ -205,6 +223,8 @@ public class TR1LaraAnimBuilder : LaraBuilder
         FixJumpToFreefall(tr1Lara);
         ImportClimbing(tr1Lara);
         FixHandstandSFX(tr1Lara);
+
+        SyncToTR2(tr1Lara);
 
         return caves;
     }
@@ -764,6 +784,65 @@ public class TR1LaraAnimBuilder : LaraBuilder
                     .Where(d => Enum.IsDefined(typeof(TR2LaraAnim), (int)d.NextAnimation)))
                 {
                     dispatch.NextAnimation = Convert.ToInt16(_ladderAnimMap[(TR2LaraAnim)dispatch.NextAnimation]);
+                }
+            }
+        }
+    }
+
+    private static void SyncToTR2(TRModel lara)
+    {
+        // Brings TR1 anim and state count to that of TR2. The following anims are not currently put to use.
+        // TODO: once TR3 anims are shared with TR1/2 refactor everything to build up the anim list more concretely
+        // rather than the repeated import/remap approach.
+        var animMap = new Dictionary<int, InjAnim>
+        {
+            [175] = InjAnim.Unknown,
+            [176] = InjAnim.SurfToWadeShallowUnused,
+            [189] = InjAnim.FlareThrow,
+            [195] = InjAnim.SwitchSmallDown,
+            [196] = InjAnim.SwitchSmallUp,
+            [197] = InjAnim.ButtonPush,
+            [204] = InjAnim.FlarePickup,
+            [206] = InjAnim.UWFlarePickup,
+            [214] = InjAnim.Kick,
+            [215] = InjAnim.ZiplineGrab,
+            [216] = InjAnim.ZiplineRide,
+            [217] = InjAnim.ZiplineFall,
+        };
+
+        var stateMap = new Dictionary<int, InjState>
+        {
+            [65] = InjState.Wade,
+            [67] = InjState.FlarePickup,
+            [70] = InjState.Zipline,
+        };
+
+        var tr2Lara = _control2.Read($"Resources/{TR2LevelNames.GW}").Models[TR2Type.Lara];
+        foreach (var (tr2Idx, newIdx) in animMap)
+        {
+            var anim = tr2Lara.Animations[tr2Idx].Clone();
+            var animIdx = Convert.ToInt16(newIdx);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+
+            if (stateMap.TryGetValue(anim.StateID, out var state))
+            {
+                anim.StateID = Convert.ToUInt16(state);
+            }
+            if (anim.NextAnimation == 177)
+            {
+                anim.NextAnimation = (ushort)InjAnim.Wade;
+            }
+            else if (animMap.TryGetValue(anim.NextAnimation, out var nextAnim))
+            {
+                anim.NextAnimation = Convert.ToUInt16(nextAnim);
+            }
+
+            foreach (var dispatch in anim.Changes.SelectMany(c => c.Dispatches))
+            {
+                if (animMap.TryGetValue(dispatch.NextAnimation, out var nextAnim))
+                {
+                    dispatch.NextAnimation = Convert.ToInt16(nextAnim);
                 }
             }
         }
