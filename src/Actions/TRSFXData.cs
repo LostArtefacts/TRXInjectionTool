@@ -38,7 +38,7 @@ public class TRSFXData
         return (uint)Data.Sum(data => data.Length);
     }
 
-    private void LoadSFX(TRGameVersion version)
+    public void LoadSFX(TRGameVersion version)
     {
         if (!_mainSFXData.TryGetValue(version, out var mainSFXData))
         {
