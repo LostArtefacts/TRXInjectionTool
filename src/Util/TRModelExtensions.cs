@@ -121,10 +121,5 @@ public static class TRModelExtensions
 
         writer.Write((int)objectType);
         writer.Write(objectID);
-        if (objectType == TRObjectType.Game)
-        {
-            Guid guid = TRXGuid.Get(version, objectID);
-            writer.Write(guid.ToByteArray());
-        }
     }
 }
