@@ -103,8 +103,7 @@ public static class TRModelExtensions
 
     public static void Serialize(this LM.TRSpriteSequence sequence, TRLevelWriter writer, TRGameVersion version)
     {
-        int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
-        TRObjectType type = sequence.SpriteID >= sceneryBase ? TRObjectType.Static2D : TRObjectType.Game;
+        var type = GetSpriteType(sequence.SpriteID, version);
         writer.Write(sequence.SpriteID, type, version);
         writer.Write(sequence.NegativeLength);
         writer.Write(sequence.Offset);
@@ -121,5 +120,16 @@ public static class TRModelExtensions
 
         writer.Write((int)objectType);
         writer.Write(objectID);
+    }
+
+    private static TRObjectType GetSpriteType(int id, TRGameVersion version)
+    {
+        int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
+        if (version == TRGameVersion.TR2 && id == (int)TR2Type.PickupAid)
+        {
+            // TODO: once TRLevelControl no longer uses typed statics, get rid of this
+            return TRObjectType.Game;
+        }
+        return id >= sceneryBase ? TRObjectType.Static2D : TRObjectType.Game;
     }
 }
