@@ -10,7 +10,10 @@ namespace TRXInjectionTool.Types;
 
 public static class AssetPublisher
 {
-    private static readonly string _wadZipPath = "../../Resources/Published/{0}-ext.zip";
+    private static readonly string _wadZipPath
+        = (Directory.Exists("../../Resources/Published") ? "../../" : "")
+            + "Resources/Published/{0}-ext.zip";
+
     private static readonly DateTimeOffset _wadZipPlaceholderDate
         = new(new DateTime(2025, 8, 11, 14, 0, 0), new TimeSpan());
 
