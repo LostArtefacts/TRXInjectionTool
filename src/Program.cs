@@ -9,6 +9,8 @@ internal class Program
     static readonly string _topNS = "TRXInjectionTool.Types";
     static Type[] _types;
     static List<string> _namespaces;
+    // Mapping of builder ID to builder type (default ID is class name if not assigned)
+    static Dictionary<string, Type> _builders = null;
 
     static int Main(string[] args)
     {
@@ -19,6 +21,17 @@ internal class Program
             .Distinct()
             .OrderBy(t => t)
             .ToList();
+
+        // Construct builder ID mapping
+        _builders = _types
+            .Where(t =>
+                t.IsSubclassOf(typeof(InjectionBuilder)) &&
+                !t.IsAbstract &&
+                t.Namespace != null &&
+                t.Namespace.StartsWith(_topNS))
+            .Select(t => new { Type = t, Builder = (InjectionBuilder)Activator.CreateInstance(t) })
+            .Where(x => x.Builder.ID != null && x.Builder.ID != "")
+            .ToDictionary(x => x.Builder.ID, x => x.Type);
 
         if (args.Length == 0)
         {
@@ -79,23 +92,30 @@ internal class Program
         if (args.Length < 1)
         {
             Console.WriteLine("Missing injection identifier.");
+            PrintHelp();
             return 1;
         }
 
-        string id = args[0].ToLower().Trim();
-        IEnumerable<Type> matches = _types.Where(t => 
-            t.IsSubclassOf(typeof(InjectionBuilder))
-            && !t.IsAbstract
-            && t.Namespace.StartsWith(_topNS)
-            && ((InjectionBuilder)Activator.CreateInstance(t)).ID == id);
-
-        if (!matches.Any())
+        // Handle global options
+        var first = args[0].ToLowerInvariant();
+        if (first == "-h" || first == "--help")
         {
-            Console.WriteLine("No matching injection builders for given ID.");
+            PrintHelp();
+            return 0;
+        } else if (first == "-l" || first == "--list")
+        {
+            PrintList();
+            return 0;
+        }
+
+        var id = args[0].ToLowerInvariant().Trim();
+        if (!_builders.TryGetValue(id, out var builderType))
+        {
+            Console.WriteLine($"No matching injection builders for given ID '{id}'.");
             return 1;
         }
 
-        RunBuilders(matches);
+        RunBuilders(new[] { builderType });
         return 0;
     }
 
@@ -125,5 +145,22 @@ internal class Program
 
         AssetPublisher.Publish();
         Console.WriteLine();
+    }
+
+    private static void PrintHelp()
+    {
+        Console.WriteLine("Usage: TRXInjectionTool [options] <builderId>");
+        Console.WriteLine("Options:");
+        Console.WriteLine("  -h, --help     Show help");
+        Console.WriteLine("  -l, --list     List available builder IDs");
+    }
+
+    private static void PrintList()
+    {
+        Console.WriteLine("Available builder IDs:");
+        foreach (var id in _builders.Keys.OrderBy(id => id))
+        {
+            Console.WriteLine($"  {id}");
+        }
     }
 }

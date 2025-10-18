@@ -5,7 +5,7 @@ namespace TRXInjectionTool.Types.TR1.Textures;
 
 public class TR1TitleTextureBuilder : TextureBuilder
 {
-    public override string ID => "title_textures";
+    public override string ID => "tr1_title_textures";
 
     public override List<InjectionData> Build()
     {
