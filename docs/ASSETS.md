@@ -47,6 +47,17 @@ existing one.
       </td>
     </tr>
     <tr valign="top">
+      <td><strong>Flares</strong></td>
+      <td><code>flares.phd</code></td>
+      <td><code>lara_flares.bin</code></td>
+      <td>
+        Relevant to TR1 only. Make sure to update TombEditor catalogs so you can place pickups in your level. The IDs should match your TR1X catalog IDs, and you will also need to
+        manually assign sound effects (<code>SFX_LARA_FLARE_IGNITE</code> and <code>SFX_LARA_FLARE_BURN</code>) <br />
+        SpriteSequences.xml: <code>&lt;sprite_sequence id="187" name="Flares" /&gt;</code><br />
+        Moveables.xml: <code>&lt;moveable id="188" name="Flares" id2="187" /&gt;</code>
+      </td>
+    </tr>
+    <tr valign="top">
       <td><strong>Font</strong></td>
       <td><code>font.phd</code> / <code>font.tr2</code></td>
       <td><code>font.bin</code></td>

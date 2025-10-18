@@ -846,6 +846,10 @@ public class TR1LaraAnimBuilder : LaraBuilder
                 }
             }
         }
+
+        AddChange(lara, 103, InjState.FlarePickup, 0, 69, InjAnim.FlarePickup, 0);
+        AddChange(lara, 103, InjState.Kick, 0, 69, InjAnim.Kick, 0);
+        AddChange(lara, 103, InjState.Zipline, 0, 69, InjAnim.ZiplineRide, 0);
     }
 
     static void ResetLevel(TR1Level level)
