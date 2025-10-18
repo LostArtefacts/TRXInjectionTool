@@ -6,7 +6,7 @@ namespace TRXInjectionTool.Types.TR2.FD;
 
 public class TR2MusicTrackBuilder : InjectionBuilder
 {
-    public override string ID => "fix-tr2-music-tracks";
+    public override string ID => "fix_tr2_music_tracks";
 
     public override List<InjectionData> Build()
     {

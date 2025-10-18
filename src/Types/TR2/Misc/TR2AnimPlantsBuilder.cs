@@ -13,7 +13,7 @@ public class TR2AnimPlantsBuilder : InjectionBuilder
 {
     private static readonly string _resourceDir = "Resources/TR2/Plants";
 
-    public override string ID => "tr2-anim-plants";
+    public override string ID => "tr2_anim_plants";
 
     public override List<InjectionData> Build()
     {

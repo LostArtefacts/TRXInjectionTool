@@ -6,7 +6,7 @@ namespace TRXInjectionTool.Types.TR1.Misc;
 
 public class TR1FontBuilder : FontBuilder
 {
-    public override string ID => "tr1-font";
+    public override string ID => "tr1_font";
 
     public TR1FontBuilder()
         : base(TRGameVersion.TR1) { }

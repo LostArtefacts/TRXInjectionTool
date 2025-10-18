@@ -31,7 +31,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         [TR3LaraState.SprintRoll] = InjState.SprintRoll,
     };
 
-    public override string ID => "tr2-lara-anims";
+    public override string ID => "tr2_lara_anims";
     public override TRGameVersion GameVersion => TRGameVersion.TR2;
     protected override short JumpSFX => (short)TR2SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR2SFX.LaraFeet;

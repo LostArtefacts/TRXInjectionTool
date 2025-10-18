@@ -8,7 +8,7 @@ namespace TRXInjectionTool.Types.TR2.Misc;
 
 public class TR2FontBuilder : FontBuilder
 {
-    public override string ID => "tr2-font";
+    public override string ID => "tr2_font";
 
     public TR2FontBuilder()
         : base(TRGameVersion.TR2) { }

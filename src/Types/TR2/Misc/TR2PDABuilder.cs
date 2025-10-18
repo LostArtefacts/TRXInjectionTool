@@ -8,7 +8,7 @@ namespace TRXInjectionTool.Types.TR2.Misc;
 
 public class TR2PDABuilder : InjectionBuilder, IPublisher
 {
-    public override string ID => "tr2-pda";
+    public override string ID => "tr2_pda";
 
     public override List<InjectionData> Build()
     {

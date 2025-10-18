@@ -69,7 +69,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         [TR2LaraState.ClimbDown] = InjState.ClimbDown,
     };
 
-    public override string ID => "tr1-lara-anims";
+    public override string ID => "tr1_lara_anims";
     public override TRGameVersion GameVersion => TRGameVersion.TR1;
     protected override short JumpSFX => (short)TR1SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR1SFX.LaraFeet;

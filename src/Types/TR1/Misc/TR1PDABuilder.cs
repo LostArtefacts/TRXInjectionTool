@@ -5,7 +5,7 @@ namespace TRXInjectionTool.Types.TR1.Misc;
 
 public class TR1PDABuilder : InjectionBuilder, IPublisher
 {
-    public override string ID => "tr1-pda";
+    public override string ID => "tr1_pda";
 
     public override List<InjectionData> Build()
     {
