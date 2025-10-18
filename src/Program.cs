@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Types;
 
@@ -30,8 +31,13 @@ internal class Program
                 t.Namespace != null &&
                 t.Namespace.StartsWith(_topNS))
             .Select(t => new { Type = t, Builder = (InjectionBuilder)Activator.CreateInstance(t) })
-            .Where(x => x.Builder.ID != null && x.Builder.ID != "")
-            .ToDictionary(x => x.Builder.ID, x => x.Type);
+            .ToDictionary(x => {
+                var id = x.Builder.ID;
+                if (string.IsNullOrWhiteSpace(id)) {
+                    id = ToSnakeCase(x.Type.Name);
+                }
+                return id.ToLowerInvariant();
+            }, x => x.Type);
 
         if (args.Length == 0)
         {
@@ -162,5 +168,10 @@ internal class Program
         {
             Console.WriteLine($"  {id}");
         }
+    }
+
+    private static string ToSnakeCase(string input)
+    {
+        return Regex.Replace(input, @"([a-z0-9])([A-Z])", "$1_$2").ToLower();
     }
 }
