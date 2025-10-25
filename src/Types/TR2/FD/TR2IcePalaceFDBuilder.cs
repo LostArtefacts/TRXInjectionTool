@@ -20,7 +20,7 @@ public class TR2IcePalaceFDBuilder : FDBuilder
         // Rotate and shift the door that leads to the Jade secret, otherwise there is an invisible wall.
         // Although this is an item shift, it's included in FD as it's closest to that in terms of config setting.
         palace.Entities[143].X += TRConsts.Step4;
-        data.ItemEdits.Add(ItemBuilder.SetAngle(palace, 143, 16384));
+        data.ItemPosEdits.Add(ItemBuilder.SetAngle(palace, 143, 16384));
 
         // Duplicate the gong hammer pickup trigger into the adjacent tile.
         FDTriggerEntry hammerTrigger = GetTrigger(palace, 29, 4, 6);

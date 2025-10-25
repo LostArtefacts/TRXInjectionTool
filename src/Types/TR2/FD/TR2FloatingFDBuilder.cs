@@ -16,7 +16,7 @@ public class TR2FloatingFDBuilder : FDBuilder
 
         // Rotate and shift the door that leads to room 86, otherwise there is an invisible wall.
         floating.Entities[72].X += TRConsts.Step4;
-        data.ItemEdits.Add(ItemBuilder.SetAngle(floating, 72, 16384));
+        data.ItemPosEdits.Add(ItemBuilder.SetAngle(floating, 72, 16384));
 
         data.FloorEdits.AddRange(FixZiplineReset(floating));
 

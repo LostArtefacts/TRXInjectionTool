@@ -14,7 +14,7 @@ public class TR2ColdWarItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.COLDWAR);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(coldWar, 0, -32768),
             SetAngle(coldWar, 70, 16384),

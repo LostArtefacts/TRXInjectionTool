@@ -23,7 +23,7 @@ public class TR1ObeliskItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "obelisk_itemrots");
         CreateDefaultTests(data, TR1LevelNames.OBELISK);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(obelisk, 15, 16384),
             SetAngle(obelisk, 17, -16384),

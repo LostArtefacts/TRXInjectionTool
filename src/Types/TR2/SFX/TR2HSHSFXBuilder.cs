@@ -37,7 +37,7 @@ public class TR2HSHSFXBuilder : InjectionBuilder
 
         // To avoid hearing the door in Lara's bedroom/kitchen opening when the cutscene
         // starts, replace them with static meshes.
-        data.ItemEdits.Add(new()
+        data.ItemPosEdits.Add(new()
         {
             Index = 11,
             Item = new()
@@ -49,7 +49,7 @@ public class TR2HSHSFXBuilder : InjectionBuilder
                 Intensity = -1,
             },
         });
-        data.ItemEdits.Add(new()
+        data.ItemPosEdits.Add(new()
         {
             Index = 55,
             Item = new()

@@ -14,7 +14,7 @@ public class TR2CatacombsItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.COT);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(catacombs, 9, 16384),
             SetAngle(catacombs, 47, -32768),

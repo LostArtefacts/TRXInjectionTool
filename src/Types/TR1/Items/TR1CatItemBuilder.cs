@@ -23,17 +23,17 @@ public class TR1CatItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "cat_itemrots");
         CreateDefaultTests(data, TR1LevelNames.CAT);
 
-        data.ItemEdits.Add(SetAngle(cat, 44, 16384));
-        data.ItemEdits.Add(SetAngle(cat, 93, 16384));
-        data.ItemEdits.Add(SetAngle(cat, 94, 16384));
-        data.ItemEdits.Add(SetAngle(cat, 127, -16384));
-        data.ItemEdits.Add(SetAngle(cat, 153, -16384));
-        data.ItemEdits.Add(SetAngle(cat, 159, 16384));
-        data.ItemEdits.Add(SetAngle(cat, 171, -32768));
+        data.ItemPosEdits.Add(SetAngle(cat, 44, 16384));
+        data.ItemPosEdits.Add(SetAngle(cat, 93, 16384));
+        data.ItemPosEdits.Add(SetAngle(cat, 94, 16384));
+        data.ItemPosEdits.Add(SetAngle(cat, 127, -16384));
+        data.ItemPosEdits.Add(SetAngle(cat, 153, -16384));
+        data.ItemPosEdits.Add(SetAngle(cat, 159, 16384));
+        data.ItemPosEdits.Add(SetAngle(cat, 171, -32768));
 
         // Rotate and shift door 180 to put the invisible wall on the other side of it.
         cat.Entities[180].X += TRConsts.Step4;
-        data.ItemEdits.Add(SetAngle(cat, 180, 16384));
+        data.ItemPosEdits.Add(SetAngle(cat, 180, 16384));
 
         return data;
     }

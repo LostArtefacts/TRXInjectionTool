@@ -12,7 +12,7 @@ public class TR1MidasItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "midas_itemrots");
         CreateDefaultTests(data, TR1LevelNames.MIDAS);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(midas, 131, -32768),
         };

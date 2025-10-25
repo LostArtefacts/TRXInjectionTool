@@ -637,7 +637,7 @@ public abstract class TextureBuilder : InjectionBuilder
             {
                 item.X += TRConsts.Step1;
             }
-            data.ItemEdits.Add(new()
+            data.ItemPosEdits.Add(new()
             {
                 Index = idx,
                 Item = item,
@@ -809,7 +809,7 @@ public abstract class TextureBuilder : InjectionBuilder
         if (levelName == TR2LevelNames.RIG)
         {
             rig.Entities[79].Z += 1024;
-            data.ItemEdits.Add(ItemBuilder.SetAngle(rig, 79, 0));
+            data.ItemPosEdits.Add(ItemBuilder.SetAngle(rig, 79, 0));
         }
     }
 

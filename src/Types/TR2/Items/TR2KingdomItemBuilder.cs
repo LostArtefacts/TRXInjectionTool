@@ -14,7 +14,7 @@ public class TR2KingdomItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.KINGDOM);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(kingdom, 11, -16384),
             SetAngle(kingdom, 12, 16384),

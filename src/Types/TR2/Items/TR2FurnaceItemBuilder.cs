@@ -14,7 +14,7 @@ public class TR2FurnaceItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.FURNACE);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(furnace, 7, 16384),
             SetAngle(furnace, 9, -32768),

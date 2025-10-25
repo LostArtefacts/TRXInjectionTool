@@ -3,7 +3,7 @@ using TRLevelControl.Model;
 
 namespace TRXInjectionTool.Actions;
 
-public class TRItemEdit
+public class TRItemPosEdit
 {
     public short Index { get; set; }
     public TR1Entity Item { get; set; }

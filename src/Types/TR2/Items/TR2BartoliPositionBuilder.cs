@@ -14,7 +14,7 @@ public class TR2BartoliPositionBuilder : ItemBuilder
         CreateDefaultTests(data, TR2LevelNames.LAIR);
 
         TR2Entity bartoli = lair.Entities[43];        
-        data.ItemEdits.Add(new()
+        data.ItemPosEdits.Add(new()
         {
             Index = 43,
             Item = new()

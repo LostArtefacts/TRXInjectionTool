@@ -12,7 +12,7 @@ public class TR1FollyItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "folly_itemrots");
         CreateDefaultTests(data, TR1LevelNames.FOLLY);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(folly, 71, -16384),
             SetAngle(folly, 89, -16384),

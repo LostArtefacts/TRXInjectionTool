@@ -5,7 +5,7 @@ namespace TRXInjectionTool.Types;
 
 public abstract class ItemBuilder : InjectionBuilder
 {
-    protected static TRItemEdit SetAngle(TR1Level level, short itemIndex, short angle)
+    protected static TRItemPosEdit SetAngle(TR1Level level, short itemIndex, short angle)
     {
         TR1Entity item = level.Entities[itemIndex].Clone() as TR1Entity;
         item.Angle = angle;
@@ -17,7 +17,7 @@ public abstract class ItemBuilder : InjectionBuilder
         };
     }
 
-    public static TRItemEdit SetAngle(TR2Level level, short itemIndex, short angle)
+    public static TRItemPosEdit SetAngle(TR2Level level, short itemIndex, short angle)
     {
         // Convert to a TR1Entity
         TR2Entity item = level.Entities[itemIndex];

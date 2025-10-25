@@ -483,7 +483,7 @@ public partial class TR1AtlantisTextureBuilder : TextureBuilder
             }
         });
 
-        data.ItemEdits.Add(new()
+        data.ItemPosEdits.Add(new()
         {
             Index = 69,
             Item = new()

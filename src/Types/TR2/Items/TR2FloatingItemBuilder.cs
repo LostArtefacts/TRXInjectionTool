@@ -12,7 +12,7 @@ public class TR2FloatingItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "floating_itemrots");
         CreateDefaultTests(data, TR2LevelNames.FLOATER);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(floating, 1, -32768),
         };

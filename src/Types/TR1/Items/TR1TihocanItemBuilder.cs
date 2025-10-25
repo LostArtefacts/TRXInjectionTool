@@ -14,7 +14,7 @@ public class TR1TihocanItemBuilder : ItemBuilder
         CreateDefaultTests(data, TR1LevelNames.TIHOCAN);
 
         tihocan.Entities[12].Z -= TRConsts.Step4;
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(tihocan, 10, -32768),
             SetAngle(tihocan, 12, -32768),

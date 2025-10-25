@@ -12,7 +12,7 @@ public class TR1CavesItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "caves_itemrots");
         CreateDefaultTests(data, TR1LevelNames.CAVES);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(caves, 54, -32768),
         };

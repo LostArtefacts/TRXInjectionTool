@@ -12,10 +12,10 @@ public class TR1ValleyItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "valley_itemrots");
         CreateDefaultTests(data, TR1LevelNames.VALLEY);
 
-        data.ItemEdits.Add(SetAngle(valley, 14, -16384));
-        data.ItemEdits.Add(SetAngle(valley, 40, -16384));
-        data.ItemEdits.Add(SetAngle(valley, 58, -32768));
-        data.ItemEdits.Add(SetAngle(valley, 59, -32768));
+        data.ItemPosEdits.Add(SetAngle(valley, 14, -16384));
+        data.ItemPosEdits.Add(SetAngle(valley, 40, -16384));
+        data.ItemPosEdits.Add(SetAngle(valley, 58, -32768));
+        data.ItemPosEdits.Add(SetAngle(valley, 59, -32768));
 
         return new() { data };
     }

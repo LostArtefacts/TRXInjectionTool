@@ -12,7 +12,7 @@ public class TR2XianItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "xian_itemrots");
         CreateDefaultTests(data, TR2LevelNames.XIAN);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(xian, 0, 16384),
             SetAngle(xian, 88, 16384),

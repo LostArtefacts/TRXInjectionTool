@@ -18,7 +18,7 @@ public class TR1CatCameraBuilder : CameraBuilder
 
         // Item 74 is an unused camera target, so move this to room 10 and have the camera there
         // look at it instead of the trapdoor, again to avoid LOS issues.
-        data.ItemEdits.Add(new()
+        data.ItemPosEdits.Add(new()
         {
             Index = 74,
             Item = new()

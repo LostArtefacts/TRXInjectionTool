@@ -14,7 +14,7 @@ public class TR2FoolsGoldItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.FOOLGOLD);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(foolsGold, 29, 16384),
             SetAngle(foolsGold, 103, -16384),

@@ -12,9 +12,9 @@ public class TR1AtlantisItemBuilder : ItemBuilder
         var data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "atlantis_itemrots");
         CreateDefaultTests(data, TR1LevelNames.ATLANTIS);
 
-        data.ItemEdits.Add(SetAngle(level, 57, -16384));
-        data.ItemEdits.Add(SetAngle(level, 58, -16384));
-        data.ItemEdits.Add(SetAngle(level, 90, -16384));
+        data.ItemPosEdits.Add(SetAngle(level, 57, -16384));
+        data.ItemPosEdits.Add(SetAngle(level, 58, -16384));
+        data.ItemPosEdits.Add(SetAngle(level, 90, -16384));
 
         return new() { data };
     }

@@ -12,7 +12,7 @@ public class TR2OperaItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "opera_itemrots");
         CreateDefaultTests(data, TR2LevelNames.OPERA);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(opera, 118, 16384),
             SetAngle(opera, 82, 16384),

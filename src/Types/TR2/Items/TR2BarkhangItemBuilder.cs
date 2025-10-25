@@ -12,7 +12,7 @@ public class TR2BarkhangItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "barkhang_itemrots");
         CreateDefaultTests(data, TR2LevelNames.MONASTERY);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(barkhang, 31, -16384),
             SetAngle(barkhang, 97, 16384),

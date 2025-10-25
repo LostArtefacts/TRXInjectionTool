@@ -12,7 +12,7 @@ public class TR2DivingItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "diving_itemrots");
         CreateDefaultTests(data, TR2LevelNames.DA);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(diving, 120, 16384),
             SetAngle(diving, 124, -16384),

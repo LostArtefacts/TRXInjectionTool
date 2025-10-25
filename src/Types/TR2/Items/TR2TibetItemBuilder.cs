@@ -12,7 +12,7 @@ public class TR2TibetItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "tibet_itemrots");
         CreateDefaultTests(data, TR2LevelNames.TIBET);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(tibet, 0, -32768),
             SetAngle(tibet, 48, 16384),

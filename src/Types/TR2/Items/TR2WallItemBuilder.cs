@@ -12,7 +12,7 @@ public class TR2WallItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "wall_itemrots");
         CreateDefaultTests(data, TR2LevelNames.GW);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(wall, 17, 16384),
             SetAngle(wall, 92, -32768),

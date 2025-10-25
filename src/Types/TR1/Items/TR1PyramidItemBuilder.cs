@@ -12,9 +12,9 @@ public class TR1PyramidItemBuilder : ItemBuilder
         var data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "pyramid_itemrots");
         CreateDefaultTests(data, TR1LevelNames.PYRAMID);
 
-        data.ItemEdits.Add(SetAngle(level, 95, -32768));
-        data.ItemEdits.Add(SetAngle(level, 96, -32768));
-        data.ItemEdits.Add(SetAngle(level, 99, -32768));
+        data.ItemPosEdits.Add(SetAngle(level, 95, -32768));
+        data.ItemPosEdits.Add(SetAngle(level, 96, -32768));
+        data.ItemPosEdits.Add(SetAngle(level, 99, -32768));
 
         return new() { data };
     }

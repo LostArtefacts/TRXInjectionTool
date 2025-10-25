@@ -12,7 +12,7 @@ public class TR2WreckItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "wreck_itemrots");
         CreateDefaultTests(data, TR2LevelNames.DORIA);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(wreck, 64, -32768),
             SetAngle(wreck, 149, 16384),

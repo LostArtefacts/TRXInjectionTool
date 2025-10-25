@@ -12,7 +12,7 @@ public class TR2DeckItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "deck_itemrots");
         CreateDefaultTests(data, TR2LevelNames.DECK);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(deck, 82, -16384),
         };

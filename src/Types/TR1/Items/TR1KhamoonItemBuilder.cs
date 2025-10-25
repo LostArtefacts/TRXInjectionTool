@@ -23,7 +23,7 @@ public class TR1KhamoonItemBuilder : ItemBuilder
         var data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "khamoon_itemrots");
         CreateDefaultTests(data, TR1LevelNames.KHAMOON);
 
-        data.ItemEdits.Add(SetAngle(level, 64, 16384));
+        data.ItemPosEdits.Add(SetAngle(level, 64, 16384));
 
         return data;
     }

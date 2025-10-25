@@ -49,7 +49,7 @@ public enum BlockType
     SampleIndices   = 15,
     SampleData      = 16,
     FloorEdits      = 17,
-    ItemEdits       = 18,
+    ItemPosEdits    = 18,
     MeshEdits       = 19,
     TextureEdits    = 20,
     RoomEditSummary = 21,

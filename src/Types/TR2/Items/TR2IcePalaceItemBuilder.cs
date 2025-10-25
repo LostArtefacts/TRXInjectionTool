@@ -12,7 +12,7 @@ public class TR2IcePalaceItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "palace_itemrots");
         CreateDefaultTests(data, TR2LevelNames.CHICKEN);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(palace, 90, -32768),
             SetAngle(palace, 93, -32768),

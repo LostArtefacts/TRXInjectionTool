@@ -12,7 +12,7 @@ public class TR2RigItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "rig_itemrots");
         CreateDefaultTests(data, TR2LevelNames.RIG);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(rig, 30, -16384),
         };

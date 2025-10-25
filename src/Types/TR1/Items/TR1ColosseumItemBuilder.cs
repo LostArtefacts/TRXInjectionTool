@@ -12,7 +12,7 @@ public class TR1ColosseumItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "colosseum_itemrots");
         CreateDefaultTests(data, TR1LevelNames.COLOSSEUM);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(colosseum, 50, -16384),
         };

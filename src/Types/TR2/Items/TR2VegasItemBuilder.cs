@@ -14,7 +14,7 @@ public class TR2VegasItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.VEGAS);
 
-        data.ItemEdits = new()
+        data.ItemPosEdits = new()
         {
             SetAngle(vegas, 10, -32768),
             SetAngle(vegas, 16, 16384),

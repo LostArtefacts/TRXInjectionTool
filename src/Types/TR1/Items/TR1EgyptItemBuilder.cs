@@ -22,12 +22,12 @@ public class TR1EgyptItemBuilder : ItemBuilder
         var data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "egypt_itemrots");
         CreateDefaultTests(data, TR1LevelNames.EGYPT);
 
-        data.ItemEdits.Add(SetAngle(level, 52, 16384));
-        data.ItemEdits.Add(SetAngle(level, 99, -16384));
-        data.ItemEdits.Add(SetAngle(level, 185, -16384));
-        data.ItemEdits.Add(SetAngle(level, 186, -32768));
-        data.ItemEdits.Add(SetAngle(level, 190, 16384));
-        data.ItemEdits.Add(SetAngle(level, 191, 16384));
+        data.ItemPosEdits.Add(SetAngle(level, 52, 16384));
+        data.ItemPosEdits.Add(SetAngle(level, 99, -16384));
+        data.ItemPosEdits.Add(SetAngle(level, 185, -16384));
+        data.ItemPosEdits.Add(SetAngle(level, 186, -32768));
+        data.ItemPosEdits.Add(SetAngle(level, 190, 16384));
+        data.ItemPosEdits.Add(SetAngle(level, 191, 16384));
 
         return data;
     }

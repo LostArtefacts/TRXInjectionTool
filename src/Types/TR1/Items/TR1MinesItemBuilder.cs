@@ -23,9 +23,9 @@ public class TR1MinesItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.ItemRotation, "mines_itemrots");
         CreateDefaultTests(data, TR1LevelNames.MINES);
 
-        data.ItemEdits.Add(SetAngle(mines, 52, 16384));
-        data.ItemEdits.Add(SetAngle(mines, 71, 16384));
-        data.ItemEdits.Add(SetAngle(mines, 80, -16384));
+        data.ItemPosEdits.Add(SetAngle(mines, 52, 16384));
+        data.ItemPosEdits.Add(SetAngle(mines, 71, 16384));
+        data.ItemPosEdits.Add(SetAngle(mines, 80, -16384));
 
         return data;
     }
