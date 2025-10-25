@@ -159,6 +159,13 @@ public class TR1CutsceneBuilder : InjectionBuilder
             FrameNumber = 1,
         });
 
+        // Fix drifty Lara
+        var lockFrame = level.Models[TR1Type.Lara].Animations[0].Frames[318];
+        for (int i = 319; i < 380; i++)
+        {
+            level.Models[TR1Type.Lara].Animations[0].Frames[i] = lockFrame.Clone();
+        }
+
         var data = InjectionData.Create(level, InjectionType.General, "cut4_setup");
 
         var lara = cut.Entities[1];
