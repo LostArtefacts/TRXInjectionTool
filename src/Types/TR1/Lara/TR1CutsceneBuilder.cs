@@ -43,6 +43,12 @@ public class TR1CutsceneBuilder : InjectionBuilder
             });
         }
 
+        level.Models[TR1Type.Lara].Animations[0].Commands.Add(new TRFXCommand
+        {
+            EffectID = (short)TR1FX.ShadowOff,
+            FrameNumber = 1,
+        });
+
         var data = InjectionData.Create(level, InjectionType.General,
             $"{Path.GetFileNameWithoutExtension(levelName).ToLower()}_setup");
 
@@ -90,14 +96,13 @@ public class TR1CutsceneBuilder : InjectionBuilder
                 [
                     new TRFXCommand
                     {
-                        // Replace GF flip map sequence
+                        // Replace old GF flip map sequence
                         EffectID = (short)TR1FX.FlipMap,
                         FrameNumber = 1,
                     },
                     new TRFXCommand
                     {
-                        // Hide Lara
-                        EffectID = 17,
+                        EffectID = (short)TR1FX.HideItem,
                         FrameNumber = 1,
                     }
                 ],
@@ -148,6 +153,11 @@ public class TR1CutsceneBuilder : InjectionBuilder
         var cut = _control1.Read($"Resources/{TR1LevelNames.ATLANTIS_CUT}");
 
         level.Models[TR1Type.Lara].Animations = cut.Models[TR1Type.CutsceneActor1].Animations;
+        level.Models[TR1Type.Lara].Animations[0].Commands.Add(new TRFXCommand
+        {
+            EffectID = (short)TR1FX.ShadowOff,
+            FrameNumber = 1,
+        });
 
         var data = InjectionData.Create(level, InjectionType.General, "cut4_setup");
 
