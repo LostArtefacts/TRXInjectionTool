@@ -20,6 +20,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder
 
             InjectionData data = InjectionData.Create(caves, InjectionType.Braid, "braid");
             AddDefaultHeadEdits(data);
+            AddBackpackEdits(data);
 
             dataGroup.Add(data);
         }
@@ -27,40 +28,6 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         {
             InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.Braid, "braid_valley");
             AddValleyHeadEdits(data);
-
-            dataGroup.Add(data);
-        }
-
-        {
-            TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
-            ImportBraid(caves);
-
-            InjectionData data = InjectionData.Create(caves, InjectionType.Braid, "braid_cut1");
-            AddCut1HeadEdits(data);
-
-            dataGroup.Add(data);
-        }
-
-        {
-            TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
-            ImportBraid(caves);
-
-            InjectionData data = InjectionData.Create(caves, InjectionType.Braid, "braid_cut2_cut4");
-            AddCut24HeadEdits(data);
-
-            dataGroup.Add(data);
-        }
-
-        {
-            InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.Braid, "backpack");
-            AddDefaultBackpackEdits(data);
-
-            dataGroup.Add(data);
-        }
-
-        {
-            InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.Braid, "backpack_cut");
-            AddCutsceneBackpackEdits(data);
 
             dataGroup.Add(data);
         }
@@ -345,215 +312,11 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         data.MeshEdits.Add(miscShotgunEdit);
     }
 
-    private static void AddCut1HeadEdits(InjectionData data)
-    {
-        TRMeshEdit headEdit = new()
-        {
-            ModelID = (uint)TR1Type.CutsceneActor1,
-            MeshIndex = 14,
-            FaceEdits = new()
-            {
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 0,
-                    FaceType = TRMeshFaceType.TexturedQuad,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 6 }
-                },
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 5,
-                    FaceType = TRMeshFaceType.TexturedTriangle,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 53, 54, 55, 56, 57, 58, 59, 60 }
-                }
-            },
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 45,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 44,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 43,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                }
-            }
-        };
-
-        data.MeshEdits.Add(headEdit);
-    }
-
-    private static void AddCut24HeadEdits(InjectionData data)
-    {
-        TRMeshEdit headEdit = new()
-        {
-            ModelID = (uint)TR1Type.CutsceneActor1,
-            MeshIndex = 14,
-            FaceEdits = new()
-            {
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 0,
-                    FaceType = TRMeshFaceType.TexturedQuad,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 1 }
-                },
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 5,
-                    FaceType = TRMeshFaceType.TexturedTriangle,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 66, 67, 68, 69, 70, 71, 72, 73 }
-                }
-            },
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 45,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 44,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 43,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                }
-            }
-        };
-
-        data.MeshEdits.Add(headEdit);
-    }
-
-    private static void AddDefaultBackpackEdits(InjectionData data)
+    private static void AddBackpackEdits(InjectionData data)
     {
         TRMeshEdit backpackEdit = new()
         {
             ModelID = (uint)TR1Type.Lara,
-            MeshIndex = 7,
-            FaceEdits = new(),
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 26,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 27,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 28,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 29,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-            }
-        };
-
-        TRMeshEdit backpackShotgunEdit = new()
-        {
-            ModelID = (uint)TR1Type.LaraShotgunAnim_H,
-            MeshIndex = 7,
-            FaceEdits = new(),
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 26,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 27,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 28,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 29,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-            }
-        };
-
-        data.MeshEdits.Add(backpackEdit);
-        data.MeshEdits.Add(backpackShotgunEdit);
-    }
-
-    private static void AddCutsceneBackpackEdits(InjectionData data)
-    {
-        TRMeshEdit backpackEdit = new()
-        {
-            ModelID = (uint)TR1Type.CutsceneActor1,
             MeshIndex = 7,
             FaceEdits = new(),
             VertexEdits = new()
