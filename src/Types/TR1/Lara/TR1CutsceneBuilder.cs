@@ -41,6 +41,14 @@ public class TR1CutsceneBuilder : InjectionBuilder
                 EffectID = (short)TR1FX.DrawRightGun,
                 FrameNumber = 1,
             });
+
+            for (var type = TR1Type.CutsceneActor2; type < TR1Type.CutsceneActor4; type++)
+            {
+                var model = level.Models[type] = cut.Models[type];
+                model.Animations[0].NextFrame = (ushort)model.Animations[0].FrameEnd;
+                model.MeshTrees.Clear();
+                model.Meshes.Clear();
+            }
         }
 
         level.Models[TR1Type.Lara].Animations[0].Commands.Add(new TRFXCommand
@@ -48,6 +56,8 @@ public class TR1CutsceneBuilder : InjectionBuilder
             EffectID = (short)TR1FX.ShadowOff,
             FrameNumber = 1,
         });
+
+        level.Models[TR1Type.Lara].Animations[0].NextFrame = (ushort)level.Models[TR1Type.Lara].Animations[0].FrameEnd;
 
         var data = InjectionData.Create(level, InjectionType.General,
             $"{Path.GetFileNameWithoutExtension(levelName).ToLower()}_setup");
