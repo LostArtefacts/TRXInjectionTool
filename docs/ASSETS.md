@@ -58,6 +58,15 @@ existing one.
       </td>
     </tr>
     <tr valign="top">
+      <td><strong>Guns</strong></td>
+      <td><code>lara_guns.phd</code></td>
+      <td><code>lara_guns.bin</code></td>
+      <td>
+        Relevant to TR1 only. OG TR1 had Lara's shotgun as part of her torso mesh in the Lara Shotgun Animation object. Later games separated this out to allow for different rifle type guns.
+        If you wish to replace the shotgun and/or Lara's hands while equipping it, you can use the given file as a basis for your WAD.
+      </td>
+    </tr>
+    <tr valign="top">
       <td><strong>Font</strong></td>
       <td><code>font.phd</code> / <code>font.tr2</code></td>
       <td><code>font.bin</code></td>

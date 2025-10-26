@@ -198,6 +198,37 @@ public class TR1LaraGymGunBuilder : InjectionBuilder
         };
         importer.Import();
 
+        {
+            var model = gym.Models[TR1Type.LaraShotgunAnim_H];
+            var oldBack = model.Meshes[7];
+            oldBack.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 26));
+            oldBack.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 26));
+            oldBack.ColouredRectangles.RemoveAll(f => f.Vertices.All(v => v < 26));
+            oldBack.Vertices.RemoveRange(0, 26);
+            oldBack.Normals.RemoveRange(0, 26);
+            oldBack.TexturedFaces.Concat(oldBack.ColouredFaces).ToList().ForEach(f =>
+            {
+                for (int i = 0; i < f.Vertices.Count; i++)
+                {
+                    f.Vertices[i] -= 26;
+                }
+            });
+
+            model.Meshes[7] = gym.Models[TR1Type.Lara].Meshes[0];
+            oldBack.Vertices.ForEach(v =>
+            {
+                v.Y += 204;
+                v.Z += 25;
+            });
+            oldBack.Centre = new() { X = 42, Y = 99, Z = 70 };
+            oldBack.CollRadius = 105;
+            model.Meshes[14] = oldBack;
+
+            var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
+            model.Animations = wall.Models[TR2Type.LaraShotgunAnim_H].Animations;
+            (model.Animations[1].Commands[0] as TRSFXCommand).SoundID = (short)TR1SFX.LaraDraw;
+        }
+
         foreach (TRMesh mesh in gym.DistinctMeshes)
         {
             foreach (TRMeshFace f in mesh.ColouredFaces.Where(f => f.Texture == 47))
