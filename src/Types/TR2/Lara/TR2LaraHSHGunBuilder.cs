@@ -1,5 +1,6 @@
 ﻿using TRDataControl;
 using TRImageControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -57,8 +58,26 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
         }
 
         TR2GunUtils.ConvertFlatFaces(level, basePalette);
+        AddPistolsSprite(level);
         GenerateImages8(level, hsh.Palette.Select(c => c.ToTR1Color()).ToList());
 
         return level;
+    }
+
+    private static void AddPistolsSprite(TR2Level level)
+    {
+        var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        var sprite = wall.Sprites[TR2Type.Pistols_S_P];
+
+        var packer = new TR2TexturePacker(wall);
+        var regions = packer.GetSpriteRegions(sprite)
+            .Values.SelectMany(r => r)
+            .ToList();
+
+        packer = new(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        level.Sprites[TR2Type.Pistols_S_P] = sprite;
     }
 }
