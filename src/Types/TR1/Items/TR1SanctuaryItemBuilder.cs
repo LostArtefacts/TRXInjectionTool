@@ -1,5 +1,6 @@
 ﻿using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Items;
@@ -18,6 +19,20 @@ public class TR1SanctuaryItemBuilder : ItemBuilder
         data.ItemPosEdits.Add(SetAngle(sanctuary, 54, -16384));
         data.ItemPosEdits.Add(SetAngle(sanctuary, 67, -16384));
         data.ItemPosEdits.Add(SetAngle(sanctuary, 73, -16384));
+
+        var mesh = sanctuary.Models[TR1Type.ScionPiece_M_H].Meshes[0];
+        data.MeshEdits.Add(new()
+        {
+            ModelID = 150,
+            VertexEdits = [.. Enumerable.Range(0, mesh.Vertices.Count).Select(v =>
+            {
+                return new TRVertexEdit
+                {
+                    Index = (short)v,
+                    Change = new() { Y = 45 },
+                };
+            })],
+        });
 
         return new() { data };
     }

@@ -1,5 +1,6 @@
 ﻿using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Items;
@@ -15,6 +16,20 @@ public class TR1ToQItemBuilder : ItemBuilder
         data.ItemPosEdits.Add(SetAngle(qualopec, 20, -16384));
         data.ItemPosEdits.Add(SetAngle(qualopec, 28, 16384));
         data.ItemPosEdits.Add(SetAngle(qualopec, 29, 16384));
+
+        var mesh = qualopec.Models[TR1Type.ScionPiece_M_H].Meshes[0];
+        data.MeshEdits.Add(new()
+        {
+            ModelID = 150,
+            VertexEdits = [.. Enumerable.Range(0, mesh.Vertices.Count).Select(v =>
+            {
+                return new TRVertexEdit
+                {
+                    Index = (short)v,
+                    Change = new() { Y = 45 },
+                };
+            })],
+        });
 
         return new() { data };
     }
