@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using TRDataControl;
 using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl;
@@ -83,10 +84,18 @@ public class TR2LaraAnimBuilder : LaraBuilder
 
     public override List<InjectionData> Build()
     {
-        var level = CreateLevel();
-        var data = InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations");
+        var result = new List<InjectionData>();
+        
+        {
+            var level = CreateLevel();
+            result.Add(InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations"));
+        }
+        {
+            var level = CreateExtraLevel();
+            result.Add(InjectionData.Create(level, InjectionType.General, "lara_extra"));
+        }
 
-        return new() { data };
+        return result;
     }
 
     private TR2Level CreateLevel()
@@ -111,10 +120,64 @@ public class TR2LaraAnimBuilder : LaraBuilder
         return wall;
     }
 
+    private static TR2Level CreateExtraLevel()
+    {
+        var map = new Dictionary<TR2Type, TR2Type>
+        {
+            [TR2Type.LaraMiscAnim_H_Xian] = (TR2Type)272,
+            [TR2Type.LaraMiscAnim_H_HSH] = (TR2Type)273,
+        };
+        var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        CreateModelLevel(level, TR2Type.Lara);
+
+        foreach (var (src, tar) in map)
+        {
+            new TR2DataImporter
+            {
+                Level = level,
+                DataFolder = "Resources/TR2/Lara/Extra",
+                TypesToImport = [src],
+            }.Import();
+            level.Models.ChangeKey(TR2Type.LaraMiscAnim_H, tar);
+            level.Models[tar].Animations = [GetBreathAnim(level.Models[TR2Type.Lara])];
+        }
+
+        {
+            var gold = level.Models[(TR2Type)271] = level.Models[TR2Type.Lara].Clone();
+            gold.Animations = [GetBreathAnim(level.Models[TR2Type.Lara])];
+            level.Palette16[4] = new()
+            {
+                Red = 252,
+                Green = 236,
+                Blue = 136,
+            };
+            gold.Meshes.ForEach(m =>
+            {
+                m.TexturedFaces.Concat(m.ColouredFaces).ToList().ForEach(f => f.Texture = 4 << 8);
+                m.ColouredRectangles.AddRange(m.TexturedRectangles);
+                m.ColouredTriangles.AddRange(m.TexturedTriangles);
+                m.TexturedRectangles.Clear();
+                m.TexturedTriangles.Clear();
+            });
+
+            TR2GunUtils.ConvertFlatFaces(level, [.. level.Palette16.Select(c => c.ToColor())], [gold]);
+        }
+
+        ImportExtraAnims(level.Models, TR2Type.LaraMiscAnim_H);
+
+        level.Models.Remove(TR2Type.Lara);
+        level.SoundEffects.Clear();
+
+        _control2.Write(level, "tmp.tr2");
+
+        return level;
+    }
+
     public override byte[] Publish()
     {
         var level = CreateLevel();
-        return ExportLaraWAD(level);
+        var extraLevel = CreateExtraLevel();
+        return ExportLaraWAD(level, extraLevel);
     }
 
     private static void ImproveTwists(TRModel lara)
@@ -144,7 +207,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         lara.Animations[213].NextFrame = 39;
     }
 
-    private static byte[] ExportLaraWAD(TR2Level level)
+    private static byte[] ExportLaraWAD(TR2Level level, TR2Level extraLevel)
     {
         // Generate the injection's effect on a regular level to allow TRLE builders to utilise
         // the new animations while also being able to edit the defaults. This is a stripped back
@@ -175,10 +238,10 @@ public class TR2LaraAnimBuilder : LaraBuilder
 
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
 
-        return ExportZip(level);
+        return ExportZip(level, extraLevel);
     }
 
-    private static byte[] ExportZip(TR2Level level)
+    private static byte[] ExportZip(TR2Level level, TR2Level extraLevel)
     {
         var stream = new MemoryStream();
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create);
@@ -188,6 +251,15 @@ public class TR2LaraAnimBuilder : LaraBuilder
             _control2.Write(level, ms);
             byte[] phdRaw = ms.ToArray();
             var entry = zip.CreateEntry("lara.tr2", CompressionLevel.Optimal);
+            using var zipStream = entry.Open();
+            zipStream.Write(phdRaw, 0, phdRaw.Length);
+        }
+
+        {
+            using var ms = new MemoryStream();
+            _control2.Write(extraLevel, ms);
+            byte[] phdRaw = ms.ToArray();
+            var entry = zip.CreateEntry("lara_extra.tr2", CompressionLevel.Optimal);
             using var zipStream = entry.Open();
             zipStream.Write(phdRaw, 0, phdRaw.Length);
         }

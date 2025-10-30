@@ -119,6 +119,60 @@ public abstract class LaraBuilder : InjectionBuilder
         PoseLeftEnd = 20,
     }
 
+    protected enum LaraExtraState
+    {
+        Breath,
+        TrexKill,
+        ScionPickup1,
+        UseMidas,
+        MidasKill,
+        ScionPickup2,
+        TorsoKill,
+        Plunger,
+        StartAnim,
+        Airlock,
+        SharkKill,
+        YetiKill,
+        GongBong,
+        GuardKill,
+        PullDagger,
+        StartHouse,
+        EndHouse,
+    }
+
+    private static readonly List<LaraExtraState> _extraDeathStates =
+    [
+        LaraExtraState.TrexKill, LaraExtraState.MidasKill, LaraExtraState.TorsoKill,
+        LaraExtraState.SharkKill, LaraExtraState.YetiKill, LaraExtraState.GuardKill,
+    ];
+
+    private class ExtraAnimData(string levelName, LaraExtraState state, int animIdx)
+    {
+        public string LevelName { get; set; } = levelName;
+        public LaraExtraState State { get; set; } = state;
+        public int AnimIdx { get; set; } = animIdx;
+    }
+
+    private static readonly List<ExtraAnimData> _extraData =
+    [
+        new(TR1LevelNames.VALLEY, LaraExtraState.TrexKill, 1),
+        new(TR1LevelNames.QUALOPEC, LaraExtraState.ScionPickup1, 0),
+        new(TR1LevelNames.MIDAS, LaraExtraState.UseMidas, 0),
+        new(TR1LevelNames.MIDAS, LaraExtraState.MidasKill, 1),
+        new(TR1LevelNames.ATLANTIS, LaraExtraState.ScionPickup2, 0),
+        new(TR1LevelNames.PYRAMID, LaraExtraState.TorsoKill, 0),
+        new(TR2LevelNames.BARTOLI, LaraExtraState.Plunger, 1),
+        new(TR2LevelNames.RIG, LaraExtraState.StartAnim, 3),
+        new(TR2LevelNames.RIG, LaraExtraState.Airlock, 2),
+        new(TR2LevelNames.FATHOMS, LaraExtraState.SharkKill, 1),
+        new(TR2LevelNames.COT, LaraExtraState.YetiKill, 1),
+        new(TR2LevelNames.CHICKEN, LaraExtraState.GongBong, 2),
+        new(TR2LevelNames.FLOATER, LaraExtraState.GuardKill, 1),
+        new(TR2LevelNames.LAIR, LaraExtraState.PullDagger, 2),
+        new(TR2LevelNames.HOME, LaraExtraState.StartHouse, 1),
+        new(TR2LevelNames.HOME, LaraExtraState.EndHouse, 2),
+    ];
+
     public static TRModel GetLaraPoseModel()
         => _control1.Read(_extLaraPath).Models[TR1Type.Lara];
 
@@ -384,5 +438,66 @@ public abstract class LaraBuilder : InjectionBuilder
                 }
             },
         });
+    }
+
+    protected static TRAnimation GetBreathAnim(TRModel lara)
+    {
+        var breathAnim = lara.Animations[(int)LaraAnim.StandStill].Clone();
+        breathAnim.Changes.Clear();
+        breathAnim.StateID = 0;
+        breathAnim.NextAnimation = 0;
+        return breathAnim;
+    }
+
+    protected static void ImportExtraAnims<T>(TRDictionary<T, TRModel> models, T extraType)
+        where T : Enum
+    {
+        var hips = models[default].Meshes[0];
+        models[extraType] = new()
+        {
+            Meshes = [.. Enumerable.Repeat(0, 15).Select(m => hips)],
+            MeshTrees = [.. models[default].MeshTrees.Select(t => t.Clone())],
+            Animations = [GetBreathAnim(models[default])],
+        };
+
+        var model = models[extraType];
+        var breath = model.Animations[0];
+
+        foreach (var data in _extraData)
+        {
+            TRModel srcModel;
+            if (TR1LevelNames.AsList.Contains(data.LevelName))
+            {
+                srcModel = _control1.Read($"Resources/{data.LevelName}").Models[TR1Type.LaraMiscAnim_H];
+            }
+            else
+            {
+                srcModel = _control2.Read($"Resources/{data.LevelName}").Models[TR2Type.LaraMiscAnim_H];
+            }
+
+            var anim = srcModel.Animations[data.AnimIdx];
+            anim.Commands.RemoveAll(c => c is TRFXCommand f && f.EffectID == (short)TR1FX.LaraNormal);
+            anim.StateID = (ushort)data.State;
+            anim.NextAnimation = (ushort)(_extraDeathStates.Contains(data.State) ? data.State : 0);
+            model.Animations.Add(anim);
+            breath.Changes.Add(new()
+            {
+                StateID = (ushort)data.State,
+                Dispatches = [new()
+                {
+                    High = 1,
+                    NextAnimation = (short)data.State,
+                }],
+            });
+
+            if (data.State == LaraExtraState.EndHouse)
+            {
+                for (int i = 0; i < 120; i++)
+                {
+                    anim.Frames.Add(anim.Frames[^1]);
+                    anim.FrameEnd++;
+                }
+            }
+        }
     }
 }

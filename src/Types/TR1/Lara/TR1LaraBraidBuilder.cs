@@ -216,7 +216,8 @@ public class TR1LaraBraidBuilder : InjectionBuilder
     {
         TRMeshEdit miscHeadEdit = new()
         {
-            ModelID = (uint)TR1Type.LaraMiscAnim_H,
+            ModelID = (uint)(TR1Type)195,
+            EnforcedType = TRObjectType.Game,
             MeshIndex = 14,
             FaceEdits = new()
             {

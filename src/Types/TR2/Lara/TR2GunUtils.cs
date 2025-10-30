@@ -10,7 +10,12 @@ public static class TR2GunUtils
 {
     public static void ConvertFlatFaces(TR2Level level, List<Color> sourcePalette)
     {
-        var ids = level.Models.Values.SelectMany(m => m.Meshes)
+        ConvertFlatFaces(level, sourcePalette, level.Models.Values);
+    }
+
+    public static void ConvertFlatFaces(TR2Level level, List<Color> sourcePalette, IEnumerable<TRModel> models)
+    {
+        var ids = models.SelectMany(m => m.Meshes)
             .SelectMany(m => m.ColouredFaces)
             .Select(f => f.Texture >> 8)
             .Distinct();
@@ -46,7 +51,7 @@ public static class TR2GunUtils
         packer.Pack(true);
 
         level.ObjectTextures.AddRange(regions.Select(r => r.Segments.First().Texture as TRObjectTexture));
-        level.Models.Values.SelectMany(m => m.Meshes)
+        models.SelectMany(m => m.Meshes)
             .ToList().ForEach(m =>
             {
                 m.ColouredRectangles.ForEach(f => f.Texture = (ushort)map[f.Texture >> 8]);

@@ -1,12 +1,16 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
 using System.Xml;
+using TRDataControl;
+using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Types.TR2.Lara;
 
 namespace TRXInjectionTool.Types.TR1.Lara;
 
@@ -193,10 +197,19 @@ public class TR1LaraAnimBuilder : LaraBuilder
 
     public override List<InjectionData> Build()
     {
-        var level = CreateLevel();
-        var data = InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations");
+        var result = new List<InjectionData>();
 
-        return new() { data };
+        {
+            var level = CreateLevel();
+            result.Add(InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations"));
+        }
+        {
+            var level = CreateExtraLevel();
+            result.Add(InjectionData.Create(level, InjectionType.General, "lara_extra"));
+            result.Add(CreateSanctuaryEdit(level));
+        }
+
+        return result;
     }
 
     private TR1Level CreateLevel()
@@ -229,10 +242,93 @@ public class TR1LaraAnimBuilder : LaraBuilder
         return caves;
     }
 
+    private static TR1Level CreateExtraLevel()
+    {
+        var map = new Dictionary<TR1Type, TR1Type>
+        {
+            [TR1Type.LaraMiscAnim_H_Valley] = (TR1Type)195,
+            [TR1Type.LaraMiscAnim_H_Midas] = (TR1Type)196,
+            [TR1Type.LaraMiscAnim_H_General] = (TR1Type)197,
+        };
+        var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        CreateModelLevel(level, TR1Type.Lara);
+
+        foreach (var (src, tar) in map)
+        {
+            new TR1DataImporter
+            {
+                Level = level,
+                DataFolder = "Resources/TR1/Lara/Extra",
+                TypesToImport = [src],
+            }.Import();
+            level.Models.ChangeKey(TR1Type.LaraMiscAnim_H, tar);
+            level.Models[tar].Animations = [GetBreathAnim(level.Models[TR1Type.Lara])];
+        }
+
+        // Dagger 2
+        level.Models[(TR1Type)198] = level.Models[(TR1Type)197].Clone();
+
+        ImportExtraAnims(level.Models, TR1Type.LaraMiscAnim_H);
+
+        var hipsA = level.Models[TR1Type.Lara].Meshes[0];
+        var hipsB = level.Models[(TR1Type)195].Meshes[0];
+        level.Models.Remove(TR1Type.Lara);
+        level.SoundEffects.Clear();
+
+        foreach (var model in level.Models.Values)
+        {
+            for (int i = 0; i < model.Meshes.Count; i++)
+            {
+                if (model.Meshes[i] == hipsA)
+                {
+                    model.Meshes[i] = hipsB;
+                }
+            }
+        }
+
+        _control1.Write(level, "tmp.phd");
+
+        return level;
+    }
+
+    private static InjectionData CreateSanctuaryEdit(TR1Level level)
+    {
+        // Sanctuary scion extra animis the same as ToQ, but ends sooner
+        var model = level.Models[TR1Type.LaraMiscAnim_H];
+        InjectionBuilder.ResetLevel(level);
+        level.Models[TR1Type.LaraMiscAnim_H] = model;
+
+        var scionAnim = model.Animations[(int)LaraExtraState.ScionPickup1];
+        model.Animations.ForEach(a => a.Commands.Clear());
+        scionAnim.Commands.Add(new TRFXCommand
+        {
+            FrameNumber = 65,
+            EffectID = (short)TR1FX.EndLevel,
+        });
+
+        var data = InjectionData.Create(level, InjectionType.General, "sanctuary_scion", true);
+        data.Animations.Clear();
+        data.AnimFrames.Clear();
+        data.AnimChanges.Clear();
+        data.AnimDispatches.Clear();
+        data.Models.Clear();
+
+        data.AnimCmdEdits.Add(new()
+        {
+            TypeID = (int)TR1Type.LaraMiscAnim_H,
+            AnimIndex = (int)LaraExtraState.ScionPickup1,
+            RawCount = data.AnimCommands.Count,
+            TotalCount = scionAnim.Commands.Count,
+        });
+
+        return data;
+    }
+
     public override byte[] Publish()
     {
         var level = CreateLevel();
-        return ExportLaraWAD(level);
+        var extraLevel = CreateExtraLevel();
+        return ExportLaraWAD(level, extraLevel);
     }
 
     static void ImportJumpTwist(TRModel tr1Lara, TRModel tr2Lara)
@@ -868,7 +964,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         };
     }
 
-    private static byte[] ExportLaraWAD(TR1Level level)
+    private static byte[] ExportLaraWAD(TR1Level level, TR1Level extraLevel)
     {
         // Generate the injection's effect on a regular level to allow TRLE builders to utilise
         // the new animations while also being able to edit the defaults. This is a stripped back
@@ -897,10 +993,10 @@ public class TR1LaraAnimBuilder : LaraBuilder
             .SelectMany(m => m.TexturedFaces)
             .ToList().ForEach(f => f.Texture = texMap[f.Texture]);
 
-        return ExportZip(level);
+        return ExportZip(level, extraLevel);
     }
 
-    private static byte[] ExportZip(TR1Level level)
+    private static byte[] ExportZip(TR1Level level, TR1Level extraLevel)
     {
         using MemoryStream stream = new();
         using ZipArchive zip = new(stream, ZipArchiveMode.Create);
@@ -910,6 +1006,15 @@ public class TR1LaraAnimBuilder : LaraBuilder
             _control1.Write(level, ms);
             byte[] phdRaw = ms.ToArray();
             ZipArchiveEntry entry = zip.CreateEntry("lara.phd", CompressionLevel.Optimal);
+            using Stream zipStream = entry.Open();
+            zipStream.Write(phdRaw, 0, phdRaw.Length);
+        }
+
+        {
+            using MemoryStream ms = new();
+            _control1.Write(extraLevel, ms);
+            byte[] phdRaw = ms.ToArray();
+            ZipArchiveEntry entry = zip.CreateEntry("lara_extra.phd", CompressionLevel.Optimal);
             using Stream zipStream = entry.Open();
             zipStream.Write(phdRaw, 0, phdRaw.Length);
         }

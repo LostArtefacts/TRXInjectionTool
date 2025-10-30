@@ -8,6 +8,7 @@ namespace TRXInjectionTool.Actions;
 public class TRMeshEdit
 {
     public uint ModelID { get; set; }
+    public TRObjectType? EnforcedType { get; set; }
     public short MeshIndex { get; set; }
     public TRVertex Centre { get; set; } = new();
     public int CollRadius { get; set; }
@@ -16,8 +17,17 @@ public class TRMeshEdit
 
     public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
-        int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
-        TRObjectType type = ModelID >= sceneryBase ? TRObjectType.Static3D : TRObjectType.Game;
+        TRObjectType type;
+        if (EnforcedType.HasValue)
+        {
+            type = EnforcedType.Value;
+        }
+        else
+        {
+            int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
+            type = ModelID >= sceneryBase ? TRObjectType.Static3D : TRObjectType.Game;
+        }
+            
         writer.Write((int)ModelID, type, version);
         writer.Write(MeshIndex);
         writer.Write(Centre);
