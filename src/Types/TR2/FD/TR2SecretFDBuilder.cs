@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -21,6 +22,16 @@ public class TR2SecretFDBuilder : FDBuilder
             var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.General, $"{binName}_secret_fd");
             CreateDefaultTests(data, levelName);
             data.FloorEdits.AddRange(edits);
+            if (levelName == TR2LevelNames.BARTOLI)
+            {
+                // Make the Jade dragon disappear after flip map
+                data.FloorEdits.Add(MakeTrigger(level, 143, 4, 1, new()
+                {
+                    Mask = 31,
+                    OneShot = true,
+                    Actions = [new() { Parameter = 125 }],
+                }));
+            }
             result.Add(data);
         }
 
