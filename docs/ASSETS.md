@@ -134,6 +134,16 @@ existing ones.
       </td>
     </tr>
     <tr valign="top">
+      <td><code>Lara ponytail and body swap</code></td>
+      <td>189, 200</td>
+      <td>N/A</td>
+      <td><code>braid.bin</code></td>
+      <td>
+        Lara's braid for TR1 along with mesh swaps for her torso and head
+        (normal, angry and t-rex death) when the braid is active in-game.
+      </td>
+    </tr>
+    <tr valign="top">
       <td><code>Font</code></td>
       <td>190</td>
       <td>255</td>

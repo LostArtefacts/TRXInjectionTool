@@ -25,6 +25,7 @@ public static class AssetPublisher
             new TR1PDABuilder(),
             new TR1LaraFlareBuilder(),
             new TR1LaraGunBuilder(),
+            new TR1LaraBraidBuilder(),
         },
         [TRGameVersion.TR2] = new()
         {

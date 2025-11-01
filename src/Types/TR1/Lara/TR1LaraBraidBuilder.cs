@@ -1,40 +1,29 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using TRImageControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
-using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Lara;
 
-public class TR1LaraBraidBuilder : InjectionBuilder
+public class TR1LaraBraidBuilder : InjectionBuilder, IPublisher
 {
     public override List<InjectionData> Build()
     {
-        List<InjectionData> dataGroup = new();
-
-        {
-            TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
-            ImportBraid(caves);
-
-            InjectionData data = InjectionData.Create(caves, InjectionType.Braid, "braid");
-            AddDefaultHeadEdits(data);
-            AddBackpackEdits(data);
-
-            dataGroup.Add(data);
-        }
-
-        {
-            InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.Braid, "braid_valley");
-            AddValleyHeadEdits(data);
-
-            dataGroup.Add(data);
-        }
-
-        return dataGroup;
+        var level = CreateLevel();
+        var data = InjectionData.Create(level, InjectionType.Braid, "braid");
+        return [data];
     }
 
+    private static TR1Level CreateLevel()
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        ImportBraid(level);
+        CreateMeshEdits(level);
+        return level;
+    }
 
     private static void ImportBraid(TR1Level caves)
     {
@@ -102,305 +91,145 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         }
     }
 
-    private static void AddDefaultHeadEdits(InjectionData data)
+    private static void CreateMeshEdits(TR1Level level)
     {
-        TRMeshEdit headEdit = new()
-        {
-            ModelID = (uint)TR1Type.Lara,
-            MeshIndex = 14,
-            FaceEdits = new()
-            {
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 0,
-                    FaceType = TRMeshFaceType.TexturedQuad,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 1 }
-                },
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 5,
-                    FaceType = TRMeshFaceType.TexturedTriangle,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 66, 67, 68, 69, 70, 71, 72, 73 }
-                }
-            },
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 45,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 44,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 43,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                }
-            }
-        };
+        SetupMeshEditModel(level);
 
-        TRMeshEdit uziHeadEdit = new()
-        {
-            ModelID = (uint)TR1Type.LaraUziAnimation_H,
-            MeshIndex = 14,
-            FaceEdits = new()
-            {
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 0,
-                    FaceType = TRMeshFaceType.TexturedQuad,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 6 }
-                },
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 5,
-                    FaceType = TRMeshFaceType.TexturedTriangle,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 56, 57, 58, 59, 60, 61, 62, 63 }
-                }
-            },
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 45,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 44,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 43,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                }
-            }
-        };
+        var ponyRecId = level.Models[TR1Type.LaraPonytail_H_U].Meshes[0]
+            .TexturedRectangles[0].Texture;
+        var ponyTriId = level.Models[TR1Type.LaraPonytail_H_U].Meshes[5]
+            .TexturedTriangles[0].Texture;
 
-        data.MeshEdits.Add(headEdit);
-        data.MeshEdits.Add(uziHeadEdit);
+        static void ShiftHeadVerts(TRMesh mesh)
+        {
+            for (int i = 43; i < 46; i++)
+            {
+                mesh.Vertices[i].Y -= 16;
+            }
+        }
+
+        var model = level.Models[(TR1Type)200];
+
+        {
+            // Lara's backback
+            var mesh = model.Meshes[0];
+            for (int i = 26; i < 30; i++)
+            {
+                mesh.Vertices[i].Z += 12;
+            }
+        }
+
+        {
+            // Lara's default head
+            var mesh = model.Meshes[1];
+            ShiftHeadVerts(mesh);
+
+            mesh.TexturedRectangles[1].Texture = ponyRecId;
+            for (int i = 66; i < 74; i++)
+            {
+                mesh.TexturedTriangles[i].Texture = ponyTriId;
+            }
+        }
+
+        {
+            // Lara's angry head
+            var mesh = model.Meshes[2];
+            ShiftHeadVerts(mesh);
+
+            mesh.TexturedRectangles[6].Texture = ponyRecId;
+            for (int i = 56; i < 64; i++)
+            {
+                mesh.TexturedTriangles[i].Texture = ponyTriId;
+            }
+        }
+
+        {
+            // Lara's mauled head
+            var mesh = model.Meshes[3];
+            ShiftHeadVerts(mesh);
+
+            foreach (var i in new[] { 14, 16, 17 })
+            {
+                mesh.TexturedRectangles[i].Texture = ponyRecId;
+            }
+
+            foreach (var i in new[] { 3, 37, 38, 39, 40 })
+            {
+                mesh.TexturedTriangles[i].Texture = ponyTriId;
+            }
+        }
     }
 
-    private static void AddValleyHeadEdits(InjectionData data)
+    private static void SetupMeshEditModel(TR1Level targetLevel)
     {
-        TRMeshEdit miscHeadEdit = new()
+        var baseLevel = _control1.Read($"Resources/{TR1LevelNames.VALLEY}");
+
+        var model = new TRModel
         {
-            ModelID = (uint)(TR1Type)195,
-            EnforcedType = TRObjectType.Game,
-            MeshIndex = 14,
-            FaceEdits = new()
-            {
+            Meshes =
+            [
+                baseLevel.Models[TR1Type.Lara].Meshes[7],
+                baseLevel.Models[TR1Type.Lara].Meshes[14],
+                baseLevel.Models[TR1Type.LaraUziAnimation_H].Meshes[14],
+                baseLevel.Models[TR1Type.LaraMiscAnim_H].Meshes[14],
+            ],
+            MeshTrees =
+            [
+                new() { OffsetY = -198, OffsetZ = -23 },
+                new() { OffsetY = -134 },
+                new() { OffsetY = -134 },
+            ],
+            Animations =
+            [
                 new()
                 {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 0,
-                    FaceType = TRMeshFaceType.TexturedQuad,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 14, 16, 17, }
-                },
-                new()
-                {
-                    ModelID = (uint)TR1Type.LaraPonytail_H_U,
-                    MeshIndex = 5,
-                    FaceType = TRMeshFaceType.TexturedTriangle,
-                    FaceIndex = 0,
-                    TargetFaceIndices = new() { 3, 37, 38, 39, 40 }
+                    FrameRate = 1,
+                    Accel = new(),
+                    Speed = new(),
+                    Frames =
+                    [
+                        new()
+                        {
+                            Bounds = new(),
+                            Rotations = [.. Enumerable.Range(0, 4).Select(i => new TRAnimFrameRotation())],
+                        },
+                    ],
                 }
-            },
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 45,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 44,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                },
-                new()
-                {
-                    Index = 43,
-                    Change = new()
-                    {
-                        Y = -16
-                    }
-                }
-            }
+            ],
         };
 
-        TRMeshEdit miscShotgunEdit = new()
+        baseLevel.Models[(TR1Type)200] = model;
+        targetLevel.Models[(TR1Type)200] = model;
+
+        foreach (var face in model.Meshes.SelectMany(m => m.ColouredFaces))
         {
-            ModelID = (uint)TR1Type.LaraMiscAnim_H,
-            MeshIndex = 7,
-            FaceEdits = new(),
-            VertexEdits = new()
+            var col = baseLevel.Palette[face.Texture];
+            var i = targetLevel.Palette.FindIndex(c => c.Red == col.Red && c.Green == col.Green && c.Blue == col.Blue);
+            if (i == -1)
             {
-                new()
-                {
-                    Index = 26,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 27,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 28,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 29,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
+                i = targetLevel.Palette.FindIndex(1, c => c.Red == 0 && c.Blue == 0 && c.Green == 0);
+                Debug.Assert(i != -1);
+                targetLevel.Palette[i] = col;
             }
-        };
+            face.Texture = (ushort)i;
+        }
 
-        data.MeshEdits.Add(miscHeadEdit);
-        data.MeshEdits.Add(miscShotgunEdit);
-    }
+        var packer = new TR1TexturePacker(baseLevel);
+        var regions = packer.GetMeshRegions(model.Meshes)
+            .Values.SelectMany(r => r);
 
-    private static void AddBackpackEdits(InjectionData data)
-    {
-        TRMeshEdit backpackEdit = new()
-        {
-            ModelID = (uint)TR1Type.Lara,
-            MeshIndex = 7,
-            FaceEdits = new(),
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 26,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 27,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 28,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 29,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-            }
-        };
+        var texInfos = model.Meshes.SelectMany(m => m.TexturedFaces)
+            .Select(f => baseLevel.ObjectTextures[f.Texture])
+            .Distinct()
+            .ToList();
 
-        TRMeshEdit backpackShotgunEdit = new()
-        {
-            ModelID = (uint)TR1Type.LaraShotgunAnim_H,
-            MeshIndex = 7,
-            FaceEdits = new(),
-            VertexEdits = new()
-            {
-                new()
-                {
-                    Index = 26,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 27,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 28,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-                new()
-                {
-                    Index = 29,
-                    Change = new()
-                    {
-                        Z = 12
-                    }
-                },
-            }
-        };
+        packer = new(targetLevel);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
 
-        data.MeshEdits.Add(backpackEdit);
-        data.MeshEdits.Add(backpackShotgunEdit);
+        targetLevel.ObjectTextures.AddRange(texInfos);
+        model.Meshes.SelectMany(m => m.TexturedFaces)
+            .ToList().ForEach(f => f.Texture = (ushort)targetLevel.ObjectTextures.IndexOf(baseLevel.ObjectTextures[f.Texture]));
     }
 
     private static void Rotate<T>(List<T> list, int count)
@@ -412,4 +241,10 @@ public class TR1LaraBraidBuilder : InjectionBuilder
             list.Add(first);
         }
     }
+
+    public TRLevelBase Publish()
+        => CreateLevel();
+
+    public string GetPublishedName()
+        => "lara_braid.phd";
 }
