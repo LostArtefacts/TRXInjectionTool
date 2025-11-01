@@ -74,32 +74,32 @@ public class TR1LaraBraidBuilder : InjectionBuilder
         }
 
         PackTextures(caves, wall, hair, new());
+    }
 
-        // Additional meshes for Midas touch
-        int goldSlot = caves.Palette.FindIndex(1, c => c.Red == 0 && c.Green == 0 && c.Blue == 0);
+    public static void ImportGoldBraid(TR1Level level)
+    {
+        var temp = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        ImportBraid(temp);
+
+        int goldSlot = level.Palette.FindIndex(1, c => c.Red == 0 && c.Green == 0 && c.Blue == 0);
         Debug.Assert(goldSlot != -1);
-        caves.Palette[goldSlot] = new()
+        level.Palette[goldSlot] = new()
         {
             Red = 252,
             Green = 236,
             Blue = 136,
         };
 
-        List<TRMesh> meshes = new(hair.Meshes);
-        for (int i = 0; i < meshes.Count; i++)
+        var model = level.Models[(TR1Type)199] = temp.Models[TR1Type.LaraPonytail_H_U];
+        foreach (var mesh in model.Meshes)
         {
-            TRMesh copy = meshes[i].Clone();
-            hair.Meshes.Add(copy);
-            copy.ColouredRectangles.AddRange(copy.TexturedRectangles);
-            copy.ColouredTriangles.AddRange(copy.TexturedTriangles);
-            copy.TexturedRectangles.Clear();
-            copy.TexturedTriangles.Clear();
-            copy.ColouredFaces.ToList().ForEach(f => f.Texture = (ushort)goldSlot);
+            mesh.ColouredRectangles.AddRange(mesh.TexturedRectangles);
+            mesh.ColouredTriangles.AddRange(mesh.TexturedTriangles);
+            mesh.TexturedRectangles.Clear();
+            mesh.TexturedTriangles.Clear();
+            mesh.ColouredFaces.ToList()
+                .ForEach(f => f.Texture = (ushort)goldSlot);
         }
-
-        List<TRMeshTreeNode> treeClones = new(hair.MeshTrees.Select(t => t.Clone()));
-        hair.MeshTrees.Add(new()); // Additional dummy tree required
-        hair.MeshTrees.AddRange(treeClones);
     }
 
     private static void AddDefaultHeadEdits(InjectionData data)

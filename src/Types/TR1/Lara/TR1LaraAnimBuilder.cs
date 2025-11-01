@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
 using System.Xml;
 using TRDataControl;
-using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
-using TRXInjectionTool.Types.TR2.Lara;
 
 namespace TRXInjectionTool.Types.TR1.Lara;
 
@@ -286,7 +283,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
             }
         }
 
-        _control1.Write(level, "tmp.phd");
+        TR1LaraBraidBuilder.ImportGoldBraid(level);
 
         return level;
     }

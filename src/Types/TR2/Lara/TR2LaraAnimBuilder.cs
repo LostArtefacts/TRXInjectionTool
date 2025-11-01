@@ -128,6 +128,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
             [TR2Type.LaraMiscAnim_H_HSH] = (TR2Type)273,
         };
         var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        var braid = level.Models[TR2Type.LaraPonytail_H];
         CreateModelLevel(level, TR2Type.Lara);
 
         foreach (var (src, tar) in map)
@@ -143,32 +144,34 @@ public class TR2LaraAnimBuilder : LaraBuilder
         }
 
         {
-            var gold = level.Models[(TR2Type)271] = level.Models[TR2Type.Lara].Clone();
-            gold.Animations = [GetBreathAnim(level.Models[TR2Type.Lara])];
+            var goldSkin = level.Models[(TR2Type)271] = level.Models[TR2Type.Lara].Clone();
+            goldSkin.Animations = [GetBreathAnim(level.Models[TR2Type.Lara])];
             level.Palette16[4] = new()
             {
                 Red = 252,
                 Green = 236,
                 Blue = 136,
             };
-            gold.Meshes.ForEach(m =>
-            {
-                m.TexturedFaces.Concat(m.ColouredFaces).ToList().ForEach(f => f.Texture = 4 << 8);
-                m.ColouredRectangles.AddRange(m.TexturedRectangles);
-                m.ColouredTriangles.AddRange(m.TexturedTriangles);
-                m.TexturedRectangles.Clear();
-                m.TexturedTriangles.Clear();
-            });
+            
+            var goldBraid = level.Models[(TR2Type)274] = braid;
 
-            TR2GunUtils.ConvertFlatFaces(level, [.. level.Palette16.Select(c => c.ToColor())], [gold]);
+            goldSkin.Meshes.Concat(goldBraid.Meshes)
+                .ToList().ForEach(m =>
+                {
+                    m.TexturedFaces.Concat(m.ColouredFaces).ToList().ForEach(f => f.Texture = 4 << 8);
+                    m.ColouredRectangles.AddRange(m.TexturedRectangles);
+                    m.ColouredTriangles.AddRange(m.TexturedTriangles);
+                    m.TexturedRectangles.Clear();
+                    m.TexturedTriangles.Clear();
+                });
+
+            TR2GunUtils.ConvertFlatFaces(level, [.. level.Palette16.Select(c => c.ToColor())], [goldSkin, goldBraid]);
         }
 
         ImportExtraAnims(level.Models, TR2Type.LaraMiscAnim_H);
 
         level.Models.Remove(TR2Type.Lara);
         level.SoundEffects.Clear();
-
-        _control2.Write(level, "tmp.tr2");
 
         return level;
     }

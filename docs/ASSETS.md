@@ -125,6 +125,15 @@ existing ones.
       </td>
     </tr>
     <tr valign="top">
+      <td><code>Lara ponytail mesh swap</code></td>
+      <td>199</td>
+      <td>274</td>
+      <td><code>lara_extra.bin</code></td>
+      <td>
+        Mesh swap for Lara's ponytail when she stands on the Midas hand.
+      </td>
+    </tr>
+    <tr valign="top">
       <td><code>Font</code></td>
       <td>190</td>
       <td>255</td>
