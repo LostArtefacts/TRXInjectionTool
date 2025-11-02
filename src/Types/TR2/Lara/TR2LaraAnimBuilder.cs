@@ -105,8 +105,9 @@ public class TR2LaraAnimBuilder : LaraBuilder
 
         ResetLevel(wall);
         wall.Models[TR2Type.Lara] = tr2Lara;
-
+        
         ImportTR1Jumping(tr2Lara);
+        ImportTR1Gliding(tr2Lara);
         ImportSlideToRun(tr2Lara);
         ImproveTwists(tr2Lara);
         ImportNeutralTwist(tr2Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll);
@@ -205,6 +206,23 @@ public class TR2LaraAnimBuilder : LaraBuilder
                 dispatch.High = 4;
             }
         }
+    }
+
+    private static void ImportTR1Gliding(TRModel lara)
+    {
+        var swimAnim = lara.Animations[(int)LaraAnim.UnderwaterSwimForward];
+        var glideChange = swimAnim.Changes.FirstOrDefault(c => c.StateID == (ushort)LaraState.Glide);
+        var dispatches = glideChange.Dispatches.Select(d => d.Clone()).ToList();
+        glideChange.Dispatches.RemoveAll(d => d.NextAnimation != (short)LaraAnim.UnderwaterSwimGlide);
+        glideChange.Dispatches.FirstOrDefault(d => d.Low == 0).High = 2;
+
+        swimAnim.Changes.Add(new()
+        {
+            StateID = (ushort)InjState.Responsive,
+            Dispatches = dispatches,
+        });
+
+        dispatches.Sort((d1, d2) => d1.Low.CompareTo(d2.Low));
     }
 
     private static void ImproveTwists(TRModel lara)

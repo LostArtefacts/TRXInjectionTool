@@ -22,6 +22,7 @@ public abstract class LaraBuilder : InjectionBuilder
         Pose = 4,
         Death = 8,
         Freefall = 9,
+        Glide = 18,
         Roll = 45,
     }
 
@@ -34,6 +35,8 @@ public abstract class LaraBuilder : InjectionBuilder
         JumpForwardEndToFreefall = 49,
         JumpBack = 75,
         JumpForward = 77,
+        UnderwaterSwimForward = 86,
+        UnderwaterSwimGlide = 87,
         ReachToHang = 96,
         StandIdle = 103,
         StandDeath = 138,
