@@ -4,7 +4,7 @@ public enum InjectionType
     General,
     Braid,
     TextureFix,
-    PSUziSFX,
+    PS1SFX,
     FDFix,
     LaraAnims,
     ItemRotation,
@@ -12,7 +12,6 @@ public enum InjectionType
     AlterAnimSprite,
     Skybox,
     PSCrystal,
-    BarefootSFX,
 }
 
 public enum TRObjectType

@@ -11,7 +11,7 @@ public class TR2BarefootSFXBuilder : InjectionBuilder
     public override List<InjectionData> Build()
     {
         var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
-        var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.BarefootSFX, ID);
+        var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.PS1SFX, ID);
 
         var feet = level.SoundEffects[TR2SFX.LaraFeet];
         data.SFX.Add(new()

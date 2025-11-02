@@ -2,7 +2,7 @@
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
-namespace TRXInjectionTool.Types.TR1.Misc;
+namespace TRXInjectionTool.Types.TR1.SFX;
 
 public class TR1UziSFXBuilder : InjectionBuilder
 {
@@ -18,7 +18,7 @@ public class TR1UziSFXBuilder : InjectionBuilder
 
         caves.SoundEffects[TR1SFX.LaraUziFire] = fx;
 
-        InjectionData data = InjectionData.Create(caves, InjectionType.PSUziSFX, "uzi_sfx");
+        InjectionData data = InjectionData.Create(caves, InjectionType.PS1SFX, "uzi_sfx");
         return new() { data };
     }
 }
