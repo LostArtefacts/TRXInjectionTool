@@ -105,7 +105,8 @@ public class TR2LaraAnimBuilder : LaraBuilder
 
         ResetLevel(wall);
         wall.Models[TR2Type.Lara] = tr2Lara;
-        
+
+        ImportTR1Jumping(tr2Lara);
         ImportSlideToRun(tr2Lara);
         ImproveTwists(tr2Lara);
         ImportNeutralTwist(tr2Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll);
@@ -181,6 +182,29 @@ public class TR2LaraAnimBuilder : LaraBuilder
         var level = CreateLevel();
         var extraLevel = CreateExtraLevel();
         return ExportLaraWAD(level, extraLevel);
+    }
+
+    private static void ImportTR1Jumping(TRModel lara)
+    {
+        var runAnim = lara.Animations[(int)LaraAnim.Run];
+        var jumpChange = runAnim.Changes.FirstOrDefault(c => c.StateID == (ushort)LaraState.JumpForward);
+        var responsiveChange = jumpChange.Clone();
+        runAnim.Changes.Add(responsiveChange);
+        responsiveChange.StateID = (ushort)InjState.Responsive;
+
+        foreach (var dispatch in jumpChange.Dispatches)
+        {
+            if (dispatch.NextAnimation == (short)LaraAnim.RunJumpRightStart)
+            {
+                dispatch.Low = 14;
+                dispatch.High = 15;
+            }
+            else
+            {
+                dispatch.Low = 3;
+                dispatch.High = 4;
+            }
+        }
     }
 
     private static void ImproveTwists(TRModel lara)

@@ -18,6 +18,7 @@ public abstract class LaraBuilder : InjectionBuilder
     protected enum LaraState
     {
         Stop = 2,
+        JumpForward = 3,
         Pose = 4,
         Death = 8,
         Freefall = 9,
@@ -26,7 +27,10 @@ public abstract class LaraBuilder : InjectionBuilder
 
     protected enum LaraAnim
     {
+        Run = 0,
         StandStill = 11,
+        RunJumpRightStart = 16,
+        RunJumpLeftStart = 18,
         JumpForwardEndToFreefall = 49,
         JumpBack = 75,
         JumpForward = 77,
