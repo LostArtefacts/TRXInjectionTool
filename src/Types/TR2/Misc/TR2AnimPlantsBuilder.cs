@@ -67,7 +67,7 @@ public class TR2AnimPlantsBuilder : InjectionBuilder
 
         GenerateImages8(level, basePalette);
 
-        level.Sprites[TR2Type.Plant2] = spriteSequence;
+        level.Sprites[TR2Type.Plant0] = spriteSequence;
         return level;
     }
 
@@ -92,7 +92,7 @@ public class TR2AnimPlantsBuilder : InjectionBuilder
             Mesh = mesh,
         });
 
-        var sequence = baseLevel.Sprites[TR2Type.Plant2];
+        var sequence = baseLevel.Sprites[TR2Type.Plant0];
         foreach (var location in def.Locations)
         {
             var room = level.Rooms[location.Room];
@@ -119,7 +119,7 @@ public class TR2AnimPlantsBuilder : InjectionBuilder
             data.RoomEdits.Add(new TRRoomSpriteCreate
             {
                 RoomIndex = location.Room,
-                ID = (int)(TR2Type.Plant2 - TR2Type.SceneryBase),
+                ID = (int)(TR2Type.Plant0 - TR2Type.SceneryBase),
                 Vertex = (ushort)(room.Mesh.Vertices.Count - 1),
                 Frame = (ushort)random.Next(sequence.Textures.Count),
             });

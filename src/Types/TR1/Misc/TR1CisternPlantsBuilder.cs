@@ -24,7 +24,7 @@ public class TR1CisternPlantsBuilder : InjectionBuilder
         packer.AddRectangle(region);
         packer.Pack(true);
 
-        cistern.Sprites[TR1Type.Plant2] = plant;
+        cistern.Sprites[TR1Type.Plant0] = plant;
 
         InjectionData data = InjectionData.Create(cistern, InjectionType.AlterAnimSprite, "cistern_plants");
         return new() { data };
