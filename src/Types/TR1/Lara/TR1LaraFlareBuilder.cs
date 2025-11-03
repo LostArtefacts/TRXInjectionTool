@@ -27,7 +27,7 @@ public class TR1LaraFlareBuilder : InjectionBuilder, IPublisher
         ResetLevel(level, 1);
         level.Models[TR1Type.Lara] = lara;
 
-        var dataDir = "Resources/TR1/Lara";
+        var dataDir = "Resources/TR1/Lara/Guns";
         if (gym)
         {
             var gymDir = dataDir + "/Gym";

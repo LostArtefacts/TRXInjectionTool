@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRDataControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
@@ -6,12 +7,28 @@ namespace TRXInjectionTool.Types.TR1.Lara;
 
 public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
 {
+    // These IDs aren't defined in TRLevelControl as doing so would affect
+    // normal level IO (sound map limit).
+    private static readonly Dictionary<TR2SFX, short> _soundIDs = new()
+    {
+        [TR2SFX.M16Fire] = 259,
+        [TR2SFX.M16Stop] = 260,
+        [TR2SFX.LaraMiniLoad] = 261,
+        [TR2SFX.LaraMiniLock] = 262,
+        [TR2SFX.LaraMiniFire] = 263,
+        [TR2SFX.LaraHarpoonFire] = 264,
+        [TR2SFX.LaraHarpoonLoad] = 265,
+        [TR2SFX.LaraHarpoonLoadWater] = 266,
+        [TR2SFX.LaraHarpoonFireWater] = 267,
+    };
+
     public override string ID => "lara_guns";
 
     public override List<InjectionData> Build()
     {
         var level = CreateLevel();
         var data = InjectionData.Create(level, InjectionType.General, ID);
+        AddGunSounds(data);
         return [data];
     }
 
@@ -19,6 +36,14 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
     {
         var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
 
+        HandleShotgun(level);
+        HandleTR2Guns(level);
+
+        return level;
+    }
+
+    private static void HandleShotgun(TR1Level level)
+    {
         var model = level.Models[TR1Type.LaraShotgunAnim_H];
         var oldBack = model.Meshes[7];
         oldBack.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 30));
@@ -75,8 +100,75 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         model.Animations = wall.Models[TR2Type.LaraShotgunAnim_H].Animations;
         // Fix using holster SFX on draw
         (model.Animations[1].Commands[0] as TRSFXCommand).SoundID = (short)TR1SFX.LaraDraw;
+    }
 
-        return level;
+    private static void HandleTR2Guns(TR1Level level)
+    {
+        var animTypes = new[] { TR1Type.LaraM16Anim_H, TR1Type.LaraGrenadeAnim_H, TR1Type.LaraHarpoonAnim_H };
+        new TR1DataImporter
+        {
+            Level = level,
+            DataFolder = "Resources/TR1/Lara/Guns",
+            TypesToImport = [.. animTypes],
+        }.Import();
+
+        foreach (var fx in animTypes.SelectMany(t => level.Models[t].Animations
+            .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
+        {
+            if (_soundIDs.TryGetValue((TR2SFX)fx.SoundID, out var id))
+            {
+                fx.SoundID = id;
+            }
+        }
+
+        foreach (var type in animTypes)
+        {
+            var equipAnim = level.Models[type].Animations[type == TR1Type.LaraGrenadeAnim_H ? 0 : 1];
+            (equipAnim.Commands[0] as TRSFXCommand).SoundID = (short)TR1SFX.LaraDraw;
+        }
+    }
+
+    private static void AddGunSounds(InjectionData data)
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        foreach (var (id2, id1) in _soundIDs)
+        {
+            var fx = level.SoundEffects[id2];
+            switch (id2)
+            {
+                case TR2SFX.M16Fire:
+                    fx.Mode = TR2SFXMode.Wait;
+                    fx.Volume = 0x5800;
+                    break;
+                case TR2SFX.M16Stop:
+                    fx.Volume = 0x5800;
+                    break;
+                case TR2SFX.LaraHarpoonFire:
+                case TR2SFX.LaraHarpoonFireWater:
+                    fx.Mode = TR2SFXMode.Restart;
+                    break;
+                default:
+                    break;
+            }
+
+            data.SFX.Add(new()
+            {
+                ID = id1,
+                Chance = fx.Chance,
+                Characteristics = fx.GetFlags(),
+                Volume = fx.Volume,
+                SampleOffset = fx.SampleID,
+            });
+
+            if (id2 == TR2SFX.M16Fire)
+            {
+                data.SFX[^1].Data = [File.ReadAllBytes("Resources/TR1/Lara/Guns/m16.wav")];
+            }
+            else
+            {
+                data.SFX[^1].LoadSFX(TRGameVersion.TR2);
+            }
+        }
     }
 
     public string GetPublishedName()
