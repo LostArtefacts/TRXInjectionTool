@@ -10,11 +10,14 @@ public class TR1LaraGymGunBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level gym = CreateEnhancedGymLevel();
-        gym = OrganiseModels(gym);
+        return [];
+    }
 
-        InjectionData data = InjectionData.Create(gym, InjectionType.General, "lara_gym_guns");
-        return new() { data };
+    public static TR1Level CreateLevel()
+    {
+        var gym = CreateEnhancedGymLevel();
+        gym = OrganiseModels(gym);
+        return gym;
     }
 
     private static TR1Level CreateEnhancedGymLevel()

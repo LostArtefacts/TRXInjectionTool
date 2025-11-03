@@ -1,4 +1,6 @@
-﻿using TRDataControl;
+﻿using System.Diagnostics;
+using System.Drawing;
+using TRDataControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -22,22 +24,38 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         [TR2SFX.LaraHarpoonFireWater] = 267,
     };
 
+    private static readonly List<TR1Type> _animTypes =
+    [
+        TR1Type.LaraM16Anim_H,
+        TR1Type.LaraGrenadeAnim_H,
+        TR1Type.LaraHarpoonAnim_H,
+        TR1Type.LaraFlareAnim_H,
+    ];
+
     public override string ID => "lara_guns";
 
     public override List<InjectionData> Build()
     {
-        var level = CreateLevel();
+        var level = CreateLevel(false);
         var data = InjectionData.Create(level, InjectionType.General, ID);
         AddGunSounds(data);
-        return [data];
+        AddFlareSounds(data);
+
+        var level2 = TR1LaraGymGunBuilder.CreateLevel();
+        HandleTR2Guns(level2, true);
+        var data2 = InjectionData.Create(level2, InjectionType.General, "lara_gym_guns");
+        AddGunSounds(data2);
+        AddFlareSounds(data2);
+
+        return [data, data2];
     }
 
-    private static TR1Level CreateLevel()
+    private static TR1Level CreateLevel(bool gym)
     {
         var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
 
         HandleShotgun(level);
-        HandleTR2Guns(level);
+        HandleTR2Guns(level, gym);
 
         return level;
     }
@@ -102,17 +120,30 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         (model.Animations[1].Commands[0] as TRSFXCommand).SoundID = (short)TR1SFX.LaraDraw;
     }
 
-    private static void HandleTR2Guns(TR1Level level)
+    private static void HandleTR2Guns(TR1Level level, bool gym)
     {
-        var animTypes = new[] { TR1Type.LaraM16Anim_H, TR1Type.LaraGrenadeAnim_H, TR1Type.LaraHarpoonAnim_H };
+        var dataDir = "Resources/TR1/Lara/Guns";
+        if (gym)
+        {
+            var gymDir = dataDir + "/Gym";
+            var data = new TR1DataProvider();
+            foreach (var dep in _animTypes.SelectMany(t => data.GetDependencies(t)))
+            {
+                var file = Path.Combine(dataDir, TR1TypeUtilities.GetName(dep) + ".trb");
+                File.Copy(file, Path.Combine(gymDir, Path.GetFileName(file)), true);
+            }
+            dataDir = gymDir;
+        }
+
+        
         new TR1DataImporter
         {
             Level = level,
-            DataFolder = "Resources/TR1/Lara/Guns",
-            TypesToImport = [.. animTypes],
+            DataFolder = dataDir,
+            TypesToImport = _animTypes,
         }.Import();
 
-        foreach (var fx in animTypes.SelectMany(t => level.Models[t].Animations
+        foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
         {
             if (_soundIDs.TryGetValue((TR2SFX)fx.SoundID, out var id))
@@ -121,10 +152,34 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             }
         }
 
-        foreach (var type in animTypes)
+        foreach (var type in _animTypes)
         {
             var equipAnim = level.Models[type].Animations[type == TR1Type.LaraGrenadeAnim_H ? 0 : 1];
-            (equipAnim.Commands[0] as TRSFXCommand).SoundID = (short)TR1SFX.LaraDraw;
+            if (equipAnim.Commands.Count > 0)
+            {
+                (equipAnim.Commands[0] as TRSFXCommand).SoundID = (short)TR1SFX.LaraDraw;
+            }
+
+            if (type == TR1Type.LaraHarpoonAnim_H)
+            {
+                foreach (var id in new[] { 9, 10 })
+                {
+                    var uwUnequipAnim = level.Models[type].Animations[id];
+                    uwUnequipAnim.Commands.Add(new TRSFXCommand
+                    {
+                        SoundID = (short)TR1SFX.LaraHolster,
+                        FrameNumber = 20,
+                    });
+                }
+            }
+        }
+
+        if (gym)
+        {
+            var col = Color.FromArgb(220, 160, 100);
+            var i = level.Palette.FindIndex(c => c.Red == col.R && c.Green == col.G && c.Blue == col.B);
+            Debug.Assert(i > 0);
+            level.Models[TR1Type.LaraFlareAnim_H].Meshes[13].ColouredRectangles[0].Texture = (ushort)i;
         }
     }
 
@@ -171,9 +226,33 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         }
     }
 
+    private static void AddFlareSounds(InjectionData data)
+    {
+        var sfxLevel = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
+        var soundMap = new Dictionary<TR3SFX, short>
+        {
+            [TR3SFX.LaraFlareIgnite] = 257,
+            [TR3SFX.LaraFlareBurn] = 258,
+        };
+
+        foreach (var (tr2Id, tr1Id) in soundMap)
+        {
+            var sfx = sfxLevel.SoundEffects[tr2Id];
+            data.SFX.Add(new()
+            {
+                ID = tr1Id,
+                Chance = sfx.Chance,
+                Characteristics = 1 << 2, // mode=wait
+                Volume = 13106,
+                SampleOffset = sfx.SampleID,
+            });
+            data.SFX[^1].LoadSFX(TRGameVersion.TR3);
+        }
+    }
+
     public string GetPublishedName()
         => "lara_guns.phd";
 
     public TRLevelBase Publish()
-        => CreateLevel();
+        => CreateLevel(false);
 }
