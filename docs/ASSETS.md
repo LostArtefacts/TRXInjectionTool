@@ -50,12 +50,12 @@ existing ones.
     </tr>
     <tr valign="top">
       <td><code>Guns</code></td>
-      <td>2</td>
+      <td>2, 201-212</td>
       <td>N/A</td>
       <td><code>lara_guns.bin</code></td>
       <td>
         Relevant to TR1 only. OG TR1 had Lara's shotgun as part of her torso mesh in the Lara Shotgun Animation object. Later games separated this out to allow for different rifle type guns.
-        If you wish to replace the shotgun and/or Lara's hands while equipping it, you can use the given file as a basis for your WAD.
+        If you wish to replace the shotgun and/or Lara's hands while equipping it, you can use the provided WAD. It also contains all guns and related objects/sprites from TR2.
       </td>
     </tr>
     <tr valign="top">
@@ -80,7 +80,7 @@ existing ones.
       <td><code>Flares</code></td>
       <td>187, 188, 192, 193, 194</td>
       <td>N/A</td>
-      <td><code>lara_flares.bin</code></td>
+      <td><code>lara_guns.bin</code></td>
       <td>
         Relevant to TR1 only. Make sure to update TombEditor catalogs so you can place pickups in your level. The IDs should match your TR1X catalog IDs, and you will also need to
         manually assign sound effects (<code>SFX_LARA_FLARE_IGNITE</code> and <code>SFX_LARA_FLARE_BURN</code>) <br />
