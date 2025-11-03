@@ -247,6 +247,10 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
                 SampleOffset = sfx.SampleID,
             });
             data.SFX[^1].LoadSFX(TRGameVersion.TR3);
+            if (tr2Id == TR3SFX.LaraFlareBurn)
+            {
+                data.SFX[^1].Data[0] = File.ReadAllBytes("Resources/TR1/Lara/Guns/flare.wav");
+            }
         }
     }
 
