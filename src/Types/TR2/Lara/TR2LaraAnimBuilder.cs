@@ -126,8 +126,8 @@ public class TR2LaraAnimBuilder : LaraBuilder
     {
         var map = new Dictionary<TR2Type, TR2Type>
         {
-            [TR2Type.LaraMiscAnim_H_Xian] = (TR2Type)272,
-            [TR2Type.LaraMiscAnim_H_HSH] = (TR2Type)273,
+            [TR2Type.LaraMiscAnim_H_Xian] = TR2Type.LaraExtraSkinDagger1,
+            [TR2Type.LaraMiscAnim_H_HSH] = TR2Type.LaraExtraSkinDagger2,
         };
         var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
         var braid = level.Models[TR2Type.LaraPonytail_H];
@@ -146,7 +146,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         }
 
         {
-            var goldSkin = level.Models[(TR2Type)271] = level.Models[TR2Type.Lara].Clone();
+            var goldSkin = level.Models[TR2Type.LaraExtraSkinMidas] = level.Models[TR2Type.Lara].Clone();
             goldSkin.Animations = [GetBreathAnim(level.Models[TR2Type.Lara])];
             level.Palette16[4] = new()
             {
@@ -155,7 +155,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
                 Blue = 136,
             };
             
-            var goldBraid = level.Models[(TR2Type)274] = braid;
+            var goldBraid = level.Models[TR2Type.LaraHairSwap] = braid;
 
             goldSkin.Meshes.Concat(goldBraid.Meshes)
                 .ToList().ForEach(m =>

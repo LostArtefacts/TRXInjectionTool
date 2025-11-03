@@ -79,7 +79,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder, IPublisher
             Blue = 136,
         };
 
-        var model = level.Models[(TR1Type)199] = temp.Models[TR1Type.LaraPonytail_H_U];
+        var model = level.Models[TR1Type.LaraHairSwap] = temp.Models[TR1Type.LaraPonytail_H_U];
         foreach (var mesh in model.Meshes)
         {
             mesh.ColouredRectangles.AddRange(mesh.TexturedRectangles);
@@ -108,7 +108,7 @@ public class TR1LaraBraidBuilder : InjectionBuilder, IPublisher
             }
         }
 
-        var model = level.Models[(TR1Type)200];
+        var model = level.Models[TR1Type.LaraHairBodySwap];
 
         {
             // Lara's backback

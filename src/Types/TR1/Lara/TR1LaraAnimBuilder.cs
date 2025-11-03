@@ -243,9 +243,9 @@ public class TR1LaraAnimBuilder : LaraBuilder
     {
         var map = new Dictionary<TR1Type, TR1Type>
         {
-            [TR1Type.LaraMiscAnim_H_Valley] = (TR1Type)195,
-            [TR1Type.LaraMiscAnim_H_Midas] = (TR1Type)196,
-            [TR1Type.LaraMiscAnim_H_General] = (TR1Type)197,
+            [TR1Type.LaraMiscAnim_H_Valley] = TR1Type.LaraExtraSkinTrex,
+            [TR1Type.LaraMiscAnim_H_Midas] = TR1Type.LaraExtraSkinMidas,
+            [TR1Type.LaraMiscAnim_H_General] = TR1Type.LaraExtraSkinDagger1,
         };
         var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         CreateModelLevel(level, TR1Type.Lara);
@@ -263,12 +263,12 @@ public class TR1LaraAnimBuilder : LaraBuilder
         }
 
         // Dagger 2
-        level.Models[(TR1Type)198] = level.Models[(TR1Type)197].Clone();
+        level.Models[TR1Type.LaraExtraSkinDagger2] = level.Models[TR1Type.LaraExtraSkinDagger1].Clone();
 
         ImportExtraAnims(level.Models, TR1Type.LaraMiscAnim_H);
 
         var hipsA = level.Models[TR1Type.Lara].Meshes[0];
-        var hipsB = level.Models[(TR1Type)195].Meshes[0];
+        var hipsB = level.Models[TR1Type.LaraExtraSkinTrex].Meshes[0];
         level.Models.Remove(TR1Type.Lara);
         level.SoundEffects.Clear();
 
