@@ -57,6 +57,7 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
             level.SoundEffects.Remove(sfx);
         }
 
+        TR2GunUtils.FixHolsterSFX(level, false);
         TR2GunUtils.ConvertFlatFaces(level, basePalette);
         AddPistolsSprite(level);
         GenerateImages8(level, hsh.Palette.Select(c => c.ToTR1Color()).ToList());

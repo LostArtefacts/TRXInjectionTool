@@ -6,6 +6,7 @@ using TRImageControl.Packing;
 using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Applicability;
 using TRXInjectionTool.Control;
 
@@ -96,7 +97,7 @@ public abstract class InjectionBuilder
         }
     }
 
-    protected static void ResetLevel(TR1Level level, uint texturePageCount = 0)
+    public static void ResetLevel(TR1Level level, uint texturePageCount = 0)
     {
         level.Images8.Clear();
         for (int i = 0; i < texturePageCount; i++)
@@ -124,7 +125,7 @@ public abstract class InjectionBuilder
         }
     }
 
-    protected static void ResetLevel(TR2Level level, uint texturePageCount = 0)
+    public static void ResetLevel(TR2Level level, uint texturePageCount = 0)
     {
         level.Images8.Clear();
         level.Images16.Clear();
@@ -361,6 +362,35 @@ public abstract class InjectionBuilder
         }
 
         return snapped;
+    }
+
+    public static TRAnimCmdEdit CreateAnimCmdEdit(TR2Level level, TR2Type type, int animIdx)
+    {
+        TRAnimation anim = level.Models[type].Animations[animIdx];
+        int rawCount = 0;
+        foreach (TRAnimCommand cmd in anim.Commands)
+        {
+            rawCount++;
+            switch (cmd.Type)
+            {
+                case TRAnimCommandType.SetPosition:
+                    rawCount += 3;
+                    break;
+                case TRAnimCommandType.JumpDistance:
+                case TRAnimCommandType.FlipEffect:
+                case TRAnimCommandType.PlaySound:
+                    rawCount += 2;
+                    break;
+            }
+        }
+
+        return new()
+        {
+            AnimIndex = animIdx,
+            TypeID = (short)type,
+            RawCount = rawCount,
+            TotalCount = anim.Commands.Count,
+        };
     }
 
     protected static T DeserializeFile<T>(string path)

@@ -53,6 +53,7 @@ public class TR2LaraGymGunBuilder : InjectionBuilder
             level.SoundEffects.Remove(sfx);
         }
 
+        TR2GunUtils.FixHolsterSFX(level, false);
         TR2GunUtils.ConvertFlatFaces(level, basePalette);
         GenerateImages8(level, gym.Palette.Select(c => c.ToTR1Color()).ToList());
 

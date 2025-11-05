@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
-using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.SFX;
@@ -48,7 +47,7 @@ public class TR2BreakableTileSFXBuilder : InjectionBuilder
         InjectionData data = CreateBaseData("loose_boards_sfx", level);
         foreach (int animIdx in new int[] { 1, 4 })
         {
-            data.AnimCmdEdits.Add(CreateEdit(level, type, animIdx));
+            data.AnimCmdEdits.Add(CreateAnimCmdEdit(level, type, animIdx));
         }
         Debug.Assert(data.AnimCmdEdits.Sum(c => c.RawCount) == data.AnimCommands.Count);
 
@@ -89,7 +88,7 @@ public class TR2BreakableTileSFXBuilder : InjectionBuilder
         InjectionData data = CreateBaseData("breakable_tile_sfx", level);
         for (int animIdx = 1; animIdx <= 3; animIdx++)
         {
-            data.AnimCmdEdits.Add(CreateEdit(level, type, animIdx));
+            data.AnimCmdEdits.Add(CreateAnimCmdEdit(level, type, animIdx));
         }
         Debug.Assert(data.AnimCmdEdits.Sum(c => c.RawCount) == data.AnimCommands.Count);
         return data;
@@ -104,34 +103,5 @@ public class TR2BreakableTileSFXBuilder : InjectionBuilder
         data.AnimDispatches.Clear();
         data.Models.Clear();
         return data;
-    }
-
-    private static TRAnimCmdEdit CreateEdit(TR2Level level, TR2Type type, int animIdx)
-    {
-        TRAnimation anim = level.Models[type].Animations[animIdx];
-        int rawCount = 0;
-        foreach (TRAnimCommand cmd in anim.Commands)
-        {
-            rawCount++;
-            switch (cmd.Type)
-            {
-                case TRAnimCommandType.SetPosition:
-                    rawCount += 3;
-                    break;
-                case TRAnimCommandType.JumpDistance:
-                case TRAnimCommandType.FlipEffect:
-                case TRAnimCommandType.PlaySound:
-                    rawCount += 2;
-                    break;
-            }
-        }
-
-        return new()
-        {
-            AnimIndex = animIdx,
-            TypeID = (short)type,
-            RawCount = rawCount,
-            TotalCount = anim.Commands.Count,
-        };
     }
 }
