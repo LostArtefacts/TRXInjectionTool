@@ -37,6 +37,7 @@ public enum FDFixType
     ZoneFix,
     PortalOverwrite,
     ClimbInsert,
+    TrigDelete,
 }
 
 public abstract class FDFix
@@ -225,6 +226,15 @@ public class FDClimbInsert : FDFix
         direction |= Convert.ToInt32(NegZ) << 2;
         direction |= Convert.ToInt32(NegX) << 3;
         writer.Write(direction);
+    }
+}
+
+public class FDTrigDelete : FDFix
+{
+    public override FDFixType FixType => FDFixType.TrigDelete;
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
     }
 }
 

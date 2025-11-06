@@ -14,7 +14,7 @@ public class TR2SecretFDBuilder : FDBuilder
         {
             var level = _control2.Read($"Resources/{levelName}");
             var edits = DeleteSecretTriggers(level);
-            if (!edits.Any())
+            if (edits.Count == 0)
             {
                 continue;
             }
@@ -38,8 +38,9 @@ public class TR2SecretFDBuilder : FDBuilder
         return result;
     }
 
-    private static IEnumerable<TRFloorDataEdit> DeleteSecretTriggers(TR2Level level)
+    private static List<TRFloorDataEdit> DeleteSecretTriggers(TR2Level level)
     {
+        var result = new List<TRFloorDataEdit>();
         for (short r = 0; r < level.Rooms.Count; r++)
         {
             var room = level.Rooms[r];
@@ -53,28 +54,30 @@ public class TR2SecretFDBuilder : FDBuilder
                         continue;
                     }
 
-                    var fixes = level.FloorData[sector.FDIndex]
-                        .OfType<FDTriggerEntry>()
-                        .Where(t => t.Actions.Any(a => a.Action == FDTrigAction.SecretFound))
-                        .Select(t => new TRFloorDataEdit
-                            {
-                                RoomIndex = r,
-                                X = x,
-                                Z = z,
-                                Fixes = t.Actions.Where(a => a.Action == FDTrigAction.SecretFound)
-                                    .Select(a => new FDTrigParamFix
-                                    {
-                                        ActionType = a.Action,
-                                        OldParam = a.Parameter,
-                                        NewParam = -1,
-                                    }).Cast<FDFix>().ToList(),
-                            });
-                    foreach (var fix in fixes)
+                    var entries = level.FloorData[sector.FDIndex];
+                    var trigger = entries.OfType<FDTriggerEntry>().FirstOrDefault();
+                    if (trigger == null || !trigger.Actions.Any(a => a.Action == FDTrigAction.SecretFound))
                     {
-                        yield return fix;
+                        continue;
                     }
+
+                    trigger.Actions.RemoveAll(a => a.Action == FDTrigAction.SecretFound);
+                    result.Add(new()
+                    {
+                        RoomIndex = r,
+                        X = x,
+                        Z = z,
+                        Fixes =
+                        [
+                            trigger.Actions.Count == 0
+                                ? new FDTrigDelete()
+                                : MakeTrigFix(sector, level.FloorData),
+                        ],
+                    });
                 }
             }
         }
+
+        return result;
     }
 }
