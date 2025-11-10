@@ -1,7 +1,9 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRImageControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Types.TR2.Lara;
 using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types.TR2.Textures;
@@ -101,6 +103,8 @@ public partial class TR2Cut3TextureBuilder : TextureBuilder
             mesh.TexturedRectangles[8].Texture = mesh.TexturedRectangles[11].Texture;
             mesh.TexturedRectangles[8].Rotate(2);
         }
+
+        TR2GunUtils.ConvertFlatFaces(level, [.. level.Palette16.Select(c => c.ToColor())]);
 
         var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
         data.SetMeshOnlyModel((uint)TR2Type.LaraPistolAnim_H);

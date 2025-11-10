@@ -166,8 +166,6 @@ public class TR2LaraAnimBuilder : LaraBuilder
                     m.TexturedRectangles.Clear();
                     m.TexturedTriangles.Clear();
                 });
-
-            TR2GunUtils.ConvertFlatFaces(level, [.. level.Palette16.Select(c => c.ToColor())], [goldSkin, goldBraid]);
         }
 
         ImportExtraAnims(level.Models, TR2Type.LaraMiscAnim_H);
@@ -175,6 +173,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         level.Models.Remove(TR2Type.Lara);
         level.SoundEffects.Clear();
 
+        TR2GunUtils.ConvertFlatFaces(level, [.. level.Palette16.Select(c => c.ToColor())]);
         return level;
     }
 
