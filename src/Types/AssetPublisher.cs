@@ -5,6 +5,7 @@ using TRXInjectionTool.Types.TR1.Lara;
 using TRXInjectionTool.Types.TR1.Misc;
 using TRXInjectionTool.Types.TR2.Lara;
 using TRXInjectionTool.Types.TR2.Misc;
+using TRXInjectionTool.Types.TR3.Lara;
 
 namespace TRXInjectionTool.Types;
 
@@ -19,24 +20,26 @@ public static class AssetPublisher
 
     private static readonly Dictionary<TRGameVersion, List<IPublisher>> _publishers = new()
     {
-        [TRGameVersion.TR1] = new()
-        {
+        [TRGameVersion.TR1] =
+        [
             new TR1FontBuilder(),
             new TR1PDABuilder(),
             new TR1LaraGunBuilder(),
             new TR1LaraBraidBuilder(),
-        },
-        [TRGameVersion.TR2] = new()
-        {
+        ],
+        [TRGameVersion.TR2] =
+        [
             new TR2FontBuilder(),
             new TR2PDABuilder(),
-        },
+        ],
+        [TRGameVersion.TR3] = [],
     };
 
     private static readonly Dictionary<TRGameVersion, bool> _runFlags = new()
     {
         [TRGameVersion.TR1] = false,
         [TRGameVersion.TR2] = false,
+        [TRGameVersion.TR3] = false,
     };
 
     public static void OnBuilderRun(InjectionBuilder builder)
@@ -61,6 +64,7 @@ public static class AssetPublisher
     {
         Publish(TRGameVersion.TR1, new TR1LaraAnimBuilder());
         Publish(TRGameVersion.TR2, new TR2LaraAnimBuilder());
+        Publish(TRGameVersion.TR3, new TR3LaraAnimBuilder());
     }
 
     private static void Publish(TRGameVersion version, LaraBuilder laraBuilder)

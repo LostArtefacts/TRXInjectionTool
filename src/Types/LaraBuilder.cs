@@ -97,6 +97,7 @@ public abstract class LaraBuilder : InjectionBuilder
 
     protected enum TR3LaraState
     {
+        Kick = 69,
         Sprint = 73,
         SprintRoll = 74
     }

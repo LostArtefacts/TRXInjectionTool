@@ -78,7 +78,11 @@ public class InjectionData
         {
             return Create(level2, type, name, removeMeshData);
         }
-        throw new Exception("Only TR1 and TR2 levels supported");
+        else if (controlledLevel is LC.Model.TR3Level level3)
+        {
+            return Create(level3, type, name, removeMeshData);
+        }
+        throw new Exception("Only TR1-3 levels supported");
     }
 
     public static InjectionData Create(LC.Model.TR1Level controlledLevel, InjectionType type, string name, bool removeMeshData = false)
@@ -223,6 +227,74 @@ public class InjectionData
         return data;
     }
 
+    public static InjectionData Create(LC.Model.TR3Level controlledLevel, InjectionType type, string name, bool removeMeshData = false)
+    {
+        // We convert to old-style flat level to simplify export later.
+        // TODO: update old lib to support reading from memory
+        new LC.TR3LevelControl().Write(controlledLevel, "temp.tr2");
+        TR3Level level = new TR3LevelReader().ReadLevel("temp.tr2");
+        File.Delete("temp.tr2");
+
+        if (type == InjectionType.LaraAnims)
+        {
+            ResetLaraLevel(level);
+        }
+
+        short[] sounds = Array.FindAll(level.SoundMap, s => s != -1);
+        if (removeMeshData)
+        {
+            RemoveMeshData(level);
+        }
+
+        InjectionData data = new()
+        {
+            InjectionType = type,
+            GameVersion = LC.Model.TRGameVersion.TR3,
+            Name = name,
+            Animations = [.. level.Animations],
+            AnimChanges = [.. level.StateChanges],
+            AnimCommands = [.. level.AnimCommands],
+            AnimDispatches = [.. level.AnimDispatches],
+            AnimFrames = [.. level.Frames],
+            Images = Convert(level.Images16),
+            Images8 = level.NumImages == 0 ? null : [.. level.Images8.Select(i => new LC.Model.TRTexImage8 { Pixels = i.Pixels })],
+            Meshes = [.. level.Meshes],
+            MeshPointers = [.. level.MeshPointers],
+            MeshTrees = [.. level.MeshTrees],
+            Models = [.. level.Models],
+            StaticObjects = [.. level.StaticMeshes],
+            ObjectTextures = [.. level.ObjectTextures],
+            Palette = [.. level.Palette.Select(c =>
+            {
+                return new TRColour
+                {
+                    Red = (byte)(c.Red * 4),
+                    Green = (byte)(c.Green * 4),
+                    Blue = (byte)(c.Blue * 4),
+                };
+            })],
+            SpriteSequences = [.. level.SpriteSequences],
+            SpriteTextures = [.. level.SpriteTextures],
+            CinematicFrames = [.. level.CinematicFrames],
+        };
+
+        for (int i = 0; i < sounds.Length; i++)
+        {
+            short soundID = (short)Array.IndexOf(level.SoundMap, sounds[i]);
+            TR3SoundDetails details = level.SoundDetails[sounds[i]];
+            data.SFX.Add(new()
+            {
+                ID = soundID,
+                Chance = details.Chance,
+                Characteristics = (ushort)details.Characteristics,
+                Volume = details.Volume,
+                SampleOffset = level.SampleIndices[details.Sample],
+            });
+        }
+
+        return data;
+    }
+
     static byte[] GetSample(uint offset, uint endOffset, byte[] wavSamples)
     {
         List<byte> data = [];
@@ -292,6 +364,37 @@ public class InjectionData
         level.Models[0].NumMeshes = 0;
     }
 
+    private static void ResetLaraLevel(TR3Level level)
+    {
+        level.NumMeshData = 0;
+        level.Meshes = [];
+        level.NumMeshPointers = 0;
+        level.MeshPointers = [];
+        level.NumMeshTrees = 0;
+        level.MeshTrees = [];
+        level.Images8 = [];
+        level.Images16 = [];
+        level.NumImages = 0;
+        level.ObjectTextures = [];
+        level.NumObjectTextures = 0;
+        for (int i = 0; i < 256; i++)
+        {
+            TRColour c = level.Palette[i];
+            c.Red = c.Green = c.Blue = 0;
+            TRColour4 c4 = level.Palette16[i];
+            c4.Unused = c4.Red = c4.Green = c4.Blue = 0;
+        }
+        level.NumMeshData = 0;
+        level.Meshes = [];
+        level.NumMeshPointers = 0;
+        level.MeshPointers = [];
+        level.NumMeshTrees = 0;
+        level.MeshTrees = [];
+        level.Models[0].MeshTree = 0;
+        level.Models[0].StartingMesh = 0;
+        level.Models[0].NumMeshes = 0;
+    }
+
     private static void RemoveMeshData(TRLevel level)
     {
         // The game will detect that there is no mesh data associated with this injection
@@ -312,6 +415,25 @@ public class InjectionData
     }
 
     private static void RemoveMeshData(TR2Level level)
+    {
+        // The game will detect that there is no mesh data associated with this injection
+        // and hence retain the existing mesh data from the original level.
+        level.NumMeshData = 0;
+        level.Meshes = [];
+        level.NumMeshPointers = 0;
+        level.MeshPointers = [];
+        level.NumMeshTrees = 0;
+        level.MeshTrees = [];
+
+        foreach (TRModel model in level.Models)
+        {
+            model.MeshTree = 0;
+            model.StartingMesh = 0;
+            model.NumMeshes = 0;
+        }
+    }
+
+    private static void RemoveMeshData(TR3Level level)
     {
         // The game will detect that there is no mesh data associated with this injection
         // and hence retain the existing mesh data from the original level.
