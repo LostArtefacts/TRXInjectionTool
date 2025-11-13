@@ -6,6 +6,7 @@ using TRXInjectionTool.Types.TR1.Misc;
 using TRXInjectionTool.Types.TR2.Lara;
 using TRXInjectionTool.Types.TR2.Misc;
 using TRXInjectionTool.Types.TR3.Lara;
+using TRXInjectionTool.Types.TR3.Misc;
 
 namespace TRXInjectionTool.Types;
 
@@ -32,7 +33,10 @@ public static class AssetPublisher
             new TR2FontBuilder(),
             new TR2PDABuilder(),
         ],
-        [TRGameVersion.TR3] = [],
+        [TRGameVersion.TR3] =
+        [
+            new TR3PDABuilder(),
+        ],
     };
 
     private static readonly Dictionary<TRGameVersion, bool> _runFlags = new()
@@ -115,9 +119,14 @@ public static class AssetPublisher
             var control = new TR2LevelControl();
             control.Write(level2, ms);
         }
+        else if (level is TR3Level level3)
+        {
+            var control = new TR3LevelControl();
+            control.Write(level3, ms);
+        }
         else
         {
-            throw new ArgumentException("Only TR1 and TR2 levels supported.");
+            throw new ArgumentException("Only TR1-3 levels supported.");
         }
 
         return ms.ToArray();

@@ -157,6 +157,38 @@ public abstract class InjectionBuilder
         }
     }
 
+    public static void ResetLevel(TR3Level level, uint texturePageCount = 0)
+    {
+        level.Images8.Clear();
+        level.Images16.Clear();
+        for (int i = 0; i < texturePageCount; i++)
+        {
+            level.Images8.Add(new() { Pixels = new byte[256 * 256] });
+            level.Images16.Add(new() { Pixels = new ushort[256 * 256] });
+        }
+
+        level.AnimatedTextures.Clear();
+        level.ObjectTextures.Clear();
+        level.Sprites.Clear();
+        level.Models.Clear();
+        level.SoundEffects.Clear();
+        level.SoundSources.Clear();
+        level.Rooms.Clear();
+        level.StaticMeshes.Clear();
+        level.Boxes.Clear();
+        level.Entities.Clear();
+        level.Cameras.Clear();
+        level.CinematicFrames.Clear();
+
+        for (int i = 0; i < 256; i++)
+        {
+            TRColour c8 = level.Palette[i];
+            c8.Red = c8.Green = c8.Blue = 0;
+            TRColour4 c16 = level.Palette16[i];
+            c16.Red = c16.Green = c16.Blue = 0;
+        }
+    }
+
     protected static void CreateModelLevel(TR1Level level, params TR1Type[] types)
     {
         // Remove everything from the level bar the data related to the provided types.
