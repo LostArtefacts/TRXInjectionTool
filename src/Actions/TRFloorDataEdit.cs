@@ -38,6 +38,7 @@ public enum FDFixType
     PortalOverwrite,
     ClimbInsert,
     TrigDelete,
+    Triangulation,
 }
 
 public abstract class FDFix
@@ -226,6 +227,36 @@ public class FDClimbInsert : FDFix
         direction |= Convert.ToInt32(NegZ) << 2;
         direction |= Convert.ToInt32(NegX) << 3;
         writer.Write(direction);
+    }
+}
+
+public class FDTriangulation : FDFix
+{
+    public override FDFixType FixType => FDFixType.Triangulation;
+
+    public List<ushort> Floor { get; set; }
+    public List<ushort> Ceiling { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        var type = 0;
+        var data = new List<ushort>();
+        if (Floor != null)
+        {
+            type |= 1 << 0;
+            data.AddRange(Floor);
+        }
+        if (Ceiling != null)
+        {
+            type |= 1 << 1;
+            data.AddRange(Ceiling);
+        }
+
+        writer.Write(type);
+        foreach (var val in data)
+        {
+            writer.Write(val);
+        }
     }
 }
 
