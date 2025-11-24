@@ -12,6 +12,12 @@ import into **WadTool**:
 
 ---
 
+## Tomb Editor Catalogs
+The above zips contain `Moveables.xml` and/or `SpriteSequences.xml` catalog
+files for TombEditor. This allows the TRX object names to be shown, and allows
+for such things as placing TR2 guns in TR1 levels. Refer to the README file
+contained within the zip files.
+
 ## Common Steps for Importing Assets
 
 1. Open your level's **WAD** file in **WadTool**.
@@ -82,10 +88,7 @@ existing ones.
       <td>N/A</td>
       <td><code>lara_guns.bin</code></td>
       <td>
-        Relevant to TR1 only. Make sure to update TombEditor catalogs so you can place pickups in your level. The IDs should match your TR1X catalog IDs, and you will also need to
-        manually assign sound effects (<code>SFX_LARA_FLARE_IGNITE</code> and <code>SFX_LARA_FLARE_BURN</code>) <br />
-        SpriteSequences.xml: <code>&lt;sprite_sequence id="187" name="Flares" /&gt;</code><br />
-        Moveables.xml: <code>&lt;moveable id="188" name="Flares" id2="187" /&gt;</code>
+        Relevant to TR1 only - this makes all TR2 guns and flares available.
       </td>
     </tr>
     <tr valign="top">
