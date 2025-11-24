@@ -9,6 +9,8 @@ namespace TRXInjectionTool.Types.TR1.Sky;
 
 public class TR1ValleySkyboxBuilder : InjectionBuilder
 {
+    private static readonly List<short> _skyRooms = [6, 32, 34, 39, 52, 53, 54, 55, 64, 65, 66];
+
     private static readonly Dictionary<string, string> _imageIDs = new()
     {
         ["54bbd1a9a9c26f1f961a494463ac2bea"] = "Resources/TR1/Valley/sky1.png",
@@ -67,6 +69,11 @@ public class TR1ValleySkyboxBuilder : InjectionBuilder
         caves.ObjectTextures.Add(region.Segments.First().Texture as TRObjectTexture);
 
         InjectionData data = InjectionData.Create(caves, InjectionType.Skybox, "valley_skybox");
-        return new() { data };
+        CreateDefaultTests(data, TR1LevelNames.VALLEY);
+
+        var valley = _control1.Read($"Resources/{TR1LevelNames.VALLEY}");
+        data.FloorEdits.AddRange(FDBuilder.AddRoomFlags(_skyRooms, TRRoomFlag.Skybox, valley.Rooms));
+
+        return [data];
     }
 }
