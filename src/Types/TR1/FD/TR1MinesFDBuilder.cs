@@ -20,6 +20,7 @@ public class TR1MinesFDBuilder : FDBuilder
             MakeMusicOneShot(86, 2, 5),
             .. CreateCabinFlipmapFix(),
             .. CreatePistolsFix(level),
+            .. CreateFuseFix(level),
         ];
 
         return [data];
@@ -91,5 +92,20 @@ public class TR1MinesFDBuilder : FDBuilder
                 }
             }
         }
+    }
+
+    private static IEnumerable<TRFloorDataEdit> CreateFuseFix(TR1Level level)
+    {
+        // Don't one-shot the fuse at the switch
+        var switchTrig = GetTrigger(level, 89, 1, 2);
+        switchTrig.Actions.RemoveAll(a => a.Parameter == 42);
+        yield return MakeTrigger(level, 89, 1, 2, switchTrig);
+
+        // Trigger it in the fliped room on the way back instead
+        yield return MakeTrigger(level, 90, 1, 9, new()
+        {
+            Mask = 31,
+            Actions = [new() { Parameter = 42 }],
+        });
     }
 }
