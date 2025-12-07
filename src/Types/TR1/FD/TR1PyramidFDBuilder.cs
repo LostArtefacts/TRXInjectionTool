@@ -11,13 +11,12 @@ public class TR1PyramidFDBuilder : FDBuilder
     {
         InjectionData data = InjectionData.Create(TRGameVersion.TR1, InjectionType.FDFix, "pyramid_fd");
         CreateDefaultTests(data, TR1LevelNames.PYRAMID);
-        data.FloorEdits = new()
-        {
-            MakeMusicOneShot(36, 4, 5),
-            CreateSecretTriggerFix(),
-        };
 
-        return new() { data };
+        data.FloorEdits.Add(MakeMusicOneShot(36, 4, 5));
+        data.FloorEdits.Add(CreateSecretTriggerFix());
+        data.FloorEdits.AddRange(FixEmberTrigger());
+
+        return [data];
     }
 
     private static TRFloorDataEdit CreateSecretTriggerFix()
@@ -38,5 +37,29 @@ public class TR1PyramidFDBuilder : FDBuilder
                 },
             },
         };
+    }
+
+    private static List<TRFloorDataEdit> FixEmberTrigger()
+    {
+        // Ember emitter 12 is on the same timed trigger as that for the secret trapdoors.
+        // TRX now allows switching off these emitters, so replace with separate triggers
+        // nearby instead.
+        var level = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
+        var result = new List<TRFloorDataEdit>();
+
+        var trig = GetTrigger(level, 18, 3, 4);
+        trig.Actions.RemoveAll(a => a.Parameter == 12);
+        result.Add(MakeTrigger(level, 18, 3, 4, trig));
+
+        foreach (var (x, z) in new(ushort, ushort)[] { (4, 4), (4, 3), (3, 3) })
+        {
+            result.Add(MakeTrigger(level, 18, x, z, new()
+            {
+                Mask = 31,
+                Actions = [new() { Parameter = 12 }],
+            }));
+        }
+
+        return result;
     }
 }

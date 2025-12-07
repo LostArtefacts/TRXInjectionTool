@@ -1,5 +1,6 @@
 ﻿using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.FD;
@@ -17,6 +18,18 @@ public class TR1CavesFDBuilder : FDBuilder
             data.FloorEdits.Add(MakeMusicOneShot(34, x, 12));
         }
 
-        return new() { data };
+        data.FloorEdits.Add(FixCollapsibleTileTrigger());
+
+        return [data];
+    }
+
+    private static TRFloorDataEdit FixCollapsibleTileTrigger()
+    {
+        // Remove the timer from the trigger under collapsible tile 50
+        // otherwise it will reset its position.
+        var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        var trig = GetTrigger(level, 32, 2, 12);
+        trig.Timer = 0;
+        return MakeTrigger(level, 32, 2, 12, trig);
     }
 }
