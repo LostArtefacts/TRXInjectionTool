@@ -8,18 +8,19 @@ public class TR2BarkhangItemBuilder : ItemBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR2Level barkhang = _control2.Read($"Resources/{TR2LevelNames.MONASTERY}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "barkhang_itemrots");
+        var barkhang = _control2.Read($"Resources/{TR2LevelNames.MONASTERY}");
+        var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "barkhang_itemrots");
         CreateDefaultTests(data, TR2LevelNames.MONASTERY);
 
-        data.ItemPosEdits = new()
-        {
+        data.ItemPosEdits =
+        [
             SetAngle(barkhang, 31, -16384),
             SetAngle(barkhang, 97, 16384),
+            SetAngle(barkhang, 168, -32768),
             SetAngle(barkhang, 176, 16384),
             SetAngle(barkhang, 202, 16384),
-        };
+        ];
 
-        return new() { data };
+        return [data];
     }
 }

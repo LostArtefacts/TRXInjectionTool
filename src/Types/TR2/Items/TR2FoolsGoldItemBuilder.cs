@@ -10,12 +10,12 @@ public class TR2FoolsGoldItemBuilder : ItemBuilder
 
     public override List<InjectionData> Build()
     {
-        TR2Level foolsGold = _control2.Read($"Resources/{TR2LevelNames.FOOLGOLD}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
+        var foolsGold = _control2.Read($"Resources/{TR2LevelNames.FOOLGOLD}");
+        var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.FOOLGOLD);
 
-        data.ItemPosEdits = new()
-        {
+        data.ItemPosEdits =
+        [
             SetAngle(foolsGold, 29, 16384),
             SetAngle(foolsGold, 103, -16384),
             SetAngle(foolsGold, 104, -16384),
@@ -24,9 +24,10 @@ public class TR2FoolsGoldItemBuilder : ItemBuilder
             SetAngle(foolsGold, 172, -32768),
             SetAngle(foolsGold, 173, -32768),
             SetAngle(foolsGold, 184, -16384),
+            SetAngle(foolsGold, 185, -32768),
             SetAngle(foolsGold, 189, -32768),
-        };
+        ];
 
-        return new() { data };
+        return [data];
     }
 }

@@ -10,12 +10,12 @@ public class TR2KingdomItemBuilder : ItemBuilder
 
     public override List<InjectionData> Build()
     {
-        TR2Level kingdom = _control2.Read($"Resources/{TR2LevelNames.KINGDOM}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
+        var kingdom = _control2.Read($"Resources/{TR2LevelNames.KINGDOM}");
+        var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.KINGDOM);
 
-        data.ItemPosEdits = new()
-        {
+        data.ItemPosEdits =
+        [
             SetAngle(kingdom, 11, -16384),
             SetAngle(kingdom, 12, 16384),
             SetAngle(kingdom, 19, -32768),
@@ -32,9 +32,10 @@ public class TR2KingdomItemBuilder : ItemBuilder
             SetAngle(kingdom, 133, -32768),
             SetAngle(kingdom, 139, -32768),
             SetAngle(kingdom, 163, -16384),
+            SetAngle(kingdom, 168, -32768),
             SetAngle(kingdom, 170, -16384),
-        };
+        ];
 
-        return new() { data };
+        return [data];
     }
 }

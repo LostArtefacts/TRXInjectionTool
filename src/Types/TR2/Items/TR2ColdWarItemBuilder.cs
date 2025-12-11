@@ -10,12 +10,12 @@ public class TR2ColdWarItemBuilder : ItemBuilder
 
     public override List<InjectionData> Build()
     {
-        TR2Level coldWar = _control2.Read($"Resources/{TR2LevelNames.COLDWAR}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
+        var coldWar = _control2.Read($"Resources/{TR2LevelNames.COLDWAR}");
+        var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.COLDWAR);
 
-        data.ItemPosEdits = new()
-        {
+        data.ItemPosEdits =
+        [
             SetAngle(coldWar, 0, -32768),
             SetAngle(coldWar, 70, 16384),
             SetAngle(coldWar, 72, 16384),
@@ -24,8 +24,9 @@ public class TR2ColdWarItemBuilder : ItemBuilder
             SetAngle(coldWar, 87, 16384),
             SetAngle(coldWar, 139, -32768),
             SetAngle(coldWar, 140, -32768),
-        };
+            SetAngle(coldWar, 155, -32768),
+        ];
 
-        return new() { data };
+        return [data];
     }
 }

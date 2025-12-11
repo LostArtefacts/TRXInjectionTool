@@ -10,12 +10,13 @@ public class TR2VegasItemBuilder : ItemBuilder
 
     public override List<InjectionData> Build()
     {
-        TR2Level vegas = _control2.Read($"Resources/{TR2LevelNames.VEGAS}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
+        var vegas = _control2.Read($"Resources/{TR2LevelNames.VEGAS}");
+        var data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, ID);
         CreateDefaultTests(data, TR2LevelNames.VEGAS);
 
-        data.ItemPosEdits = new()
-        {
+        data.ItemPosEdits =
+        [
+            SetAngle(vegas, 7, -16384),
             SetAngle(vegas, 10, -32768),
             SetAngle(vegas, 16, 16384),
             SetAngle(vegas, 42, 16384),
@@ -32,8 +33,8 @@ public class TR2VegasItemBuilder : ItemBuilder
             SetAngle(vegas, 162, -32768),
             SetAngle(vegas, 167, -16384),
             SetAngle(vegas, 168, 16384),
-        };
+        ];
 
-        return new() { data };
+        return [data];
     }
 }
