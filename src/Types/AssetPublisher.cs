@@ -5,6 +5,7 @@ using TRXInjectionTool.Types.TR1.Lara;
 using TRXInjectionTool.Types.TR1.Misc;
 using TRXInjectionTool.Types.TR2.Lara;
 using TRXInjectionTool.Types.TR2.Misc;
+using TRXInjectionTool.Types.TR2.Objects;
 using TRXInjectionTool.Types.TR3.Lara;
 using TRXInjectionTool.Types.TR3.Misc;
 
@@ -32,6 +33,8 @@ public static class AssetPublisher
         [
             new TR2FontBuilder(),
             new TR2PDABuilder(),
+            new TR2OGSecretBuilder(),
+            new TR2GMSecretBuilder(),
         ],
         [TRGameVersion.TR3] =
         [

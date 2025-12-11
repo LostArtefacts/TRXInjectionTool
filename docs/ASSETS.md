@@ -153,6 +153,13 @@ existing ones.
       <td><code>font.bin</code></td>
       <td>Extends the original font sequence with several additional characters and icons.</td>
     </tr>
+    <tr valign="top">
+      <td><code>Secrets</code></td>
+      <td>N/A</td>
+      <td>275-277</td>
+      <td><code>secret_models_*.bin</code></td>
+      <td>3D secret pickup models for the dragons in OG and the treasure in Golden Mask.</td>
+    </tr>
   </tbody>
 </table>
 
