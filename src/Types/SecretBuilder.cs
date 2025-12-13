@@ -16,7 +16,7 @@ public abstract class SecretBuilder : InjectionBuilder, IPublisher
 
     private TR2Level CreateLevel()
     {
-        var level = _control2.Read($"Resources/TR2/Secrets/{Name}/wad.tr2");
+        var level = _control2.Read($"Resources/TR2/Secrets/{Name.ToUpper()}/wad.tr2");
         level.SoundEffects.Clear();
         level.Rooms.Clear();
         return level;
