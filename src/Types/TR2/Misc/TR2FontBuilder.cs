@@ -27,7 +27,4 @@ public class TR2FontBuilder : FontBuilder
         wall.Sprites[TR2Type.FontGraphics_S_H] = font;
         return wall;
     }
-
-    public override string GetPublishedName()
-        => "font.tr2";
 }

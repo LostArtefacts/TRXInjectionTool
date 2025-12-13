@@ -65,6 +65,7 @@ public static class InjectionIO
             CreateChunk(ChunkType.ObjectData, data, WriteObjectData),
             CreateChunk(ChunkType.SFXData, data, WriteSFXData),
             CreateChunk(ChunkType.CameraData, data, WriteCameraData),
+            CreateChunk(ChunkType.GlyphData, data, WriteGlyphData),
             CreateChunk(ChunkType.DataEdits, data, WriteEdits),
         ];
 
@@ -213,6 +214,12 @@ public static class InjectionIO
     {
         return WriteBlock(BlockType.CinematicFrames, data.CinematicFrames.Count, writer,
             s => data.CinematicFrames.ForEach(f => s.Write(f.Serialize())));
+    }
+
+    private static int WriteGlyphData(InjectionData data, TRLevelWriter writer)
+    {
+        return WriteBlock(BlockType.GlyphData, data.Glyphs.Count, writer,
+            s => data.Glyphs.ForEach(g => g.Serialize(s, data.GameVersion)));
     }
 
     private static int WriteEdits(InjectionData data, TRLevelWriter writer)

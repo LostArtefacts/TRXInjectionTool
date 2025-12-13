@@ -27,6 +27,7 @@ public enum ChunkType
     SFXData       = 5,
     DataEdits     = 6,
     CameraData    = 7,
+    GlyphData     = 8,
 }
 
 public enum BlockType
@@ -65,4 +66,5 @@ public enum BlockType
     ObjectTypeEdits = 31,
     FrameReplace    = 32,
     ItemFlagEdits   = 33,
+    GlyphData       = 34,
 }

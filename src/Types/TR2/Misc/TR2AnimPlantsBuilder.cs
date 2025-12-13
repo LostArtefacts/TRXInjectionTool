@@ -71,10 +71,10 @@ public class TR2AnimPlantsBuilder : InjectionBuilder
         return level;
     }
 
-    private static TRImage GetImage(GlyphDef glyph)
+    private static TRImage GetImage(SpriteImage def)
     {
-        var image = new TRImage(Path.Combine(_resourceDir, glyph.filename));
-        var bounds = new Rectangle(glyph.x, glyph.y, glyph.w, glyph.h);
+        var image = new TRImage(Path.Combine(_resourceDir, def.filename));
+        var bounds = new Rectangle(def.x, def.y, def.w, def.h);
         return image.Export(bounds);
     }
 
@@ -130,7 +130,7 @@ public class TR2AnimPlantsBuilder : InjectionBuilder
 
     private class PlantData
     {
-        public List<GlyphDef> Sprites { get; set; }
+        public List<SpriteImage> Sprites { get; set; }
         public List<LevelDef> Defs { get; set; }
     }
 

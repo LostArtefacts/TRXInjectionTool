@@ -22,7 +22,4 @@ public class TR1FontBuilder : FontBuilder
         caves.Sprites[TR1Type.FontGraphics_S_H] = font;
         return caves;
     }
-
-    public override string GetPublishedName()
-        => "font.phd";
 }

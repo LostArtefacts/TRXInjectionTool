@@ -39,6 +39,7 @@ public class InjectionData
     public List<TRVisPortalEdit> VisPortalEdits { get; set; } = [];
     public List<TRItemPosEdit> ItemPosEdits { get; set; } = [];
     public List<TRItemTypeFlagEdit> ItemFlagEdits { get; set; } = [];
+    public List<TRGlyphData> Glyphs { get; set; } = [];
     public List<TRFrameRotEdit> FrameEdits { get; set; } = [];
     public List<TRFrameReplacement> FrameReplacements { get; set; } = [];
     public List<TRAnimCmdEdit> AnimCmdEdits { get; set; } = [];

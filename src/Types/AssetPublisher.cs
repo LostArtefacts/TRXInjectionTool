@@ -21,7 +21,6 @@ public static class AssetPublisher
     {
         [TRGameVersion.TR1] = new()
         {
-            new TR1FontBuilder(),
             new TR1PDABuilder(),
             new TR1LaraFlareBuilder(),
             new TR1LaraGunBuilder(),
@@ -29,7 +28,6 @@ public static class AssetPublisher
         },
         [TRGameVersion.TR2] = new()
         {
-            new TR2FontBuilder(),
             new TR2PDABuilder(),
         },
     };
