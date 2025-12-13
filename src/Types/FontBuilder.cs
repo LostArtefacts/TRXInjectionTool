@@ -12,18 +12,18 @@ public abstract class FontBuilder : InjectionBuilder, IPublisher
     private static readonly string _resourceDirBase = "Resources/{0}/Font";
 
     protected readonly string _resourceDir;
-    protected readonly List<GlyphDef> _glyphDefs;
+    protected readonly List<SpriteInfo> _glyphDefs;
     protected readonly Dictionary<string, TRImage> _imageCache;
 
     public FontBuilder(TRGameVersion gameVersion)
     {
         _resourceDir = string.Format(_resourceDirBase, gameVersion.ToString());
-        _glyphDefs = DeserializeFile<List<GlyphDef>>(Path.Combine(_resourceDir, "glyph_info.json"));
+        _glyphDefs = DeserializeFile<List<SpriteInfo>>(Path.Combine(_resourceDir, "glyph_info.json"));
         _glyphDefs.Sort((g1, g2) => g1.mesh_num.CompareTo(g2.mesh_num));
         _imageCache = new();
     }
 
-    public TRImage GetImage(GlyphDef glyph)
+    public TRImage GetImage(SpriteInfo glyph)
     {
         string path = Path.Combine(_resourceDir, glyph.filename);
         if (!_imageCache.ContainsKey(path))
@@ -53,7 +53,7 @@ public abstract class FontBuilder : InjectionBuilder, IPublisher
         TRSpriteSequence font = new();
         List<TRTextileRegion> regions = new();
 
-        foreach (GlyphDef glyph in _glyphDefs)
+        foreach (SpriteInfo glyph in _glyphDefs)
         {
             TRSpriteTexture texture = new()
             {

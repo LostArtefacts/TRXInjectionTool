@@ -3,7 +3,7 @@
 namespace TRXInjectionTool.Util;
 
 [SuppressMessage("Style", "IDE1006:Naming Styles")]
-public class GlyphDef
+public class SpriteInfo
 {
     public int mesh_num { get; set; }
     public string filename { get; set; }
