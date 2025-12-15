@@ -112,7 +112,7 @@ public static class TRModelExtensions
     {
         if (objectType != TRObjectType.Game)
         {
-            int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
+            int sceneryBase = version.GetSceneryBase();
             Debug.Assert(objectID >= sceneryBase);
             objectID -= sceneryBase;
         }
@@ -123,12 +123,23 @@ public static class TRModelExtensions
 
     private static TRObjectType GetSpriteType(int id, TRGameVersion version)
     {
-        int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
+        int sceneryBase = version.GetSceneryBase();
         if (version == TRGameVersion.TR2 && id == (int)TR2Type.PickupAid)
         {
             // TODO: once TRLevelControl no longer uses typed statics, get rid of this
             return TRObjectType.Game;
         }
         return id >= sceneryBase ? TRObjectType.Static2D : TRObjectType.Game;
+    }
+
+    public static int GetSceneryBase(this TRGameVersion version)
+    {
+        return version switch
+        {
+            TRGameVersion.TR1 => (int)TR1Type.SceneryBase,
+            TRGameVersion.TR2 => (int)TR2Type.SceneryBase,
+            TRGameVersion.TR3 => (int)TR3Type.SceneryBase,
+            _ => throw new Exception(),
+        };
     }
 }

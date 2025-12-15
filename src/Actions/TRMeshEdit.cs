@@ -24,7 +24,7 @@ public class TRMeshEdit
         }
         else
         {
-            int sceneryBase = version == TRGameVersion.TR1 ? (int)TR1Type.SceneryBase : (int)TR2Type.SceneryBase;
+            int sceneryBase = version.GetSceneryBase();
             type = ModelID >= sceneryBase ? TRObjectType.Static3D : TRObjectType.Game;
         }
             
