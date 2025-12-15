@@ -85,7 +85,7 @@ internal class Program
                 Console.WriteLine(ns);
                 IEnumerable<Type> builders = _types
                     .Where(t => t.IsSubclassOf(typeof(InjectionBuilder)) && t.Namespace == $"{_topNS}.{ns}");
-                RunBuilders(builders, usedNames);
+                RunBuilders(builders, usedNames, true);
             }
 
             Console.WriteLine("Done!");
@@ -102,30 +102,51 @@ internal class Program
             return 1;
         }
 
+        bool publishAssets = true;
+
         // Handle global options
-        var first = args[0].ToLowerInvariant();
-        if (first == "-h" || first == "--help")
+        var globalArgs = new List<string>();
+        foreach (var arg in args)
         {
-            PrintHelp();
-            return 0;
-        } else if (first == "-l" || first == "--list")
-        {
-            PrintList();
-            return 0;
+            switch (arg.ToLowerInvariant())
+            {
+                case "-h":
+                case "--help":
+                    PrintHelp();
+                    return 0;
+                case "-l":
+                case "--list":
+                    PrintList();
+                    return 0;
+                case "-n":
+                case "--no-publish":
+                    publishAssets = false;
+                    break;
+                default:
+                    globalArgs.Add(arg);
+                    break;
+            }
         }
 
-        var id = args[0].ToLowerInvariant().Trim();
+        if (globalArgs.Count < 1)
+        {
+            Console.WriteLine("Missing injection identifier.");
+            PrintHelp();
+            return 1;
+        }
+
+        var id = globalArgs[0].ToLowerInvariant().Trim();
         if (!_builders.TryGetValue(id, out var builderType))
         {
             Console.WriteLine($"No matching injection builders for given ID '{id}'.");
             return 1;
         }
 
-        RunBuilders(new[] { builderType });
+        RunBuilders(new[] { builderType }, publishAssets: publishAssets);
         return 0;
     }
 
-    private static void RunBuilders(IEnumerable<Type> builders, HashSet<string> usedNames = null)
+    private static void RunBuilders(IEnumerable<Type> builders, HashSet<string> usedNames = null, bool publishAssets = true)
     {
         usedNames ??= new();
         foreach (Type type in builders)
@@ -146,19 +167,24 @@ internal class Program
                 }
             }
 
-            AssetPublisher.OnBuilderRun(builder);
+            if (publishAssets) {
+                AssetPublisher.OnBuilderRun(builder);
+            }
         }
 
-        AssetPublisher.Publish();
-        Console.WriteLine();
+        if (publishAssets) {
+            AssetPublisher.Publish();
+            Console.WriteLine();
+        }
     }
 
     private static void PrintHelp()
     {
         Console.WriteLine("Usage: TRXInjectionTool [options] <builderId>");
         Console.WriteLine("Options:");
-        Console.WriteLine("  -h, --help     Show help");
-        Console.WriteLine("  -l, --list     List available builder IDs");
+        Console.WriteLine("  -h, --help         Show help");
+        Console.WriteLine("  -l, --list         List available builder IDs");
+        Console.WriteLine("  -n, --no-publish   Turn off asset publishing");
     }
 
     private static void PrintList()
