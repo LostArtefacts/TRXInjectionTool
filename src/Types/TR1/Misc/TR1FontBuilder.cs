@@ -1,4 +1,5 @@
-﻿using TRImageControl.Packing;
+﻿using System.Drawing;
+using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 
@@ -11,18 +12,50 @@ public class TR1FontBuilder : FontBuilder
     public TR1FontBuilder()
         : base(TRGameVersion.TR1) { }
 
-    protected override TRLevelBase Pack(TRSpriteSequence font, List<TRTextileRegion> regions)
+    protected override TRLevelBase CreateLevel(TRSpriteSequence font, bool useLegacyImages)
     {
-        TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
-        ResetLevel(caves, 1);
-        TR1TexturePacker packer = new(caves);
-        packer.AddRectangles(regions);
-        packer.Pack(true);
+        var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        ResetLevel(level);
 
-        caves.Sprites[TR1Type.FontGraphics_S_H] = font;
-        return caves;
+        if (useLegacyImages)
+        {
+            var palette = GeneratePalette();
+            level.Images8 = [.. _imageCache.Values.Select(i => new TRTexImage8
+            {
+                Pixels = i.ToRGB(palette),
+            })];
+            level.Palette = palette;
+        }
+
+        level.Sprites[TR1Type.FontGraphics_S_H] = font;
+        return level;
     }
 
     public override string GetPublishedName()
         => "font.phd";
+
+    private List<TRColour> GeneratePalette()
+    {
+        var palette = new List<Color>
+        {
+            Color.Transparent,
+        };
+        _imageCache.Values.ToList().ForEach(img =>
+        {
+            img.Read((c, x, y) =>
+            {
+                if (c.A != 0 && !palette.Contains(c))
+                {
+                    palette.Add(c);
+                }
+            });
+        });
+
+        while (palette.Count < 256)
+        {
+            palette.Add(Color.Black);
+        }
+
+        return palette.Select(c => c.ToTRColour()).ToList();
+    }
 }

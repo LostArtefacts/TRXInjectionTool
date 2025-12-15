@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using TRImageControl;
-using TRImageControl.Packing;
+﻿using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 
@@ -13,19 +11,23 @@ public class TR2FontBuilder : FontBuilder
     public TR2FontBuilder()
         : base(TRGameVersion.TR2) { }
 
-    protected override TRLevelBase Pack(TRSpriteSequence font, List<TRTextileRegion> regions)
+    protected override TRLevelBase CreateLevel(TRSpriteSequence font, bool useLegacyImages)
     {
-        TR2Level wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
-        List<Color> basePalette = new(wall.Palette.Select(c => c.ToTR1Color()));
-        ResetLevel(wall, 1);
-        TR2TexturePacker packer = new(wall);
-        packer.AddRectangles(regions);
-        packer.Pack(true);
+        var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        var palette = level.Palette.Select(c => c.ToTR1Color()).ToList();
+        ResetLevel(level);
 
-        GenerateImages8(wall, basePalette);
+        if (useLegacyImages)
+        {
+            level.Images16 = [.. _imageCache.Values.Select(i => new TRTexImage16
+            {
+                Pixels = i.ToRGB555(),
+            })];
+            GenerateImages8(level, palette);
+        }
 
-        wall.Sprites[TR2Type.FontGraphics_S_H] = font;
-        return wall;
+        level.Sprites[TR2Type.FontGraphics_S_H] = font;
+        return level;
     }
 
     public override string GetPublishedName()

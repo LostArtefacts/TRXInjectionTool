@@ -20,43 +20,35 @@ public abstract class FontBuilder : InjectionBuilder, IPublisher
         _resourceDir = string.Format(_resourceDirBase, gameVersion.ToString());
         _glyphDefs = DeserializeFile<List<SpriteInfo>>(Path.Combine(_resourceDir, "glyph_info.json"));
         _glyphDefs.Sort((g1, g2) => g1.mesh_num.CompareTo(g2.mesh_num));
-        _imageCache = new();
+        _imageCache = [];
     }
 
-    public TRImage GetImage(SpriteInfo glyph)
+    public ushort GetAtlas(SpriteInfo glyph)
     {
-        string path = Path.Combine(_resourceDir, glyph.filename);
-        if (!_imageCache.ContainsKey(path))
-        {
-            _imageCache[path] = new(path);
-        }
-
-        TRImage image = _imageCache[path];
+        var path = Path.Combine(_resourceDir, glyph.filename);
         if (!_imageCache.ContainsKey(glyph.filename))
         {
             _imageCache[glyph.filename] = new(path);
         }
 
-        Rectangle bounds = new(glyph.x, glyph.y, glyph.w, glyph.h);
-        return image.Export(bounds);
+        return (ushort)_imageCache.Keys.ToList().IndexOf(glyph.filename);
     }
 
     public override List<InjectionData> Build()
     {
-        var level = CreateLevel();
+        var level = CreateLevel(false);
         var data = InjectionData.Create(level, InjectionType.General, ID);
-        return new() { data };
+        data.Images.AddRange(_imageCache.Values.Select(i => new TRTexImage32 { Pixels = i.ToRGBA() }));
+        return [ data ];
     }
 
-    private TRLevelBase CreateLevel()
+    private TRLevelBase CreateLevel(bool useLegacyImages)
     {
-        TRSpriteSequence font = new();
-        List<TRTextileRegion> regions = new();
-
-        foreach (SpriteInfo glyph in _glyphDefs)
+        var font = new TRSpriteSequence
         {
-            TRSpriteTexture texture = new()
+            Textures = [.. _glyphDefs.Select(glyph => new TRSpriteTexture
             {
+                Atlas = GetAtlas(glyph),
                 Bounds = new(glyph.x, glyph.y, glyph.w, glyph.h),
                 Alignment = new()
                 {
@@ -65,32 +57,16 @@ public abstract class FontBuilder : InjectionBuilder, IPublisher
                     Right = glyph.r,
                     Bottom = glyph.b,
                 },
-            };
+            })],
+        };
 
-            font.Textures.Add(texture);
-
-            regions.Add(new()
-            {
-                Bounds = texture.Bounds,
-                Image = GetImage(glyph),
-                Segments = new()
-                {
-                    new()
-                    {
-                        Index = glyph.mesh_num,
-                        Texture = texture,
-                    },
-                },
-            });
-        }
-
-        return Pack(font, regions);
+        return CreateLevel(font, useLegacyImages);
     }
 
-    protected abstract TRLevelBase Pack(TRSpriteSequence font, List<TRTextileRegion> regions);
+    protected abstract TRLevelBase CreateLevel(TRSpriteSequence font, bool useLegacyImages);
 
     public TRLevelBase Publish()
-        => CreateLevel();
+        => CreateLevel(true);
 
     public abstract string GetPublishedName();
 }
