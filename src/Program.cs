@@ -135,14 +135,20 @@ internal class Program
             return 1;
         }
 
-        var id = globalArgs[0].ToLowerInvariant().Trim();
-        if (!_builders.TryGetValue(id, out var builderType))
+        var builderTypes = new List<Type>();
+
+        foreach (var idRaw in globalArgs)
         {
-            Console.WriteLine($"No matching injection builders for given ID '{id}'.");
-            return 1;
+            var id = idRaw.ToLowerInvariant().Trim();
+            if (!_builders.TryGetValue(id, out var builderType))
+            {
+                Console.WriteLine($"No matching injection builders for given ID '{id}'.");
+                return 1;
+            }
+            builderTypes.Add(builderType);
         }
 
-        RunBuilders(new[] { builderType }, publishAssets: publishAssets);
+        RunBuilders(builderTypes.ToArray(), publishAssets: publishAssets);
         return 0;
     }
 
@@ -180,7 +186,7 @@ internal class Program
 
     private static void PrintHelp()
     {
-        Console.WriteLine("Usage: TRXInjectionTool [options] <builderId>");
+        Console.WriteLine("Usage: TRXInjectionTool [options] <builderId>...");
         Console.WriteLine("Options:");
         Console.WriteLine("  -h, --help         Show help");
         Console.WriteLine("  -l, --list         List available builder IDs");
