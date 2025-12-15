@@ -38,6 +38,7 @@ public static class AssetPublisher
         ],
         [TRGameVersion.TR3] =
         [
+            new TR3FontBuilder(),
             new TR3PDABuilder(),
         ],
     };
