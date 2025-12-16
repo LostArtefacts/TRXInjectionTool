@@ -24,13 +24,15 @@ public class TR2BarkhangTextureBuilder : TextureBuilder
 
         FixPassport(barkhang, data);
 
-        return new() { data };
+        FixFenceZFighting(barkhang, data);
+
+        return [data];
     }
 
     private static List<TRRoomVertexMove> CreateVertexShifts(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 70,
@@ -43,20 +45,20 @@ public class TR2BarkhangTextureBuilder : TextureBuilder
                 VertexIndex = level.Rooms[70].Mesh.Rectangles[113].Vertices[2],
                 VertexChange = new() { Y = 256 },
             },
-        };
+        ];
     }
 
     private static List<TRRoomTextureMove> CreateShifts(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 94,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 TargetIndex = 63,
-                VertexRemap = new()
-                {
+                VertexRemap =
+                [
                     new()
                     {
                         Index = 0,
@@ -67,49 +69,111 @@ public class TR2BarkhangTextureBuilder : TextureBuilder
                         Index = 3,
                         NewVertexIndex = level.Rooms[94].Mesh.Rectangles[52].Vertices[3],
                     }
-                }
+                ]
             },
-        };
+        ];
     }
 
     private static List<TRRoomTextureCreate> CreateFillers(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 94,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 SourceRoom = 94,
                 SourceIndex = 63,
-                Vertices = new()
-                {
+                Vertices =
+                [
                     level.Rooms[94].Mesh.Rectangles[67].Vertices[2],
                     level.Rooms[94].Mesh.Rectangles[67].Vertices[1],
                     level.Rooms[94].Mesh.Rectangles[53].Vertices[1],
                     level.Rooms[94].Mesh.Rectangles[53].Vertices[0],
-                }
+                ]
             },
-        };
+        ];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
             Reface(level, 45, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1370, 67),
-        };
+        ];
     }
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(23, TRMeshFaceType.TexturedQuad, 203, 2),
             Rotate(25, TRMeshFaceType.TexturedTriangle, 8, 2),
             Rotate(70, TRMeshFaceType.TexturedQuad, 112, 2),
             Rotate(87, TRMeshFaceType.TexturedTriangle, 57, 2),
-        };
+        ];
+    }
+
+    private static void FixFenceZFighting(TR2Level level, InjectionData data)
+    {
+        foreach (var idx in new[] { 11, 17 })
+        {
+            var id = (TR2Type)((int)TR2Type.SceneryBase + idx);
+            var fence = level.StaticMeshes[id].Mesh;
+            data.MeshEdits.Add(new()
+            {
+                ModelID = (uint)(object)id,
+                VertexEdits = [.. Enumerable.Range(12, 8).Select(v => new TRVertexEdit
+                {
+                    Index = (short)v,
+                    Change = new() { Z = -1 },
+                })],
+            });
+            data.MeshEdits[^1].VertexEdits.AddRange(Enumerable.Range(0, 4).Select(v => new TRVertexEdit
+            {
+                Index = (short)v,
+                Change = new() { X = (short)(v < 2 ? -2 : 2) },
+            }));
+        }
+
+        {
+            var id = (TR2Type)((int)TR2Type.SceneryBase + 30);
+            var fence = level.StaticMeshes[id].Mesh;
+            data.MeshEdits.Add(new()
+            {
+                ModelID = (uint)(object)id,
+                VertexEdits = [.. Enumerable.Range(12, 4).Select(v => new TRVertexEdit
+                {
+                    Index = (short)v,
+                    Change = new() { X = 2 },
+                })],
+            });
+            data.MeshEdits[^1].VertexEdits.Add(new()
+            {
+                Index = 2,
+                Change = new() { Z = 18, Y = 10 },
+            });
+            data.MeshEdits[^1].VertexEdits.Add(new()
+            {
+                Index = 23,
+                Change = new() { Z = -26, Y = 14 },
+            });
+            data.MeshEdits[^1].VertexEdits.Add(new()
+            {
+                Index = 7,
+                Change = new() { Z = 24, Y = -10 },
+            });
+            data.MeshEdits[^1].VertexEdits.Add(new()
+            {
+                Index = 16,
+                Change = new() { Z = -22, Y = -10 },
+            });
+            data.MeshEdits[^1].VertexEdits.Add(new()
+            {
+                Index = 17,
+                Change = new() { Z = -2, Y = -1 },
+            });
+        }
     }
 
     private InjectionData CreateBaseData()
