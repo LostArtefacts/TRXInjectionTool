@@ -16,6 +16,7 @@ public class TR2IcePalaceFDBuilder : FDBuilder
         CreateDefaultTests(data, TR2LevelNames.CHICKEN);
 
         data.FloorEdits.AddRange(FixSpringboardTrigger(palace));
+        data.FloorEdits.Add(FixTigerTrigger(palace));
 
         // Rotate and shift the door that leads to the Jade secret, otherwise there is an invisible wall.
         // Although this is an item shift, it's included in FD as it's closest to that in terms of config setting.
@@ -28,7 +29,7 @@ public class TR2IcePalaceFDBuilder : FDBuilder
 
         data.FloorEdits.Add(FixZoning(palace));
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRFloorDataEdit> FixSpringboardTrigger(TR2Level palace)
@@ -36,11 +37,18 @@ public class TR2IcePalaceFDBuilder : FDBuilder
         FDTriggerEntry springTrig = GetTrigger(palace, 104, 3, 2);
         Debug.Assert(springTrig != null);
 
-        return new()
-        {
+        return
+        [
             RemoveTrigger(palace, 104, 3, 2),
             MakeTrigger(palace, 104, 2, 2, springTrig),
-        };
+        ];
+    }
+
+    private static TRFloorDataEdit FixTigerTrigger(TR2Level level)
+    {
+        // Extend trigger for tiger 6 by one tile
+        var trigger = GetTrigger(level, 4, 1, 3);
+        return MakeTrigger(level, 4, 1, 4, trigger);
     }
 
     private static TRFloorDataEdit FixZoning(TR2Level palace)
@@ -56,13 +64,13 @@ public class TR2IcePalaceFDBuilder : FDBuilder
             RoomIndex = 48,
             X = 5,
             Z = 4,
-            Fixes = new()
-            {
+            Fixes =
+            [
                 new FDZoneFix
                 {
                     ZoneOverwrite = zone,
                 },
-            },
+            ],
         };
     }
 }

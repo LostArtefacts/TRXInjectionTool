@@ -84,7 +84,7 @@ public class TR2MusicTrackBuilder : InjectionBuilder
         };
     }
 
-    private static short GetRealTrack(short trackID)
+    public static short GetRealTrack(short trackID)
     {
         short[] skippedIDs = { 2, 19, 20, 26, -1 };
         short idx = 0;

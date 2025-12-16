@@ -1,4 +1,5 @@
-﻿using TRLevelControl;
+﻿using System.Diagnostics;
+using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -19,8 +20,10 @@ public class TR2FloatingFDBuilder : FDBuilder
         data.ItemPosEdits.Add(ItemBuilder.SetAngle(floating, 72, 16384));
 
         data.FloorEdits.AddRange(FixZiplineReset(floating));
+        data.FloorEdits.Add(FixMusicTrigger(floating));
+        data.FloorEdits.Add(FixDeathTile(floating));
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRFloorDataEdit> FixZiplineReset(TR2Level floating)
@@ -29,17 +32,49 @@ public class TR2FloatingFDBuilder : FDBuilder
         FDTriggerEntry resetTrigger = new()
         {
             Mask = 31,
-            Actions = new()
-            {
+            Actions =
+            [
                 new() { Parameter = 41 },
-            }
+            ]
         };
 
-        List<TRFloorDataEdit> edits = new();
+        List<TRFloorDataEdit> edits = [];
         for (ushort z = 3; z < 14; z++)
         {
             edits.Add(MakeTrigger(floating, 41, 2, z, resetTrigger));
         }
         return edits;
+    }
+
+    private static TRFloorDataEdit FixMusicTrigger(TR2Level level)
+    {
+        // Extend music trigger in room 80 by one tile
+        var trigger = GetTrigger(level, 80, 1, 2).Clone() as FDTriggerEntry;
+        var action = trigger.Actions.FirstOrDefault(a => a.Action == FDTrigAction.PlaySoundtrack);
+        Debug.Assert(action != null);
+        action.Parameter = TR2MusicTrackBuilder.GetRealTrack(action.Parameter);
+        return MakeTrigger(level, 80, 2, 2, trigger);
+    }
+
+    private static TRFloorDataEdit FixDeathTile(TR2Level level)
+    {
+        var sector = level.Rooms[91].GetSector(1, 4, TRUnit.Sector);
+        var fd = new FDTrigCreateFix
+        {
+            Entries = [],
+        };
+        if (sector.FDIndex != 0)
+        {
+            fd.Entries.AddRange(level.FloorData[sector.FDIndex]);
+        }
+        fd.Entries.Add(new FDKillLaraEntry());
+
+        return new()
+        {
+            RoomIndex = 91,
+            X = 1,
+            Z = 4,
+            Fixes = [fd],
+        };
     }
 }
