@@ -158,6 +158,13 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
+    protected static short ShiftLighting(TRRoomMesh<TR2Type, TR2RoomVertex> mesh,
+        int sourceQuad, int sourceVert, int targetQuad, int targetVert)
+    {
+        return (short)(mesh.Vertices[mesh.Rectangles[targetQuad].Vertices[targetVert]].Lighting
+                - mesh.Vertices[mesh.Rectangles[sourceQuad].Vertices[sourceVert]].Lighting);
+    }
+
     protected static TRVisPortalEdit CreatePortalFix(short baseRoom, short linkRoom, ushort index, List<TRVertex> changes)
     {
         return new()
@@ -199,7 +206,7 @@ public abstract class TextureBuilder : InjectionBuilder
             throw new Exception("Unsupported level type");
         }
 
-        List<ushort> eyeVerts = new() { 20, 13, 12, 22 };
+        List<ushort> eyeVerts = [20, 13, 12, 22];
         TRMeshFace eyeFace = model.Meshes[3]
             .TexturedRectangles.Find(t => t.Vertices.All(eyeVerts.Contains));
 
@@ -208,7 +215,7 @@ public abstract class TextureBuilder : InjectionBuilder
 
     protected static void FixBatTransparency(TR1Level level, InjectionData data)
     {
-        List<ushort> eyeVerts = new() { 0, 1, 3 };
+        List<ushort> eyeVerts = [0, 1, 3];
         TRMeshFace eyeFace = level.Models[TR1Type.Bat].Meshes[4]
             .TexturedTriangles.Find(t => t.Vertices.All(eyeVerts.Contains));
 
@@ -217,7 +224,7 @@ public abstract class TextureBuilder : InjectionBuilder
 
     protected static void FixLaraTransparency(TR2Level level, InjectionData data)
     {
-        List<ushort> eyeVerts = new() { 12, 13, 34 };
+        List<ushort> eyeVerts = [12, 13, 34];
         TRMeshFace eyeFace = level.Models[TR2Type.Lara].Meshes[14]
             .TexturedTriangles.Find(t => t.Vertices.All(eyeVerts.Contains));
 
@@ -455,14 +462,14 @@ public abstract class TextureBuilder : InjectionBuilder
         {
             Image = img,
             Bounds = texInfo.Bounds,
-            Segments = new()
-            {
+            Segments =
+            [
                 new()
                 {
                     Index = regions.Count,
                     Texture = texInfo,
                 }
-            }
+            ]
         });
 
         packer = new(level);
@@ -486,7 +493,7 @@ public abstract class TextureBuilder : InjectionBuilder
         {
             Type = TRFaceType.Rectangle,
             Texture = statues[1].Mesh.TexturedRectangles[11].Texture,
-            Vertices = new() { 20, 23, 22, 21 }
+            Vertices = [20, 23, 22, 21]
         });
 
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
@@ -549,12 +556,12 @@ public abstract class TextureBuilder : InjectionBuilder
         statue.Mesh.TexturedTriangles[43].Texture = statue.Mesh.TexturedTriangles[44].Texture
             = statue.Mesh.TexturedRectangles[52].Texture;
 
-        statue.Mesh.TexturedTriangles[24].Vertices = new() { 39, 75, 65 };
-        statue.Mesh.TexturedTriangles[27].Vertices = new() { 80, 62, 78 };
-        statue.Mesh.TexturedTriangles[28].Vertices = new() { 73, 78, 62 };
-        statue.Mesh.TexturedTriangles[29].Vertices = new() { 83, 85, 70 };
-        statue.Mesh.TexturedRectangles[48].Vertices = new() { 63, 68, 69, 64 };
-        statue.Mesh.TexturedRectangles[49].Vertices = new() { 68, 71, 72, 69 };
+        statue.Mesh.TexturedTriangles[24].Vertices = [39, 75, 65];
+        statue.Mesh.TexturedTriangles[27].Vertices = [80, 62, 78];
+        statue.Mesh.TexturedTriangles[28].Vertices = [73, 78, 62];
+        statue.Mesh.TexturedTriangles[29].Vertices = [83, 85, 70];
+        statue.Mesh.TexturedRectangles[48].Vertices = [63, 68, 69, 64];
+        statue.Mesh.TexturedRectangles[49].Vertices = [68, 71, 72, 69];
 
         new[] { 43, 44, 45, 52, 55, 58 }
             .OrderByDescending(i => i)

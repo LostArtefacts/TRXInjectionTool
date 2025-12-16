@@ -21,18 +21,20 @@ public class TR2GymTextureBuilder : TextureBuilder
 
         data.RoomEdits.AddRange(CreateVertexShifts(gym));
         data.RoomEdits.AddRange(CreateShifts(gym));
+        data.RoomEdits.AddRange(CreateFillers(gym));
         data.RoomEdits.AddRange(CreateRefacings(gym));
         data.RoomEdits.AddRange(CreateRotations());
         ReplaceGoldIdol(data, gym);
         FixPassport(gym, data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomVertexMove> CreateVertexShifts(TR2Level level)
     {
-        return new()
-        {
+        var mesh28 = level.Rooms[28].Mesh;
+        return
+        [
             new()
             {
                 RoomIndex = 65,
@@ -45,20 +47,67 @@ public class TR2GymTextureBuilder : TextureBuilder
                 VertexIndex = level.Rooms[65].Mesh.Rectangles[14].Vertices[1],
                 VertexChange = new() { Y = -256 },
             },
-        };
+            new()
+            {
+                RoomIndex = 28,
+                VertexIndex = mesh28.Rectangles[51].Vertices[0],
+                VertexChange = new(),
+                ShadeChange = (short)(ShiftLighting(mesh28, 51, 0, 42, 1) + 480),
+            },
+            new()
+            {
+                RoomIndex = 28,
+                VertexIndex = mesh28.Rectangles[51].Vertices[3],
+                VertexChange = new(),
+                ShadeChange = (short)(ShiftLighting(mesh28, 51, 3, 59, 3) + 480),
+            },
+            new()
+            {
+                RoomIndex = 28,
+                VertexIndex = mesh28.Rectangles[51].Vertices[1],
+                VertexChange = new(),
+                ShadeChange = (short)(ShiftLighting(mesh28, 51, 1, 41, 1) + 1024),
+            },
+            new()
+            {
+                RoomIndex = 28,
+                VertexIndex = mesh28.Rectangles[51].Vertices[2],
+                VertexChange = new(),
+                ShadeChange = (short)(ShiftLighting(mesh28, 51, 2, 59, 0) + 1024),
+            },
+        ];
     }
 
     private static List<TRRoomTextureMove> CreateShifts(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
+            new TRRoomTextureMove
+            {
+                RoomIndex = 28,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                TargetIndex = 49,
+                VertexRemap =
+                [
+                    new()
+                    {
+                        Index = 0,
+                        NewVertexIndex = level.Rooms[28].Mesh.Rectangles[40].Vertices[1],
+                    },
+                    new()
+                    {
+                        Index = 1,
+                        NewVertexIndex = level.Rooms[28].Mesh.Rectangles[58].Vertices[0],
+                    },
+                ]
+            },
             new TRRoomTextureMove
             {
                 RoomIndex = 65,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 TargetIndex = 15,
-                VertexRemap = new()
-                {
+                VertexRemap =
+                [
                     new()
                     {
                         Index = 0,
@@ -79,27 +128,41 @@ public class TR2GymTextureBuilder : TextureBuilder
                         Index = 3,
                         NewVertexIndex = level.Rooms[65].Mesh.Rectangles[15].Vertices[3],
                     },
-                }
+                ]
             },
-        };
+        ];
+    }
+
+    private static List<TRRoomTextureEdit> CreateFillers(TR2Level level)
+    {
+        return
+        [
+            CreateFace(28, 28, 49,TRMeshFaceType.TexturedQuad,
+            [
+                level.Rooms[28].Mesh.Rectangles[51].Vertices[0],
+                level.Rooms[28].Mesh.Rectangles[51].Vertices[3],
+                level.Rooms[28].Mesh.Rectangles[58].Vertices[0],
+                level.Rooms[28].Mesh.Rectangles[40].Vertices[1],
+            ]),
+        ];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings(TR2Level level)
     {
-        return new()
-        {
+        return
+        [
             Reface(level, 9, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedQuad, 867, 0),
             Reface(level, 65, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 838, 14),
-        };
+        ];
     }
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(36, TRMeshFaceType.TexturedQuad, 38, 3),
             Rotate(57, TRMeshFaceType.TexturedQuad, 15, 3),
-        };
+        ];
     }
 
     private static void ReplaceGoldIdol(InjectionData data, TR2Level level)
