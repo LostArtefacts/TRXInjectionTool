@@ -35,6 +35,24 @@ public abstract class ItemBuilder : InjectionBuilder
         };
     }
 
+    public static TRItemPosEdit SetAngle(TR3Level level, short itemIndex, short angle)
+    {
+        // Convert to a TR1Entity
+        var item = level.Entities[itemIndex];
+        return new()
+        {
+            Index = itemIndex,
+            Item = new()
+            {
+                Angle = angle,
+                X = item.X,
+                Y = item.Y,
+                Z = item.Z,
+                Room = item.Room,
+            },
+        };
+    }
+
     public static TRMeshEdit FixEgyptToppledChair(TR1Type type, TR1Level level)
     {
         var mesh = level.StaticMeshes[type].Mesh;
