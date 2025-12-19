@@ -877,6 +877,26 @@ public abstract class TextureBuilder : InjectionBuilder
         }
     }
 
+    protected record class StaticShift(short Room, int Mesh, TRVertex32 Shift);
+
+    protected static TRRoomStatic3DEdit ShiftStatic(TR2Level level, StaticShift shift)
+    {
+        var mesh = level.Rooms[shift.Room].StaticMeshes[shift.Mesh];
+        return new()
+        {
+            RoomIndex = shift.Room,
+            MeshIndex = shift.Mesh,
+            StaticMesh = new()
+            {
+                Angle = mesh.Angle,
+                X = mesh.X + shift.Shift.X,
+                Y = mesh.Y + shift.Shift.Y,
+                Z = mesh.Z + shift.Shift.Z,
+                Intensity = mesh.Intensity1,
+            },
+        };
+    }
+
     protected class TextureSource
     {
         public short Room { get; set; }
