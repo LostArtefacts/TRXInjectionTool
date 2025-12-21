@@ -106,7 +106,7 @@ public static class TRModelExtensions
         var type = GetSpriteType(sequence.SpriteID, version);
         writer.Write(sequence.SpriteID, type, version);
         writer.Write(sequence.NegativeLength);
-        writer.Write(sequence.Offset);
+        writer.Write((ushort)0);
     }
 
     private static readonly Dictionary<TRGameVersion, HashSet<int>> _gameSpriteTypes = new()
