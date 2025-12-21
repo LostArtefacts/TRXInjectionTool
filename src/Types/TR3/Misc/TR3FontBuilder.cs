@@ -1,4 +1,4 @@
-using TRImageControl;
+﻿using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 
@@ -11,7 +11,7 @@ public class TR3FontBuilder : FontBuilder
     public TR3FontBuilder()
         : base(TRGameVersion.TR3) { }
 
-    protected override TRLevelBase CreateLevel(TRSpriteSequence font, bool useLegacyImages)
+    protected override TRLevelBase CreateLevel(IReadOnlyDictionary<int, TRSpriteSequence> fonts, bool useLegacyImages)
     {
         var level = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
         var palette = level.Palette.Select(c => c.ToTR1Color()).ToList();
@@ -19,14 +19,16 @@ public class TR3FontBuilder : FontBuilder
 
         if (useLegacyImages)
         {
-            level.Images16 = [.. _imageCache.Values.Select(i => new TRTexImage16
+            level.Images16 = [.. _atlasOrder.Select(name => new TRTexImage16
             {
-                Pixels = i.ToRGB555(),
+                Pixels = _imageCache[name].ToRGB555(),
             })];
             GenerateImages8(level, palette);
         }
 
-        level.Sprites[TR3Type.FontGraphics_S_H] = font;
+        level.Sprites[TR3Type.FontGraphics_S_H] = fonts[0];
+        level.Sprites[(TR3Type)376] = fonts[1];
+
         return level;
     }
 

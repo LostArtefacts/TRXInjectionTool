@@ -11,7 +11,7 @@ public class TR2FontBuilder : FontBuilder
     public TR2FontBuilder()
         : base(TRGameVersion.TR2) { }
 
-    protected override TRLevelBase CreateLevel(TRSpriteSequence font, bool useLegacyImages)
+    protected override TRLevelBase CreateLevel(IReadOnlyDictionary<int, TRSpriteSequence> fonts, bool useLegacyImages)
     {
         var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
         var palette = level.Palette.Select(c => c.ToTR1Color()).ToList();
@@ -19,14 +19,16 @@ public class TR2FontBuilder : FontBuilder
 
         if (useLegacyImages)
         {
-            level.Images16 = [.. _imageCache.Values.Select(i => new TRTexImage16
+            level.Images16 = [.. _atlasOrder.Select(name => new TRTexImage16
             {
-                Pixels = i.ToRGB555(),
+                Pixels = _imageCache[name].ToRGB555(),
             })];
             GenerateImages8(level, palette);
         }
 
-        level.Sprites[TR2Type.FontGraphics_S_H] = font;
+        level.Sprites[TR2Type.FontGraphics_S_H] = fonts[0];
+        level.Sprites[(TR2Type)278] = fonts[1];
+
         return level;
     }
 

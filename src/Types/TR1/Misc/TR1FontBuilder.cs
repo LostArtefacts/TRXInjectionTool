@@ -12,7 +12,7 @@ public class TR1FontBuilder : FontBuilder
     public TR1FontBuilder()
         : base(TRGameVersion.TR1) { }
 
-    protected override TRLevelBase CreateLevel(TRSpriteSequence font, bool useLegacyImages)
+    protected override TRLevelBase CreateLevel(IReadOnlyDictionary<int, TRSpriteSequence> fonts, bool useLegacyImages)
     {
         var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         ResetLevel(level);
@@ -20,14 +20,16 @@ public class TR1FontBuilder : FontBuilder
         if (useLegacyImages)
         {
             var palette = GeneratePalette();
-            level.Images8 = [.. _imageCache.Values.Select(i => new TRTexImage8
+            level.Images8 = [.. _atlasOrder.Select(name => new TRTexImage8
             {
-                Pixels = i.ToRGB(palette),
+                Pixels = _imageCache[name].ToRGB(palette),
             })];
             level.Palette = palette;
         }
 
-        level.Sprites[TR1Type.FontGraphics_S_H] = font;
+        level.Sprites[TR1Type.FontGraphics_S_H] = fonts[0];
+        level.Sprites[(TR1Type)247] = fonts[1];
+
         return level;
     }
 
@@ -40,7 +42,7 @@ public class TR1FontBuilder : FontBuilder
         {
             Color.Transparent,
         };
-        _imageCache.Values.ToList().ForEach(img =>
+        _atlasOrder.Select(name => _imageCache[name]).ToList().ForEach(img =>
         {
             img.Read((c, x, y) =>
             {

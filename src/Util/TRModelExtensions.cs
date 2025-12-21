@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using TRLevelControl;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -108,6 +109,13 @@ public static class TRModelExtensions
         writer.Write(sequence.Offset);
     }
 
+    private static readonly Dictionary<TRGameVersion, HashSet<int>> _gameSpriteTypes = new()
+    {
+        [TRGameVersion.TR1] = new() { 247 },
+        [TRGameVersion.TR2] = new() { 278, (int)TR2Type.PickupAid },
+        [TRGameVersion.TR3] = new() { 376 }
+    };
+
     public static void Write(this TRLevelWriter writer, int objectID, TRObjectType objectType, TRGameVersion version)
     {
         if (objectType != TRObjectType.Game)
@@ -123,12 +131,12 @@ public static class TRModelExtensions
 
     private static TRObjectType GetSpriteType(int id, TRGameVersion version)
     {
-        int sceneryBase = version.GetSceneryBase();
-        if (version == TRGameVersion.TR2 && id == (int)TR2Type.PickupAid)
+        if (_gameSpriteTypes.TryGetValue(version, out HashSet<int> overrides) && overrides.Contains(id))
         {
-            // TODO: once TRLevelControl no longer uses typed statics, get rid of this
             return TRObjectType.Game;
         }
+
+        int sceneryBase = version.GetSceneryBase();
         return id >= sceneryBase ? TRObjectType.Static2D : TRObjectType.Game;
     }
 
