@@ -124,56 +124,19 @@ public class TR2LaraAnimBuilder : LaraBuilder
 
     private static TR2Level CreateExtraLevel()
     {
-        var map = new Dictionary<TR2Type, TR2Type>
-        {
-            [TR2Type.LaraMiscAnim_H_Xian] = TR2Type.LaraExtraSkinDagger1,
-            [TR2Type.LaraMiscAnim_H_HSH] = TR2Type.LaraExtraSkinDagger2,
-        };
         var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
-        var braid = level.Models[TR2Type.LaraPonytail_H];
+        level.Models[TR2Type.Lara].Meshes[0].TexturedRectangles.Clear();
+        level.Models[TR2Type.Lara].Meshes[0].TexturedTriangles.Clear();
+        level.Models[TR2Type.Lara].Meshes[0].ColouredRectangles.Clear();
+        level.Models[TR2Type.Lara].Meshes[0].ColouredTriangles.Clear();
+        level.Models[TR2Type.Lara].Meshes = [.. Enumerable.Repeat(0, 15).Select(m => level.Models[TR2Type.Lara].Meshes[0])];
         CreateModelLevel(level, TR2Type.Lara);
-
-        foreach (var (src, tar) in map)
-        {
-            new TR2DataImporter
-            {
-                Level = level,
-                DataFolder = "Resources/TR2/Lara/Extra",
-                TypesToImport = [src],
-            }.Import();
-            level.Models.ChangeKey(TR2Type.LaraMiscAnim_H, tar);
-            level.Models[tar].Animations = [GetBreathAnim(level.Models[TR2Type.Lara])];
-        }
-
-        {
-            var goldSkin = level.Models[TR2Type.LaraExtraSkinMidas] = level.Models[TR2Type.Lara].Clone();
-            goldSkin.Animations = [GetBreathAnim(level.Models[TR2Type.Lara])];
-            level.Palette16[4] = new()
-            {
-                Red = 252,
-                Green = 236,
-                Blue = 136,
-            };
-            
-            var goldBraid = level.Models[TR2Type.LaraHairSwap] = braid;
-
-            goldSkin.Meshes.Concat(goldBraid.Meshes)
-                .ToList().ForEach(m =>
-                {
-                    m.TexturedFaces.Concat(m.ColouredFaces).ToList().ForEach(f => f.Texture = 4 << 8);
-                    m.ColouredRectangles.AddRange(m.TexturedRectangles);
-                    m.ColouredTriangles.AddRange(m.TexturedTriangles);
-                    m.TexturedRectangles.Clear();
-                    m.TexturedTriangles.Clear();
-                });
-        }
 
         ImportExtraAnims(level.Models, TR2Type.LaraMiscAnim_H);
 
         level.Models.Remove(TR2Type.Lara);
         level.SoundEffects.Clear();
 
-        TR2GunUtils.ConvertFlatFaces(level, [.. level.Palette16.Select(c => c.ToColor())]);
         return level;
     }
 

@@ -2,7 +2,6 @@
 using System.IO.Compression;
 using System.Text;
 using System.Xml;
-using TRDataControl;
 using TRImageControl.Packing;
 using TRLevelControl;
 using TRLevelControl.Helpers;
@@ -241,56 +240,25 @@ public class TR1LaraAnimBuilder : LaraBuilder
 
     private static TR1Level CreateExtraLevel()
     {
-        var map = new Dictionary<TR1Type, TR1Type>
-        {
-            [TR1Type.LaraMiscAnim_H_Valley] = TR1Type.LaraExtraSkinTrex,
-            [TR1Type.LaraMiscAnim_H_Midas] = TR1Type.LaraExtraSkinMidas,
-            [TR1Type.LaraMiscAnim_H_General] = TR1Type.LaraExtraSkinDagger1,
-        };
         var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        level.Models[TR1Type.Lara].Meshes[0].TexturedRectangles.Clear();
+        level.Models[TR1Type.Lara].Meshes[0].TexturedTriangles.Clear();
+        level.Models[TR1Type.Lara].Meshes[0].ColouredRectangles.Clear();
+        level.Models[TR1Type.Lara].Meshes[0].ColouredTriangles.Clear();
+        level.Models[TR1Type.Lara].Meshes = [.. Enumerable.Repeat(0, 15).Select(m => level.Models[TR1Type.Lara].Meshes[0])];
         CreateModelLevel(level, TR1Type.Lara);
-
-        foreach (var (src, tar) in map)
-        {
-            new TR1DataImporter
-            {
-                Level = level,
-                DataFolder = "Resources/TR1/Lara/Extra",
-                TypesToImport = [src],
-            }.Import();
-            level.Models.ChangeKey(TR1Type.LaraMiscAnim_H, tar);
-            level.Models[tar].Animations = [GetBreathAnim(level.Models[TR1Type.Lara])];
-        }
-
-        // Dagger 2
-        level.Models[TR1Type.LaraExtraSkinDagger2] = level.Models[TR1Type.LaraExtraSkinDagger1].Clone();
 
         ImportExtraAnims(level.Models, TR1Type.LaraMiscAnim_H);
 
-        var hipsA = level.Models[TR1Type.Lara].Meshes[0];
-        var hipsB = level.Models[TR1Type.LaraExtraSkinTrex].Meshes[0];
         level.Models.Remove(TR1Type.Lara);
         level.SoundEffects.Clear();
-
-        foreach (var model in level.Models.Values)
-        {
-            for (int i = 0; i < model.Meshes.Count; i++)
-            {
-                if (model.Meshes[i] == hipsA)
-                {
-                    model.Meshes[i] = hipsB;
-                }
-            }
-        }
-
-        TR1LaraBraidBuilder.ImportGoldBraid(level);
 
         return level;
     }
 
     private static InjectionData CreateSanctuaryEdit(TR1Level level)
     {
-        // Sanctuary scion extra animis the same as ToQ, but ends sooner
+        // Sanctuary scion extra anim is the same as ToQ, but ends sooner
         var model = level.Models[TR1Type.LaraMiscAnim_H];
         InjectionBuilder.ResetLevel(level);
         level.Models[TR1Type.LaraMiscAnim_H] = model;

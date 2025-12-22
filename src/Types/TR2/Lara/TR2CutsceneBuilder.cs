@@ -28,6 +28,10 @@ public class TR2CutsceneBuilder : InjectionBuilder
         var endAnim = lara.Animations[^1];
         endAnim.NextFrame = (ushort)endAnim.FrameEnd;
 
+        // Remove mesh swap commands, now handled in Lua
+        lara.Animations[0].Commands.Clear();
+        lara.Animations[7].Commands.Clear();
+
         FixMonkDeath(monk);
 
         return InjectionData.Create(cut, InjectionType.General, "cut3_setup", true);

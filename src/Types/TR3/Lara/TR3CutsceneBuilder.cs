@@ -125,7 +125,12 @@ public class TR3CutsceneBuilder : InjectionBuilder
         => CreateCommonCutData(TR3LevelNames.NEVADA_CUT, 16384);
 
     private static InjectionData CreateCut8Data()
-        => CreateCommonCutData(TR3LevelNames.HSC_CUT, 16384);
+    {
+        var data = CreateCommonCutData(TR3LevelNames.HSC_CUT, 16384);
+        data.AnimCommands.Clear();
+        data.Animations[0].NumAnimCommands = 0;
+        return data;
+    }
 
     private static InjectionData CreateCut3Data()
         => CreateCommonCutData(TR3LevelNames.ANTARC_CUT, 16384);

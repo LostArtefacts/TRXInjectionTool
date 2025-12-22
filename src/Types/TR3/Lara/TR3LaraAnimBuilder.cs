@@ -95,6 +95,11 @@ public class TR3LaraAnimBuilder : LaraBuilder
     private static TR3Level CreateExtraLevel()
     {
         var level = _control3.Read($"Resources/TR3/{TR3LevelNames.RUINS}");
+        level.Models[TR3Type.Lara].Meshes[0].TexturedRectangles.Clear();
+        level.Models[TR3Type.Lara].Meshes[0].TexturedTriangles.Clear();
+        level.Models[TR3Type.Lara].Meshes[0].ColouredRectangles.Clear();
+        level.Models[TR3Type.Lara].Meshes[0].ColouredTriangles.Clear();
+        level.Models[TR3Type.Lara].Meshes = [.. Enumerable.Repeat(0, 15).Select(m => level.Models[TR3Type.Lara].Meshes[0])];
         CreateModelLevel(level, TR3Type.Lara);
 
         ImportExtraAnims(level.Models, TR3Type.LaraExtraAnimation_H);
