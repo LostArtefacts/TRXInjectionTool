@@ -129,13 +129,12 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             var data = new TR1DataProvider();
             foreach (var dep in _animTypes.SelectMany(t => data.GetDependencies(t)))
             {
-                var file = Path.Combine(dataDir, TR1TypeUtilities.GetName(dep) + ".trb");
+                var file = Path.Combine(dataDir, TR1TypeUtilities.GetName(dep).ToUpper() + ".TRB");
                 File.Copy(file, Path.Combine(gymDir, Path.GetFileName(file)), true);
             }
             dataDir = gymDir;
         }
 
-        
         new TR1DataImporter
         {
             Level = level,

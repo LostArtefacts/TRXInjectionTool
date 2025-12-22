@@ -17,7 +17,7 @@ public class TR2AnimPlantsBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
-        var plantData = DeserializeFile<PlantData>($"Resources/TR2/plants/data.json");
+        var plantData = DeserializeFile<PlantData>($"Resources/TR2/Plants/data.json");
         var baseLevel = CreateBaseLevel(plantData);
         var random = new Random(21072025);
         return plantData.Defs.Select(data => CreateLevelData(data, baseLevel, random)).ToList();

@@ -9,9 +9,9 @@ public class TR1TitleTextureBuilder : TextureBuilder
 
     public override List<InjectionData> Build()
     {
-        var level = _control1.Read($"Resources/title.phd");
+        var level = _control1.Read($"Resources/TITLE.PHD");
         var data = InjectionData.Create(TRGameVersion.TR1, InjectionType.TextureFix, ID);
-        CreateDefaultTests(data, "title.phd");
+        CreateDefaultTests(data, "TITLE.PHD");
 
         FixPassport(level, data);
 
