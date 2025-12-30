@@ -1,4 +1,5 @@
-﻿using TRImageControl;
+﻿using TRDataControl;
+using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -13,12 +14,14 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
     {
         TR2Level gym = Createlevel();
         InjectionData data = InjectionData.Create(gym, InjectionType.General, ID);
-        return new() { data };
+        TR2LaraGunBuilder.AddGunSounds(data);
+        return [data];
     }
 
     private static TR2Level Createlevel()
     {
         TR2Level level = _control2.Read($"Resources/{TR2LevelNames.VENICE}");
+        ImportMagnums(level);
         var basePalette = level.Palette16.Select(c => c.ToTR1Color()).ToList();
 
         var gunTypes = new[]
@@ -26,6 +29,7 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
             TR2Type.M16_M_H, TR2Type.GrenadeLauncher_M_H, TR2Type.Harpoon_M_H,
             TR2Type.LaraM16Anim_H, TR2Type.LaraGrenadeAnim_H, TR2Type.LaraHarpoonAnim_H,
             TR2Type.Gunflare_H, TR2Type.M16Gunflare_H, TR2Type.HarpoonProjectile_H, TR2Type.GrenadeProjectile_H,
+            TR2Type.LaraMagnumAnim_H, TR2Type.Magnums_M_H, TR2Type.MagnumAmmo_M_H,
         };
 
         CreateModelLevel(level, gunTypes);
@@ -41,5 +45,16 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
         GenerateImages8(level, vegas.Palette.Select(c => c.ToTR1Color()).ToList());
 
         return level;
+    }
+
+    private static void ImportMagnums(TR2Level level)
+    {
+        new TR2DataImporter
+        {
+            Level = level,
+            DataFolder = "Resources/TR2/Objects",
+            TypesToImport = [TR2Type.LaraMagnumAnim_H],
+        }.Import();
+        level.Models[TR2Type.Magnums_M_H].Meshes[0].TexturedTriangles.Clear();
     }
 }

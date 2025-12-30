@@ -15,7 +15,8 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
     {
         TR2Level gym = Createlevel();
         InjectionData data = InjectionData.Create(gym, InjectionType.General, ID);
-        return new() { data };
+        TR2LaraGunBuilder.AddGunSounds(data);
+        return [data];
     }
 
     private static TR2Level Createlevel()
@@ -34,6 +35,9 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
             },
         };
         importer.Import();
+
+        ImportMagnums(level);
+
         level.Models[TR2Type.Lara].Meshes[0].TexturedRectangles.Clear();
         level.Models[TR2Type.Lara].Meshes[0].TexturedTriangles.Clear();
         level.Models[TR2Type.Lara].Meshes[0].ColouredRectangles.Clear();
@@ -46,6 +50,7 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
             TR2Type.LaraPistolAnim_H, TR2Type.LaraAutoAnim_H, TR2Type.LaraUziAnim_H,
             TR2Type.LaraM16Anim_H, TR2Type.LaraGrenadeAnim_H, TR2Type.LaraHarpoonAnim_H,
             TR2Type.M16Gunflare_H, TR2Type.GrenadeProjectile_H, TR2Type.HarpoonProjectile_H,
+            TR2Type.LaraMagnumAnim_H, TR2Type.Magnums_M_H, TR2Type.MagnumAmmo_M_H,
         };
 
         CreateModelLevel(level, gunTypes);
@@ -63,6 +68,29 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
         GenerateImages8(level, hsh.Palette.Select(c => c.ToTR1Color()).ToList());
 
         return level;
+    }
+
+    private static void ImportMagnums(TR2Level level)
+    {
+        new TR2DataImporter
+        {
+            Level = level,
+            DataFolder = "Resources/TR2/Objects",
+            TypesToImport = [TR2Type.LaraMagnumAnim_H],
+        }.Import();
+        level.Models[TR2Type.Magnums_M_H].Meshes[0].TexturedTriangles.Clear();
+
+        static bool pred(TRMeshFace f) => f.Vertices.All(v => v < 13 || (v >= 21 && v <= 25));
+        foreach (var legIdx in new[] { 1, 4 })
+        {
+            var magLeg = level.Models[TR2Type.LaraMagnumAnim_H].Meshes[legIdx];
+            var defLeg = level.Models[TR2Type.LaraPistolAnim_H].Meshes[legIdx];
+
+            magLeg.TexturedTriangles.RemoveAll(pred);
+            magLeg.TexturedRectangles.RemoveAll(pred);
+            magLeg.TexturedTriangles.AddRange(defLeg.TexturedTriangles.Where(pred));
+            magLeg.TexturedRectangles.AddRange(defLeg.TexturedRectangles.Where(pred));
+        }
     }
 
     private static void AddPistolsSprite(TR2Level level)
