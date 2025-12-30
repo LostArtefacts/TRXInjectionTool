@@ -16,7 +16,7 @@ public class TR2PSXCrystalBuilder : InjectionBuilder
 
         var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
         ResetLevel(wall, 1);
-        wall.Models[(TR2Type)269] = crystal;
+        wall.Models[TR2Type.SavegameCrystal_P] = crystal;
         TR2TexturePacker packer = new(wall);
         TRImage img = new(16, 16);
         img.Write((c, x, y) => Color.FromArgb(64, 64, 252));

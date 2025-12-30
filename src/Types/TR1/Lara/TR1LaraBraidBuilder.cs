@@ -198,8 +198,8 @@ public class TR1LaraBraidBuilder : InjectionBuilder, IPublisher
             ],
         };
 
-        baseLevel.Models[(TR1Type)200] = model;
-        targetLevel.Models[(TR1Type)200] = model;
+        baseLevel.Models[TR1Type.LaraHairBodySwap] = model;
+        targetLevel.Models[TR1Type.LaraHairBodySwap] = model;
 
         foreach (var face in model.Meshes.SelectMany(m => m.ColouredFaces))
         {

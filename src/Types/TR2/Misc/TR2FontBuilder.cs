@@ -27,7 +27,7 @@ public class TR2FontBuilder : FontBuilder
         }
 
         level.Sprites[TR2Type.FontGraphics_S_H] = fonts[0];
-        level.Sprites[(TR2Type)278] = fonts[1];
+        level.Sprites[TR2Type.FontGraphicsSmall_S_H] = fonts[1];
 
         return level;
     }
