@@ -22,6 +22,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         [TR2SFX.LaraHarpoonLoad] = 265,
         [TR2SFX.LaraHarpoonLoadWater] = 266,
         [TR2SFX.LaraHarpoonFireWater] = 267,
+        [TR2SFX.LaraFireMagnums] = 268,
     };
 
     private static readonly List<TR1Type> _animTypes =
@@ -30,14 +31,15 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         TR1Type.LaraGrenadeAnim_H,
         TR1Type.LaraHarpoonAnim_H,
         TR1Type.LaraFlareAnim_H,
+        TR1Type.LaraAutoAnim_H,
     ];
 
-    public override string ID => "lara_guns";
+    public override string ID => "tr1_lara_guns";
 
     public override List<InjectionData> Build()
     {
         var level = CreateLevel(false);
-        var data = InjectionData.Create(level, InjectionType.General, ID);
+        var data = InjectionData.Create(level, InjectionType.General, "lara_guns");
         AddGunSounds(data);
         AddFlareSounds(data);
 
@@ -153,6 +155,11 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
 
         foreach (var type in _animTypes)
         {
+            if (type == TR1Type.LaraAutoAnim_H)
+            {
+                continue;
+            }
+
             var equipAnim = level.Models[type].Animations[type == TR1Type.LaraGrenadeAnim_H ? 0 : 1];
             if (equipAnim.Commands.Count > 0)
             {
@@ -199,6 +206,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
                     break;
                 case TR2SFX.LaraHarpoonFire:
                 case TR2SFX.LaraHarpoonFireWater:
+                case TR2SFX.LaraFireMagnums:
                     fx.Mode = TR2SFXMode.Restart;
                     break;
                 default:
