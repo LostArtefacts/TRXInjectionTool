@@ -16,6 +16,20 @@ public class TR2OperaItemBuilder : ItemBuilder
         {
             SetAngle(opera, 118, 16384),
             SetAngle(opera, 82, 16384),
+            // Move the switch to the correct room
+            new()
+            {
+                Index = 57,
+                Item = new()
+                {
+                    X = 72192,
+                    Y = 7936,
+                    Z = 50688,
+                    Angle = 16384,
+                    Room = 7,
+                    Intensity = -1,
+                },
+            }
         };
 
         return new() { data };
