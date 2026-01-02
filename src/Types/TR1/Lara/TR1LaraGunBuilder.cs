@@ -11,7 +11,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
 {
     // These IDs aren't defined in TRLevelControl as doing so would affect
     // normal level IO (sound map limit).
-    private static readonly Dictionary<TR2SFX, short> _soundIDs = new()
+    private static readonly Dictionary<TR2SFX, short> _tr2SoundIDs = new()
     {
         [TR2SFX.M16Fire] = 259,
         [TR2SFX.M16Stop] = 260,
@@ -25,6 +25,11 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         [TR2SFX.LaraFireMagnums] = 268,
     };
 
+    private static readonly Dictionary<TR3SFX, short> _tr3SoundIDs = new()
+    {
+        [TR3SFX.DessertEagleFire] = 269,
+    };
+
     private static readonly List<TR1Type> _animTypes =
     [
         TR1Type.LaraM16Anim_H,
@@ -32,6 +37,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         TR1Type.LaraHarpoonAnim_H,
         TR1Type.LaraFlareAnim_H,
         TR1Type.LaraAutoAnim_H,
+        TR1Type.LaraDeagleAnim_H,
     ];
 
     public override string ID => "tr1_lara_guns";
@@ -147,7 +153,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
         {
-            if (_soundIDs.TryGetValue((TR2SFX)fx.SoundID, out var id))
+            if (_tr2SoundIDs.TryGetValue((TR2SFX)fx.SoundID, out var id))
             {
                 fx.SoundID = id;
             }
@@ -155,7 +161,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
 
         foreach (var type in _animTypes)
         {
-            if (type == TR1Type.LaraAutoAnim_H)
+            if (type == TR1Type.LaraAutoAnim_H || type == TR1Type.LaraDeagleAnim_H)
             {
                 continue;
             }
@@ -191,10 +197,10 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
 
     private static void AddGunSounds(InjectionData data)
     {
-        var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
-        foreach (var (id2, id1) in _soundIDs)
+        var level2 = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        foreach (var (id2, id1) in _tr2SoundIDs)
         {
-            var fx = level.SoundEffects[id2];
+            var fx = level2.SoundEffects[id2];
             switch (id2)
             {
                 case TR2SFX.M16Fire:
@@ -230,6 +236,32 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             {
                 data.SFX[^1].LoadSFX(TRGameVersion.TR2);
             }
+        }
+
+        var caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        var level3 = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
+        foreach (var (id3, id1) in _tr3SoundIDs)
+        {
+            var defaultSfx = caves.SoundEffects[TR1SFX.LaraFire].Clone();
+            var fx = level3.SoundEffects[id3];
+            switch (id3)
+            {
+                case TR3SFX.DessertEagleFire:
+                    defaultSfx.Mode = TR1SFXMode.Restart;
+                    break;
+                default:
+                    break;
+            }
+
+            data.SFX.Add(new()
+            {
+                ID = id1,
+                Chance = defaultSfx.Chance,
+                Characteristics = defaultSfx.GetFlags(),
+                Volume = defaultSfx.Volume,
+                SampleOffset = fx.SampleID,
+            });
+            data.SFX[^1].LoadSFX(TRGameVersion.TR3);
         }
     }
 
