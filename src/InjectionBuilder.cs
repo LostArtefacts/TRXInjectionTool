@@ -258,6 +258,56 @@ public abstract class InjectionBuilder
         GenerateImages8(level, basePalette);
     }
 
+    protected static void CreateModelLevel(TR3Level level, params TR3Type[] types)
+    {
+        var models = new TRDictionary<TR3Type, TRModel>();
+        foreach (TR3Type type in types)
+        {
+            models[type] = level.Models[type];
+        }
+
+        TR3DataProvider data = new();
+        List<TR3SFX> soundIDs = new(types.SelectMany(t => data.GetHardcodedSounds(t)));
+
+        soundIDs.AddRange(models.Values.SelectMany(m => m.Animations)
+            .SelectMany(a => a.Commands.Where(c => c is TRSFXCommand))
+            .Select(s => (TR3SFX)((TRSFXCommand)s).SoundID));
+
+        var idsToPack = soundIDs
+            .Where(s => level.SoundEffects.ContainsKey(s))
+            .Distinct()
+            .ToList();
+        TRDictionary<TR3SFX, TR3SoundEffect> effects = new();
+        idsToPack.ForEach(s => effects[s] = level.SoundEffects[s]);
+
+        var packer = new TR3TexturePacker(level);
+        var regions = packer.GetMeshRegions(models.Values.SelectMany(m => m.Meshes))
+            .Values.SelectMany(v => v);
+        var originalInfos = level.ObjectTextures.ToList();
+
+        var basePalette = level.Palette.Select(c => c.ToTR1Color()).ToList();
+        ResetLevel(level, 1);
+
+        packer = new(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        level.Models = models;
+        level.SoundEffects = effects;
+        level.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        models.Values
+            .SelectMany(m => m.Meshes)
+            .SelectMany(m => m.TexturedFaces)
+            .Distinct()
+            .ToList()
+            .ForEach(f =>
+            {
+                f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+
+        GenerateImages8(level, basePalette);
+    }
+
     protected static TR1Level CreatePDALevel()
     {
         const TR1Type betaMapID = TR1Type.PushBlock4;
