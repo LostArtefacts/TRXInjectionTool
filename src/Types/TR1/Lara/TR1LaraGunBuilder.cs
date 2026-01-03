@@ -28,6 +28,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
     private static readonly Dictionary<TR3SFX, short> _tr3SoundIDs = new()
     {
         [TR3SFX.DessertEagleFire] = 269,
+        [TR3SFX.HecklerFire] = 270,
     };
 
     private static readonly List<TR1Type> _animTypes =
@@ -38,6 +39,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         TR1Type.LaraFlareAnim_H,
         TR1Type.LaraAutoAnim_H,
         TR1Type.LaraDeagleAnim_H,
+        TR1Type.LaraMP5Anim_H,
     ];
 
     public override string ID => "tr1_lara_guns";
@@ -66,6 +68,19 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         HandleTR2Guns(level, gym);
 
         return level;
+    }
+
+    private static void FixRifleGlove(TR1Level level, TRMesh hand)
+    {
+        var goodHand = level.Models[TR1Type.LaraShotgunAnim_H].Meshes[10];
+        hand.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        hand.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        hand.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        hand.ColouredTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        hand.TexturedRectangles.AddRange(goodHand.TexturedRectangles.Where(f => f.Vertices.All(v => v < 8)));
+        hand.TexturedTriangles.AddRange(goodHand.TexturedTriangles.Where(f => f.Vertices.All(v => v < 8)));
+        hand.ColouredRectangles.AddRange(goodHand.ColouredRectangles.Where(f => f.Vertices.All(v => v < 8)));
+        hand.ColouredTriangles.AddRange(goodHand.ColouredTriangles.Where(f => f.Vertices.All(v => v < 8)));
     }
 
     private static void HandleShotgun(TR1Level level)
@@ -166,6 +181,11 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
                 continue;
             }
 
+            if (type == TR1Type.LaraMP5Anim_H)
+            {
+                FixRifleGlove(level, level.Models[type].Meshes[10]);
+            }
+
             var equipAnim = level.Models[type].Animations[type == TR1Type.LaraGrenadeAnim_H ? 0 : 1];
             if (equipAnim.Commands.Count > 0)
             {
@@ -248,6 +268,10 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             {
                 case TR3SFX.DessertEagleFire:
                     defaultSfx.Mode = TR1SFXMode.Restart;
+                    break;
+                case TR3SFX.HecklerFire:
+                    defaultSfx.Mode = TR1SFXMode.Wait;
+                    defaultSfx.Volume = 29490;
                     break;
                 default:
                     break;
