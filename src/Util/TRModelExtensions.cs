@@ -110,9 +110,20 @@ public static class TRModelExtensions
 
     private static readonly Dictionary<TRGameVersion, HashSet<int>> _gameSpriteTypes = new()
     {
-        [TRGameVersion.TR1] = [(int)TR1Type.FontGraphicsSmall_S_H, (int)TR1Type.Automags_S_P, (int)TR1Type.AutoAmmo_S_P, (int)TR1Type.Deagle_S_P, (int)TR1Type.DeagleAmmo_S_P],
-        [TRGameVersion.TR2] = [(int)TR2Type.FontGraphicsSmall_S_H, (int)TR2Type.PickupAid, (int)TR1Type.Magnums_S_P, (int)TR1Type.MagnumAmmo_S_P],
-        [TRGameVersion.TR3] = [(int)TR3Type.FontGraphicsSmall_S_H],
+        [TRGameVersion.TR1] =
+        [
+            (int)TR1Type.FontGraphicsSmall_S_H, (int)TR1Type.Automags_S_P, (int)TR1Type.AutoAmmo_S_P,
+            (int)TR1Type.Deagle_S_P, (int)TR1Type.DeagleAmmo_S_P,
+        ],
+        [TRGameVersion.TR2] =
+        [
+            (int)TR2Type.FontGraphicsSmall_S_H, (int)TR2Type.PickupAid, (int)TR1Type.Magnums_S_P,
+            (int)TR1Type.MagnumAmmo_S_P, (int)TR2Type.Deagle_S_P, (int)TR2Type.DeagleAmmo_S_P,
+        ],
+        [TRGameVersion.TR3] =
+        [
+            (int)TR3Type.FontGraphicsSmall_S_H,
+        ],
     };
 
     public static void Write(this TRLevelWriter writer, int objectID, TRObjectType objectType, TRGameVersion version)

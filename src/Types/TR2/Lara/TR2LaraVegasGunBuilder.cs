@@ -30,6 +30,7 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
             TR2Type.LaraM16Anim_H, TR2Type.LaraGrenadeAnim_H, TR2Type.LaraHarpoonAnim_H,
             TR2Type.Gunflare_H, TR2Type.M16Gunflare_H, TR2Type.HarpoonProjectile_H, TR2Type.GrenadeProjectile_H,
             TR2Type.LaraMagnumAnim_H, TR2Type.Magnums_M_H, TR2Type.MagnumAmmo_M_H,
+            TR2Type.LaraDeagleAnim_H, TR2Type.Deagle_M_H, TR2Type.DeagleAmmo_M_H,
         };
 
         CreateModelLevel(level, gunTypes);
@@ -53,8 +54,9 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
         {
             Level = level,
             DataFolder = "Resources/TR2/Objects",
-            TypesToImport = [TR2Type.LaraMagnumAnim_H],
+            TypesToImport = [TR2Type.LaraMagnumAnim_H, TR2Type.LaraDeagleAnim_H],
         }.Import();
         level.Models[TR2Type.Magnums_M_H].Meshes[0].TexturedTriangles.Clear();
+        TR2LaraGunBuilder.FixGloves(level);
     }
 }

@@ -9,14 +9,20 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
 {
     // These IDs aren't defined in TRLevelControl as doing so would affect
     // normal level IO (sound map limit).
-    private static readonly Dictionary<TR1SFX, short> _soundIDs = new()
+    private static readonly Dictionary<TR1SFX, short> _tr1SoundIDs = new()
     {
         [TR1SFX.LaraMagnums] = 370,
+    };
+
+    private static readonly Dictionary<TR3SFX, short> _tr3SoundIDs = new()
+    {
+        [TR3SFX.DessertEagleFire] = 371,
     };
 
     private static readonly List<TR2Type> _animTypes =
     [
         TR2Type.LaraMagnumAnim_H,
+        TR2Type.LaraDeagleAnim_H,
     ];
 
     public override string ID => "tr2_lara_guns";
@@ -75,20 +81,34 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
 
         level.Models[TR2Type.Magnums_M_H].Meshes[0].TexturedTriangles.Clear();
 
+        FixGloves(level);
+
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
         {
-            if (_soundIDs.TryGetValue((TR1SFX)fx.SoundID, out var id))
+            if (_tr1SoundIDs.TryGetValue((TR1SFX)fx.SoundID, out var id))
             {
                 fx.SoundID = id;
             }
         }
     }
 
+    public static void FixGloves(TR2Level level)
+    {
+        // Gloves are messed up, can't work out why. Do this for now until
+        // proper controlled outfits are implemented.
+        var handA = level.Models[TR2Type.LaraDeagleAnim_H].Meshes[10];
+        var handB = level.Models[TR2Type.LaraMagnumAnim_H].Meshes[10];
+        handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        handA.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        handA.TexturedTriangles.AddRange(handB.TexturedTriangles.Where(f => f.Vertices.All(v => v < 8)));
+        handA.TexturedRectangles.AddRange(handB.TexturedRectangles.Where(f => f.Vertices.All(v => v < 8)));
+    }
+
     public static void AddGunSounds(InjectionData data)
     {
         var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
-        foreach (var (id1, id2) in _soundIDs)
+        foreach (var (id1, id2) in _tr1SoundIDs)
         {
             var fx = level.SoundEffects[id1];
             fx.Mode = TR1SFXMode.Ambient;
@@ -101,6 +121,24 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
                 Volume = fx.Volume,
                 Data = fx.Samples,
             });
+        }
+
+        var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        var level3 = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
+        foreach (var (id3, id1) in _tr3SoundIDs)
+        {
+            var defaultSfx = wall.SoundEffects[TR2SFX.LaraFire].Clone();
+            var fx = level3.SoundEffects[id3];
+
+            data.SFX.Add(new()
+            {
+                ID = id1,
+                Chance = defaultSfx.Chance,
+                Characteristics = defaultSfx.GetFlags(),
+                Volume = defaultSfx.Volume,
+                SampleOffset = fx.SampleID,
+            });
+            data.SFX[^1].LoadSFX(TRGameVersion.TR3);
         }
     }
 

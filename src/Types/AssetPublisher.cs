@@ -35,6 +35,7 @@ public static class AssetPublisher
             new TR2PDABuilder(),
             new TR2OGSecretBuilder(),
             new TR2GMSecretBuilder(),
+            new TR2LaraGunBuilder(),
         ],
         [TRGameVersion.TR3] =
         [

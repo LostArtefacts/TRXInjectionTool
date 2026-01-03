@@ -37,6 +37,7 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
         importer.Import();
 
         ImportMagnums(level);
+        ImportDeagle(level);
 
         level.Models[TR2Type.Lara].Meshes[0].TexturedRectangles.Clear();
         level.Models[TR2Type.Lara].Meshes[0].TexturedTriangles.Clear();
@@ -51,6 +52,7 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
             TR2Type.LaraM16Anim_H, TR2Type.LaraGrenadeAnim_H, TR2Type.LaraHarpoonAnim_H,
             TR2Type.M16Gunflare_H, TR2Type.GrenadeProjectile_H, TR2Type.HarpoonProjectile_H,
             TR2Type.LaraMagnumAnim_H, TR2Type.Magnums_M_H, TR2Type.MagnumAmmo_M_H,
+            TR2Type.LaraDeagleAnim_H, TR2Type.Deagle_M_H, TR2Type.DeagleAmmo_M_H,
         };
 
         CreateModelLevel(level, gunTypes);
@@ -90,6 +92,66 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
             magLeg.TexturedRectangles.RemoveAll(pred);
             magLeg.TexturedTriangles.AddRange(defLeg.TexturedTriangles.Where(pred));
             magLeg.TexturedRectangles.AddRange(defLeg.TexturedRectangles.Where(pred));
+        }
+    }
+
+    private static void ImportDeagle(TR2Level level)
+    {
+        new TR2DataImporter
+        {
+            Level = level,
+            DataFolder = "Resources/TR2/Objects",
+            TypesToImport = [TR2Type.LaraDeagleAnim_H],
+        }.Import();
+
+        static bool pred(TRMeshFace f) => f.Vertices.All(v => v < 18);
+        foreach (var legIdx in new[] { 1, 4 })
+        {
+            var magLeg = level.Models[TR2Type.LaraDeagleAnim_H].Meshes[legIdx];
+            var defLeg = level.Models[TR2Type.LaraPistolAnim_H].Meshes[legIdx].Clone();
+            if (legIdx == 1)
+            {
+                var remove = new ushort[] { 22, 23, 24, 25, 26, 27, 28, 30, 31, 33, 46, 47, 48, 49, 34, 37, 38, 39, 41, 42, 43, 44 };
+                defLeg.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v > 25));
+                defLeg.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v > 25));
+            }
+            else
+            {
+                magLeg.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 18));
+                magLeg.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 18));
+                defLeg.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => (v > 12 && v < 21) || v > 25));
+                defLeg.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => (v > 12 && v < 21) || v > 25));
+                defLeg.ColouredRectangles.Clear();
+
+                var newFaces = magLeg.TexturedFaces.ToList();
+                var newVerts = newFaces.SelectMany(f => f.Vertices)
+                    .Distinct().ToList();
+                var map = new Dictionary<ushort, ushort>();
+                foreach (var vert in newVerts)
+                {
+                    map[vert] = (ushort)defLeg.Vertices.Count;
+                    defLeg.Vertices.Add(magLeg.Vertices[vert]);
+                    defLeg.Normals.Add(magLeg.Normals[vert]);
+                }
+
+                foreach (var face in newFaces)
+                {
+                    for (int i = 0; i < face.Vertices.Count; i++)
+                    {
+                        face.Vertices[i] = map[face.Vertices[i]];
+                    }
+                    if (face.Type == TRFaceType.Triangle)
+                    {
+                        defLeg.TexturedTriangles.Add(face);
+                    }
+                    else
+                    {
+                        defLeg.TexturedRectangles.Add(face);
+                    }
+                }
+            }
+
+            level.Models[TR2Type.LaraDeagleAnim_H].Meshes[legIdx] = defLeg;
         }
     }
 
