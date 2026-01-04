@@ -23,6 +23,7 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
         TR2Level level = _control2.Read($"Resources/{TR2LevelNames.VENICE}");
         ImportMagnums(level);
         ImportTR3Rifle(level, TR2Type.LaraMP5Anim_H);
+        ImportTR3Rifle(level, TR2Type.LaraRocketAnim_H);
         var basePalette = level.Palette16.Select(c => c.ToTR1Color()).ToList();
 
         var gunTypes = new[]
@@ -33,7 +34,7 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
             TR2Type.LaraMagnumAnim_H, TR2Type.Magnums_M_H, TR2Type.MagnumAmmo_M_H,
             TR2Type.LaraDeagleAnim_H, TR2Type.Deagle_M_H, TR2Type.DeagleAmmo_M_H,
             TR2Type.LaraMP5Anim_H, TR2Type.MP5_M_H, TR2Type.MP5Ammo_M_H,
-            TR2Type.LaraMP5Anim_H, TR2Type.MP5_M_H, TR2Type.MP5Ammo_M_H,
+            TR2Type.LaraRocketAnim_H, TR2Type.RocketLauncher_M_H, TR2Type.RocketAmmo_M_H, TR2Type.RocketProjectile_H,
         };
 
         CreateModelLevel(level, gunTypes);

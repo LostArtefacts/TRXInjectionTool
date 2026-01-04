@@ -12,6 +12,7 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
     private static readonly Dictionary<TR1SFX, short> _tr1SoundIDs = new()
     {
         [TR1SFX.LaraMagnums] = 370,
+        [TR1SFX.Explosion] = 373,
     };
 
     private static readonly Dictionary<TR3SFX, short> _tr3SoundIDs = new()
@@ -25,6 +26,7 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
         TR2Type.LaraMagnumAnim_H,
         TR2Type.LaraDeagleAnim_H,
         TR2Type.LaraMP5Anim_H,
+        TR2Type.LaraRocketAnim_H,
     ];
 
     public override string ID => "tr2_lara_guns";
@@ -85,6 +87,7 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
 
         FixGloves(level, TR2Type.LaraDeagleAnim_H);
         FixGloves(level, TR2Type.LaraMP5Anim_H);
+        FixGloves(level, TR2Type.LaraRocketAnim_H);
 
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
@@ -110,11 +113,14 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
 
     public static void AddGunSounds(InjectionData data)
     {
-        var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        var level = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
         foreach (var (id1, id2) in _tr1SoundIDs)
         {
             var fx = level.SoundEffects[id1];
-            fx.Mode = TR1SFXMode.Ambient;
+            if (id1 == TR1SFX.LaraMagnums)
+            {
+                fx.Mode = TR1SFXMode.Ambient;
+            }
 
             data.SFX.Add(new()
             {
@@ -131,7 +137,6 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
         foreach (var (id3, id1) in _tr3SoundIDs)
         {
             var defaultSfx = wall.SoundEffects[TR2SFX.LaraFire].Clone();
-            var d= wall.SoundEffects[TR2SFX.M16Fire].Clone();
             var fx = level3.SoundEffects[id3];
             if (id3 == TR3SFX.HecklerFire)
             {

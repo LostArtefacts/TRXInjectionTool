@@ -38,7 +38,8 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
 
         ImportMagnums(level);
         ImportDeagle(level);
-        ImportMP5(level);
+        ImportTR3Rifle(level, TR2Type.LaraMP5Anim_H);
+        ImportTR3Rifle(level, TR2Type.LaraRocketAnim_H);
 
         level.Models[TR2Type.Lara].Meshes[0].TexturedRectangles.Clear();
         level.Models[TR2Type.Lara].Meshes[0].TexturedTriangles.Clear();
@@ -55,6 +56,7 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
             TR2Type.LaraMagnumAnim_H, TR2Type.Magnums_M_H, TR2Type.MagnumAmmo_M_H,
             TR2Type.LaraDeagleAnim_H, TR2Type.Deagle_M_H, TR2Type.DeagleAmmo_M_H,
             TR2Type.LaraMP5Anim_H, TR2Type.MP5_M_H, TR2Type.MP5Ammo_M_H,
+            TR2Type.LaraRocketAnim_H, TR2Type.RocketLauncher_M_H, TR2Type.RocketAmmo_M_H, TR2Type.RocketProjectile_H,
         };
 
         CreateModelLevel(level, gunTypes);
@@ -156,15 +158,15 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
         }
     }
 
-    private static void ImportMP5(TR2Level level)
+    private static void ImportTR3Rifle(TR2Level level, TR2Type type)
     {
         new TR2DataImporter
         {
             Level = level,
             DataFolder = "Resources/TR2/Objects",
-            TypesToImport = [TR2Type.LaraMP5Anim_H],
+            TypesToImport = [type],
         }.Import();
-        var handA = level.Models[TR2Type.LaraMP5Anim_H].Meshes[10];
+        var handA = level.Models[type].Meshes[10];
         var handB = level.Models[TR2Type.LaraShotgunAnim_H].Meshes[10];
         handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
         handA.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
