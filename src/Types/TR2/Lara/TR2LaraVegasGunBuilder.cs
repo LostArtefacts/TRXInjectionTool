@@ -22,6 +22,7 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
     {
         TR2Level level = _control2.Read($"Resources/{TR2LevelNames.VENICE}");
         ImportMagnums(level);
+        ImportTR3Rifle(level, TR2Type.LaraMP5Anim_H);
         var basePalette = level.Palette16.Select(c => c.ToTR1Color()).ToList();
 
         var gunTypes = new[]
@@ -31,6 +32,8 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
             TR2Type.Gunflare_H, TR2Type.M16Gunflare_H, TR2Type.HarpoonProjectile_H, TR2Type.GrenadeProjectile_H,
             TR2Type.LaraMagnumAnim_H, TR2Type.Magnums_M_H, TR2Type.MagnumAmmo_M_H,
             TR2Type.LaraDeagleAnim_H, TR2Type.Deagle_M_H, TR2Type.DeagleAmmo_M_H,
+            TR2Type.LaraMP5Anim_H, TR2Type.MP5_M_H, TR2Type.MP5Ammo_M_H,
+            TR2Type.LaraMP5Anim_H, TR2Type.MP5_M_H, TR2Type.MP5Ammo_M_H,
         };
 
         CreateModelLevel(level, gunTypes);
@@ -54,9 +57,26 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
         {
             Level = level,
             DataFolder = "Resources/TR2/Objects",
-            TypesToImport = [TR2Type.LaraMagnumAnim_H, TR2Type.LaraDeagleAnim_H],
+            TypesToImport = [TR2Type.LaraMagnumAnim_H, TR2Type.LaraDeagleAnim_H, TR2Type.LaraMP5Anim_H],
         }.Import();
         level.Models[TR2Type.Magnums_M_H].Meshes[0].TexturedTriangles.Clear();
-        TR2LaraGunBuilder.FixGloves(level);
+        TR2LaraGunBuilder.FixGloves(level, TR2Type.LaraDeagleAnim_H);
+        TR2LaraGunBuilder.FixGloves(level, TR2Type.LaraMP5Anim_H);
+    }
+
+    private static void ImportTR3Rifle(TR2Level level, TR2Type type)
+    {
+        new TR2DataImporter
+        {
+            Level = level,
+            DataFolder = "Resources/TR2/Objects",
+            TypesToImport = [type],
+        }.Import();
+        var handA = level.Models[type].Meshes[10];
+        var handB = level.Models[TR2Type.LaraShotgunAnim_H].Meshes[10];
+        handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        handA.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        handA.TexturedTriangles.AddRange(handB.TexturedTriangles.Where(f => f.Vertices.All(v => v < 8)));
+        handA.TexturedRectangles.AddRange(handB.TexturedRectangles.Where(f => f.Vertices.All(v => v < 8)));
     }
 }

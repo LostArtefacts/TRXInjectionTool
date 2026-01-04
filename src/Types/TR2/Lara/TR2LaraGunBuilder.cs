@@ -17,12 +17,14 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
     private static readonly Dictionary<TR3SFX, short> _tr3SoundIDs = new()
     {
         [TR3SFX.DessertEagleFire] = 371,
+        [TR3SFX.HecklerFire] = 372,
     };
 
     private static readonly List<TR2Type> _animTypes =
     [
         TR2Type.LaraMagnumAnim_H,
         TR2Type.LaraDeagleAnim_H,
+        TR2Type.LaraMP5Anim_H,
     ];
 
     public override string ID => "tr2_lara_guns";
@@ -81,7 +83,8 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
 
         level.Models[TR2Type.Magnums_M_H].Meshes[0].TexturedTriangles.Clear();
 
-        FixGloves(level);
+        FixGloves(level, TR2Type.LaraDeagleAnim_H);
+        FixGloves(level, TR2Type.LaraMP5Anim_H);
 
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
@@ -93,11 +96,11 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
         }
     }
 
-    public static void FixGloves(TR2Level level)
+    public static void FixGloves(TR2Level level, TR2Type type)
     {
         // Gloves are messed up, can't work out why. Do this for now until
         // proper controlled outfits are implemented.
-        var handA = level.Models[TR2Type.LaraDeagleAnim_H].Meshes[10];
+        var handA = level.Models[type].Meshes[10];
         var handB = level.Models[TR2Type.LaraMagnumAnim_H].Meshes[10];
         handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
         handA.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
@@ -128,7 +131,13 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
         foreach (var (id3, id1) in _tr3SoundIDs)
         {
             var defaultSfx = wall.SoundEffects[TR2SFX.LaraFire].Clone();
+            var d= wall.SoundEffects[TR2SFX.M16Fire].Clone();
             var fx = level3.SoundEffects[id3];
+            if (id3 == TR3SFX.HecklerFire)
+            {
+                defaultSfx.Volume = 29490;
+                defaultSfx.Mode = TR2SFXMode.Ambient;
+            }
 
             data.SFX.Add(new()
             {

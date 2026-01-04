@@ -37,6 +37,7 @@ public class TR2LaraGymGunBuilder : InjectionBuilder
 
         ImportMagnums(level);
         ImportDeagle(level);
+        ImportMP5(level);
 
         var gunTypes = new[]
         {
@@ -47,6 +48,7 @@ public class TR2LaraGymGunBuilder : InjectionBuilder
             TR2Type.Gunflare_H, TR2Type.M16Gunflare_H,
             TR2Type.LaraMagnumAnim_H, TR2Type.Magnums_M_H, TR2Type.MagnumAmmo_M_H,
             TR2Type.LaraDeagleAnim_H, TR2Type.Deagle_M_H, TR2Type.DeagleAmmo_M_H,
+            TR2Type.LaraMP5Anim_H, TR2Type.MP5_M_H, TR2Type.MP5Ammo_M_H,
         };
 
         var glassSFX = level.SoundEffects[TR2SFX.GlassBreak];
@@ -178,5 +180,21 @@ public class TR2LaraGymGunBuilder : InjectionBuilder
 
             level.Models[TR2Type.LaraDeagleAnim_H].Meshes[legIdx] = defLeg;
         }
+    }
+
+    private static void ImportMP5(TR2Level level)
+    {
+        new TR2DataImporter
+        {
+            Level = level,
+            DataFolder = "Resources/TR2/Objects",
+            TypesToImport = [TR2Type.LaraMP5Anim_H],
+        }.Import();
+        var handA = level.Models[TR2Type.LaraMP5Anim_H].Meshes[10];
+        var handB = level.Models[TR2Type.LaraShotgunAnim_H].Meshes[10];
+        handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        handA.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+        handA.TexturedTriangles.AddRange(handB.TexturedTriangles.Where(f => f.Vertices.All(v => v < 8)));
+        handA.TexturedRectangles.AddRange(handB.TexturedRectangles.Where(f => f.Vertices.All(v => v < 8)));
     }
 }
