@@ -243,6 +243,7 @@ public class TR1LaraGymGunBuilder : InjectionBuilder
         gym.SoundEffects[TR1SFX.LaraShotgun] = caves.SoundEffects[TR1SFX.LaraShotgun];
         gym.SoundEffects[TR1SFX.LaraMagnums] = caves.SoundEffects[TR1SFX.LaraMagnums];
         gym.SoundEffects[TR1SFX.LaraUziFire] = caves.SoundEffects[TR1SFX.LaraUziFire];
+        gym.SoundEffects[TR1SFX.MenuGuns] = caves.SoundEffects[TR1SFX.MenuGuns];
 
         AddRicochet(gym);
         return gym;
