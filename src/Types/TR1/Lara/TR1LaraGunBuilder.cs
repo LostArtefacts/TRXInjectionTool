@@ -40,6 +40,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         TR1Type.LaraAutoAnim_H,
         TR1Type.LaraDeagleAnim_H,
         TR1Type.LaraMP5Anim_H,
+        TR1Type.LaraRocketAnim_H,
     ];
 
     public override string ID => "tr1_lara_guns";
@@ -181,7 +182,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
                 continue;
             }
 
-            if (type == TR1Type.LaraMP5Anim_H)
+            if (type == TR1Type.LaraMP5Anim_H || type == TR1Type.LaraRocketAnim_H)
             {
                 FixRifleGlove(level, level.Models[type].Meshes[10]);
             }
@@ -287,6 +288,17 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             });
             data.SFX[^1].LoadSFX(TRGameVersion.TR3);
         }
+
+        // Explosion for rocket launcher
+        var pyramid = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
+        var explosionSfx = pyramid.SoundEffects[TR1SFX.Explosion];
+        data.SFX.Add(new()
+        {
+            ID = (short)TR1SFX.Explosion,
+            Characteristics = explosionSfx.GetFlags(),
+            Volume = explosionSfx.Volume,
+            Data = explosionSfx.Samples,
+        });
     }
 
     private static void AddFlareSounds(InjectionData data)
