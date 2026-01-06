@@ -897,7 +897,26 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
-    public static InjectionData GenerateSnowSprite(TRLevelBase level, Action<TRSpriteSequence> callback)
+    protected static Dictionary<TR3Type, TRSpriteSequence> ImportTR3MiscSprites(TRLevelBase level, List<TR3Type> types)
+    {
+        var baseLevel = GetBaseTR3SpriteLevel();
+        var spriteMap = new Dictionary<TR3Type, TRSpriteSequence>();
+        foreach (var type in types)
+        {
+            spriteMap[type] = baseLevel.Sprites[type];
+        }
+
+        TRTexturePacker packer = new TR3TexturePacker(baseLevel);
+        var regions = spriteMap.Values.SelectMany(s => packer.GetSpriteRegions(s).Values.SelectMany(v => v)).ToList();
+
+        packer = GetPacker(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        return spriteMap;
+    }
+
+    private static TR3Level GetBaseTR3SpriteLevel()
     {
         var antarc = _control3.Read($"Resources/{TR3LevelNames.ANTARC}");
         var snow = antarc.Sprites[TR3Type.MiscSprites_S_H];
@@ -909,20 +928,39 @@ public abstract class TextureBuilder : InjectionBuilder
         info.Y += 13;
         info.Width = 18;
         info.Height = 19;
+
         var img = new TRImage(antarc.Images16[info.Atlas].Pixels).Export(info.Bounds);
         img.Write((c, x, y) => x + y < 4 ? Color.Transparent : c);
 
-        var tile = new TRImage(TRConsts.TPageWidth, TRConsts.TPageHeight);
-        tile.Import(img, new(0, 0));
         info.X = 0;
         info.Y = 0;
-        info.Atlas = 0;
+        info.Atlas = (ushort)antarc.Images16.Count;
+        var tile = new TRImage(TRConsts.TPageWidth, TRConsts.TPageHeight);
+        tile.Import(img, new(0, 0));
+        antarc.Images16.Add(new() { Pixels = tile.ToRGB555() });
 
-        callback(snow);
+        antarc.Sprites[TR3Type.Snowflake_S_H] = snow;
+        antarc.Sprites.Remove(TR3Type.MiscSprites_S_H);
 
-        var data = InjectionData.Create(level, InjectionType.General, "snow");
-        data.Images.Add(new() { Pixels = tile.ToRGBA() });
-        return data;
+        return antarc;
+    }
+
+    private static TRTexturePacker GetPacker(TRLevelBase level)
+    {
+        if (level is TR1Level level1)
+        {
+            return new TR1TexturePacker(level1);
+        }
+        else if (level is TR2Level level2)
+        {
+            return new TR2TexturePacker(level2);
+        }
+        else if (level is TR3Level level3)
+        {
+            return new TR3TexturePacker(level3);
+        }
+
+        throw new Exception("Only TR1-3 packing supported");
     }
 
     protected class TextureSource
