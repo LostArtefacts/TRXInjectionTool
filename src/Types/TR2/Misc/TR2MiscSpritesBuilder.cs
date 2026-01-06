@@ -4,7 +4,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Misc;
 
-public class TR2SnowBuilder : TextureBuilder
+public class TR2MiscSpritesBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
