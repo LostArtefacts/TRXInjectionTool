@@ -10,6 +10,6 @@ public class TR1SnowBuilder : TextureBuilder
     {
         var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         ResetLevel(level);
-        return [GenerateSnow(level, s => level.Sprites[TR1Type.Snowflake_S_H] = s)];
+        return [GenerateSnowSprite(level, s => level.Sprites[TR1Type.Snowflake_S_H] = s)];
     }
 }

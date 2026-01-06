@@ -10,6 +10,6 @@ public class TR2SnowBuilder : TextureBuilder
     {
         var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
         ResetLevel(level);
-        return [GenerateSnow(level, s => level.Sprites[TR2Type.Snowflake_S_H] = s)];
+        return [GenerateSnowSprite(level, s => level.Sprites[TR2Type.Snowflake_S_H] = s)];
     }
 }

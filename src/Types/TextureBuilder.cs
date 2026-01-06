@@ -897,13 +897,21 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
-    public static InjectionData GenerateSnow(TRLevelBase level, Action<TRSpriteSequence> callback)
+    public static InjectionData GenerateSnowSprite(TRLevelBase level, Action<TRSpriteSequence> callback)
     {
         var antarc = _control3.Read($"Resources/{TR3LevelNames.ANTARC}");
-        var snow = antarc.Sprites[TR3Type.ShadowSprite_S_H];
-        var info = snow.Textures[0];
+        var snow = antarc.Sprites[TR3Type.MiscSprites_S_H];
+        var info = snow.Textures[17].Clone();
         snow.Textures = [info];
+
+        // Clip out the top-left footprint
+        info.X += 14;
+        info.Y += 13;
+        info.Width = 18;
+        info.Height = 19;
         var img = new TRImage(antarc.Images16[info.Atlas].Pixels).Export(info.Bounds);
+        img.Write((c, x, y) => x + y < 4 ? Color.Transparent : c);
+
         var tile = new TRImage(TRConsts.TPageWidth, TRConsts.TPageHeight);
         tile.Import(img, new(0, 0));
         info.X = 0;
