@@ -16,12 +16,15 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
     private static readonly Dictionary<TR2SFX, short> _tr2SoundIDs = new()
     {
         [TR2SFX.LaraFireMagnums] = 371,
+        [TR2SFX.M16Fire] = 372,
+        [TR2SFX.M16Stop] = 373,
     };
 
     private static readonly List<TR3Type> _animTypes =
     [
         TR3Type.LaraMagnumAnim_H,
         TR3Type.LaraAutoAnim_H,
+        TR3Type.LaraM16Anim_H,
     ];
 
     public override string ID => "tr3_lara_guns";
@@ -82,9 +85,6 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
 
         FixLegs(level, TR3Type.LaraAutoAnim_H);
         FixGloves(level, TR3Type.LaraAutoAnim_H);
-        //FixGloves(level, TR2Type.LaraDeagleAnim_H);
-        //FixGloves(level, TR2Type.LaraMP5Anim_H);
-        //FixGloves(level, TR2Type.LaraRocketAnim_H);
 
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
@@ -94,6 +94,7 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
                 fx.SoundID = id;
             }
         }
+        level.SoundEffects.Remove(TR3SFX.LaraHolster);
     }
 
     public static void FixGloves(TR3Level level, TR3Type type)
@@ -102,6 +103,11 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
         // proper controlled outfits are implemented.
         foreach (var handIdx in new[] { 10, 13 })
         {
+            if (type == TR3Type.LaraM16Anim_H && handIdx != 10)
+            {
+                continue;
+            }
+
             var handA = level.Models[type].Meshes[handIdx];
             var handB = level.Models[TR3Type.LaraMagnumAnim_H].Meshes[handIdx];
             handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
@@ -181,6 +187,10 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
         foreach (var (id1, id2) in _tr2SoundIDs)
         {
             var fx = wall.SoundEffects[id1];
+            if (id1 == TR2SFX.M16Fire)
+            {
+                fx.Volume = 24576;
+            }
             data.SFX.Add(new()
             {
                 ID = id2,
