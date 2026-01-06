@@ -13,10 +13,15 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
     {
         [TR1SFX.LaraMagnums] = 370,
     };
+    private static readonly Dictionary<TR2SFX, short> _tr2SoundIDs = new()
+    {
+        [TR2SFX.LaraFireMagnums] = 371,
+    };
 
     private static readonly List<TR3Type> _animTypes =
     [
         TR3Type.LaraMagnumAnim_H,
+        TR3Type.LaraAutoAnim_H,
     ];
 
     public override string ID => "tr3_lara_guns";
@@ -75,6 +80,8 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
 
         level.Models[TR3Type.Magnums_M_H].Meshes[0].TexturedTriangles.Clear();
 
+        FixLegs(level, TR3Type.LaraAutoAnim_H);
+        FixGloves(level, TR3Type.LaraAutoAnim_H);
         //FixGloves(level, TR2Type.LaraDeagleAnim_H);
         //FixGloves(level, TR2Type.LaraMP5Anim_H);
         //FixGloves(level, TR2Type.LaraRocketAnim_H);
@@ -93,12 +100,58 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
     {
         // Gloves are messed up, can't work out why. Do this for now until
         // proper controlled outfits are implemented.
-        var handA = level.Models[type].Meshes[10];
-        var handB = level.Models[TR3Type.LaraMagnumAnim_H].Meshes[10];
-        handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
-        handA.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
-        handA.TexturedTriangles.AddRange(handB.TexturedTriangles.Where(f => f.Vertices.All(v => v < 8)));
-        handA.TexturedRectangles.AddRange(handB.TexturedRectangles.Where(f => f.Vertices.All(v => v < 8)));
+        foreach (var handIdx in new[] { 10, 13 })
+        {
+            var handA = level.Models[type].Meshes[handIdx];
+            var handB = level.Models[TR3Type.LaraMagnumAnim_H].Meshes[handIdx];
+            handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+            handA.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
+            handA.TexturedTriangles.AddRange(handB.TexturedTriangles.Where(f => f.Vertices.All(v => v < 8)));
+            handA.TexturedRectangles.AddRange(handB.TexturedRectangles.Where(f => f.Vertices.All(v => v < 8)));
+        }
+    }
+
+    public static void FixLegs(TR3Level level, TR3Type type)
+    {
+        var model = level.Models[type];
+        foreach (var legIdx in new[] { 1, 4 })
+        {
+            // Sigh
+            var badLeg = level.Models[type].Meshes[legIdx];
+            var goodLeg = level.Models[TR3Type.LaraMagnumAnim_H].Meshes[legIdx].Clone();
+            goodLeg.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v > 27));
+            goodLeg.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v > 27));
+
+            var newFaces = badLeg.TexturedFaces.ToList();
+            var newVerts = newFaces.SelectMany(f => f.Vertices)
+                .Distinct().ToList();
+            var map = new Dictionary<ushort, ushort>();
+            foreach (var vert in newVerts)
+            {
+                map[vert] = (ushort)goodLeg.Vertices.Count;
+                goodLeg.Vertices.Add(badLeg.Vertices[vert]);
+                goodLeg.Normals.Add(badLeg.Normals[vert]);
+            }
+
+
+            foreach (var face in newFaces)
+            {
+                for (int i = 0; i < face.Vertices.Count; i++)
+                {
+                    face.Vertices[i] = map[face.Vertices[i]];
+                }
+                if (face.Type == TRFaceType.Triangle)
+                {
+                    goodLeg.TexturedTriangles.Add(face);
+                }
+                else
+                {
+                    goodLeg.TexturedRectangles.Add(face);
+                }
+            }
+
+            level.Models[type].Meshes[legIdx] = goodLeg;
+        }
     }
 
     public static void AddGunSounds(InjectionData data)
@@ -122,6 +175,21 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
                 Volume = fx.Volume,
                 Data = fx.Samples,
             });
+        }
+
+        var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        foreach (var (id1, id2) in _tr2SoundIDs)
+        {
+            var fx = wall.SoundEffects[id1];
+            data.SFX.Add(new()
+            {
+                ID = id2,
+                Chance = fx.Chance,
+                Characteristics = fx.GetFlags(),
+                Volume = fx.Volume,
+                SampleOffset = fx.SampleID,
+            });
+            data.SFX[^1].LoadSFX(TRGameVersion.TR2);
         }
     }
 
