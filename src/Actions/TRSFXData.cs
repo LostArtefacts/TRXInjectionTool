@@ -11,6 +11,8 @@ public class TRSFXData
     public ushort Volume { get; set; }
     public ushort Chance { get; set; }
     public ushort Characteristics { get; set; }
+    public byte Pitch { get; set; }
+    public byte Range { get; set; } = 10;
     public List<byte[]> Data { get; set; }
     public uint SampleOffset { get; set; }
 
@@ -20,6 +22,8 @@ public class TRSFXData
         writer.Write(Volume);
         writer.Write(Chance);
         writer.Write(Characteristics);
+        writer.Write(Range * TRConsts.Step4);
+        writer.Write(Pitch);
 
         if (version > TRGameVersion.TR1 && Data == null)
         {
@@ -69,5 +73,47 @@ public class TRSFXData
         }
 
         return result;
+    }
+
+    public static TRSFXData Create(object id, TR1SoundEffect effect)
+    {
+        return new()
+        {
+            ID = Convert.ToInt16(id),
+            Chance = effect.Chance,
+            Characteristics = effect.GetFlags(),
+            Volume = effect.Volume,
+            Data = effect.Samples,
+        };
+    }
+
+    public static TRSFXData Create(object id, TR2SoundEffect effect)
+    {
+        var sfx = new TRSFXData
+        {
+            ID = Convert.ToInt16(id),
+            Chance = effect.Chance,
+            Characteristics = effect.GetFlags(),
+            Volume = effect.Volume,
+            SampleOffset = effect.SampleID,
+        };
+        sfx.LoadSFX(TRGameVersion.TR2);
+        return sfx;
+    }
+
+    public static TRSFXData Create(object id, TR3SoundEffect effect)
+    {
+        var sfx = new TRSFXData
+        {
+            ID = Convert.ToInt16(id),
+            Chance = effect.Chance,
+            Characteristics = effect.GetFlags(),
+            Volume = (ushort)(effect.Volume << 7),
+            Pitch = effect.Pitch,
+            Range = effect.Range,
+            SampleOffset = effect.SampleID,
+        };
+        sfx.LoadSFX(TRGameVersion.TR3);
+        return sfx;
     }
 }
