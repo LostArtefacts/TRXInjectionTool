@@ -1,6 +1,7 @@
 ﻿using TRDataControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR3.Lara;
@@ -20,6 +21,14 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
         [TR2SFX.M16Stop] = 373,
     };
 
+    private static readonly List<TR3SFX> _tr3SoundIDs =
+    [
+        TR3SFX.LaraShotgun, TR3SFX.LaraShotgunShell, TR3SFX.LaraReload,
+        TR3SFX.LaraMiniLoad, TR3SFX.LaraMiniLock, TR3SFX.LaraMiniFire,
+        TR3SFX.BazookaFire, TR3SFX.LaraHarpoonFire, TR3SFX.LaraHarpoonFireWater,
+        TR3SFX.LaraHarpoonLoad, TR3SFX.LaraHarpoonLoadWater,
+    ];
+
     private static readonly List<TR3Type> _animTypes =
     [
         TR3Type.LaraMagnumAnim_H,
@@ -37,7 +46,7 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
             var level = CreateLevel(typeStr);
             var data = InjectionData.Create(level, InjectionType.General,
                 $"lara_{typeStr.ToLower()}{(typeStr.Length > 0 ? "_" : string.Empty)}guns");
-            AddGunSounds(data);
+            AddGunSounds(data, false);
             result.Add(data);
         }
 
@@ -160,10 +169,9 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
         }
     }
 
-    public static void AddGunSounds(InjectionData data)
+    public static void AddGunSounds(InjectionData data, bool gym)
     {
         var level = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
-        var pistols = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").SoundEffects[TR3SFX.LaraFire];
         foreach (var (id1, id2) in _tr1SoundIDs)
         {
             var fx = level.SoundEffects[id1];
@@ -172,15 +180,7 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
                 fx.Mode = TR1SFXMode.Ambient;
                 fx.Volume = 24576;
             }
-
-            data.SFX.Add(new()
-            {
-                ID = id2,
-                Chance = fx.Chance,
-                Characteristics = fx.GetFlags(),
-                Volume = fx.Volume,
-                Data = fx.Samples,
-            });
+            data.SFX.Add(TRSFXData.Create(id2, fx));
         }
 
         var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
@@ -191,15 +191,13 @@ public class TR3LaraGunBuilder : InjectionBuilder, IPublisher
             {
                 fx.Volume = 24576;
             }
-            data.SFX.Add(new()
-            {
-                ID = id2,
-                Chance = fx.Chance,
-                Characteristics = fx.GetFlags(),
-                Volume = fx.Volume,
-                SampleOffset = fx.SampleID,
-            });
-            data.SFX[^1].LoadSFX(TRGameVersion.TR2);
+            data.SFX.Add(TRSFXData.Create(id2, fx));
+        }
+
+        if (gym)
+        {
+            var jungle = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
+            data.SFX.AddRange(_tr3SoundIDs.Select(s => TRSFXData.Create(s, jungle.SoundEffects[s])));
         }
     }
 
