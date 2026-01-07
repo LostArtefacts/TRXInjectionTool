@@ -1,6 +1,7 @@
 ﻿using TRDataControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Lara;
@@ -19,6 +20,7 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
     {
         [TR3SFX.DessertEagleFire] = 371,
         [TR3SFX.HecklerFire] = 372,
+        [TR3SFX.BazookaFire] = 373,
     };
 
     private static readonly List<TR2Type> _animTypes =
@@ -89,12 +91,21 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
         FixGloves(level, TR2Type.LaraMP5Anim_H);
         FixGloves(level, TR2Type.LaraRocketAnim_H);
 
+        AmendAnimSFX(level);
+    }
+
+    public static void AmendAnimSFX(TR2Level level)
+    {
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
         {
-            if (_tr1SoundIDs.TryGetValue((TR1SFX)fx.SoundID, out var id))
+            if (_tr1SoundIDs.TryGetValue((TR1SFX)fx.SoundID, out var id1))
             {
-                fx.SoundID = id;
+                fx.SoundID = id1;
+            }
+            else if (_tr3SoundIDs.TryGetValue((TR3SFX)fx.SoundID, out var id3))
+            {
+                fx.SoundID = id3;
             }
         }
     }
@@ -121,38 +132,18 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
             {
                 fx.Mode = TR1SFXMode.Ambient;
             }
-
-            data.SFX.Add(new()
-            {
-                ID = id2,
-                Chance = fx.Chance,
-                Characteristics = fx.GetFlags(),
-                Volume = fx.Volume,
-                Data = fx.Samples,
-            });
+            data.SFX.Add(TRSFXData.Create(id2, fx));
         }
 
-        var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
         var level3 = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
         foreach (var (id3, id1) in _tr3SoundIDs)
         {
-            var defaultSfx = wall.SoundEffects[TR2SFX.LaraFire].Clone();
             var fx = level3.SoundEffects[id3];
             if (id3 == TR3SFX.HecklerFire)
             {
-                defaultSfx.Volume = 29490;
-                defaultSfx.Mode = TR2SFXMode.Ambient;
+                fx.Volume = 230;
             }
-
-            data.SFX.Add(new()
-            {
-                ID = id1,
-                Chance = defaultSfx.Chance,
-                Characteristics = defaultSfx.GetFlags(),
-                Volume = defaultSfx.Volume,
-                SampleOffset = fx.SampleID,
-            });
-            data.SFX[^1].LoadSFX(TRGameVersion.TR3);
+            data.SFX.Add(TRSFXData.Create(id1, fx));
         }
     }
 

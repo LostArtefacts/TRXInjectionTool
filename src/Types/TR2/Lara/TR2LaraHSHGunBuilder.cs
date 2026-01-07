@@ -41,6 +41,8 @@ public class TR2LaraHSHGunBuilder : InjectionBuilder
         ImportTR3Rifle(level, TR2Type.LaraMP5Anim_H);
         ImportTR3Rifle(level, TR2Type.LaraRocketAnim_H);
 
+        TR2LaraGunBuilder.AmendAnimSFX(level);
+
         level.Models[TR2Type.Lara].Meshes[0].TexturedRectangles.Clear();
         level.Models[TR2Type.Lara].Meshes[0].TexturedTriangles.Clear();
         level.Models[TR2Type.Lara].Meshes[0].ColouredRectangles.Clear();

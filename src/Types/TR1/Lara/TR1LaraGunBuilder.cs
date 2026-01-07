@@ -3,6 +3,7 @@ using System.Drawing;
 using TRDataControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Lara;
@@ -29,6 +30,7 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
     {
         [TR3SFX.DessertEagleFire] = 269,
         [TR3SFX.HecklerFire] = 270,
+        [TR3SFX.BazookaFire] = 271,
     };
 
     private static readonly List<TR1Type> _animTypes =
@@ -169,9 +171,13 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
         {
-            if (_tr2SoundIDs.TryGetValue((TR2SFX)fx.SoundID, out var id))
+            if (_tr2SoundIDs.TryGetValue((TR2SFX)fx.SoundID, out var id2))
             {
-                fx.SoundID = id;
+                fx.SoundID = id2;
+            }
+            else if (_tr3SoundIDs.TryGetValue((TR3SFX)fx.SoundID, out var id3))
+            {
+                fx.SoundID = id3;
             }
         }
 
@@ -240,65 +246,35 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
                     break;
             }
 
-            data.SFX.Add(new()
-            {
-                ID = id1,
-                Chance = fx.Chance,
-                Characteristics = fx.GetFlags(),
-                Volume = fx.Volume,
-                SampleOffset = fx.SampleID,
-            });
-
+            data.SFX.Add(TRSFXData.Create(id1, fx));
             if (id2 == TR2SFX.M16Fire)
             {
                 data.SFX[^1].Data = [File.ReadAllBytes("Resources/TR1/Lara/Guns/m16.wav")];
             }
-            else
-            {
-                data.SFX[^1].LoadSFX(TRGameVersion.TR2);
-            }
         }
 
-        var caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         var level3 = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
         foreach (var (id3, id1) in _tr3SoundIDs)
         {
-            var defaultSfx = caves.SoundEffects[TR1SFX.LaraFire].Clone();
             var fx = level3.SoundEffects[id3];
             switch (id3)
             {
                 case TR3SFX.DessertEagleFire:
-                    defaultSfx.Mode = TR1SFXMode.Restart;
+                    fx.Mode = TR3SFXMode.Restart;
                     break;
                 case TR3SFX.HecklerFire:
-                    defaultSfx.Mode = TR1SFXMode.Wait;
-                    defaultSfx.Volume = 29490;
+                    fx.Mode = TR3SFXMode.Wait;
+                    fx.Volume = 230;
                     break;
                 default:
                     break;
             }
-
-            data.SFX.Add(new()
-            {
-                ID = id1,
-                Chance = defaultSfx.Chance,
-                Characteristics = defaultSfx.GetFlags(),
-                Volume = defaultSfx.Volume,
-                SampleOffset = fx.SampleID,
-            });
-            data.SFX[^1].LoadSFX(TRGameVersion.TR3);
+            data.SFX.Add(TRSFXData.Create(id1, fx));
         }
 
         // Explosion for rocket launcher
         var pyramid = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
-        var explosionSfx = pyramid.SoundEffects[TR1SFX.Explosion];
-        data.SFX.Add(new()
-        {
-            ID = (short)TR1SFX.Explosion,
-            Characteristics = explosionSfx.GetFlags(),
-            Volume = explosionSfx.Volume,
-            Data = explosionSfx.Samples,
-        });
+        data.SFX.Add(TRSFXData.Create(TR1SFX.Explosion, pyramid.SoundEffects[TR1SFX.Explosion]));
     }
 
     private static void AddFlareSounds(InjectionData data)

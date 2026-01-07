@@ -24,6 +24,7 @@ public class TR2LaraVegasGunBuilder : InjectionBuilder
         ImportMagnums(level);
         ImportTR3Rifle(level, TR2Type.LaraMP5Anim_H);
         ImportTR3Rifle(level, TR2Type.LaraRocketAnim_H);
+        TR2LaraGunBuilder.AmendAnimSFX(level);
         var basePalette = level.Palette16.Select(c => c.ToTR1Color()).ToList();
 
         var gunTypes = new[]

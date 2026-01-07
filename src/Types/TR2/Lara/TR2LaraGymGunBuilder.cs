@@ -26,12 +26,12 @@ public class TR2LaraGymGunBuilder : InjectionBuilder
         {
             Level = level,
             DataFolder = "Resources/TR2/Objects",
-            TypesToImport = new()
-            {
+            TypesToImport =
+            [
                 TR2Type.LaraPistolAnim_H_Assault,
                 TR2Type.LaraAutoAnim_H_Assault,
                 TR2Type.LaraUziAnim_H_Assault,
-            },
+            ],
         };
         importer.Import();
 
@@ -39,6 +39,8 @@ public class TR2LaraGymGunBuilder : InjectionBuilder
         ImportDeagle(level);
         ImportTR3Rifle(level, TR2Type.LaraMP5Anim_H);
         ImportTR3Rifle(level, TR2Type.LaraRocketAnim_H);
+
+        TR2LaraGunBuilder.AmendAnimSFX(level);
 
         var gunTypes = new[]
         {
@@ -65,7 +67,7 @@ public class TR2LaraGymGunBuilder : InjectionBuilder
 
         TR2GunUtils.FixHolsterSFX(level, false);
         TR2GunUtils.ConvertFlatFaces(level, basePalette);
-        GenerateImages8(level, gym.Palette.Select(c => c.ToTR1Color()).ToList());
+        GenerateImages8(level, [.. gym.Palette.Select(c => c.ToTR1Color())]);
 
         return level;
     }
