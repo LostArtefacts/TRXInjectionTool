@@ -9,6 +9,7 @@ public class TR3MiscSpritesBuilder : TextureBuilder
     private static readonly List<TR3Type> _spriteRemap =
     [
         TR3Type.Snowflake_S_H,
+        TR3Type.ShadowSprite_S_H,
     ];
 
     public override List<InjectionData> Build()
