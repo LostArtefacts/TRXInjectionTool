@@ -20,7 +20,7 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
     {
         [TR3SFX.DessertEagleFire] = 371,
         [TR3SFX.HecklerFire] = 372,
-        [TR3SFX.BazookaFire] = 373,
+        [TR3SFX.BazookaFire] = 374,
     };
 
     private static readonly List<TR2Type> _animTypes =
