@@ -56,6 +56,7 @@ public class TR3LaraGymGunBuilder : InjectionBuilder
             TR3Type.LaraMagnumAnim_H, TR3Type.Magnums_M_H, TR3Type.MagnumAmmo_M_H,
             TR3Type.LaraAutoAnim_H, TR3Type.Autos_M_H, TR3Type.AutoAmmo_M_H,
             TR3Type.LaraM16Anim_H, TR3Type.M16_M_H, TR3Type.M16Ammo_M_H,
+            TR3Type.RedShellCasing_H,
         };
 
         CreateModelLevel(level, gunTypes);
