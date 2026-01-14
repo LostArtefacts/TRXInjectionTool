@@ -12,9 +12,8 @@ public partial class TR2RigTextureBuilder : TextureBuilder
 
     public override List<InjectionData> Build()
     {
-        TR2Level level = _control2.Read($"Resources/{TR2LevelNames.RIG}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.TextureFix, ID);
-        CreateDefaultTests(data, TR2LevelNames.RIG);
+        var level = _control2.Read($"Resources/{TR2LevelNames.RIG}");
+        var data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateShifts(level));
         data.RoomEdits.AddRange(CreateFillers(level));
@@ -31,6 +30,25 @@ public partial class TR2RigTextureBuilder : TextureBuilder
         FixOxygenTanks(level, data);
 
         return [data];
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.RIG}");
+        var types = TR2TypeUtilities.BreakableWindows()
+            .FindAll(t => level.Models.ContainsKey(t));
+        CreateModelLevel(level, [.. types]);
+        level.SoundEffects.Clear();
+
+        FixTR2Windows(level);
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR2LevelNames.RIG);
+        foreach (var type in types)
+        {
+            data.SetMeshOnlyModel((uint)type);
+        }
+        return data;
     }
 
     private static List<TRRoomTextureMove> CreateShifts(TR2Level level)

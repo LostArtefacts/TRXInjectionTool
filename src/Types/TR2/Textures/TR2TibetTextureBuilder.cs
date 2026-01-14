@@ -11,9 +11,8 @@ public class TR2TibetTextureBuilder : TextureBuilder
 
     public override List<InjectionData> Build()
     {
-        TR2Level level = _control2.Read($"Resources/{TR2LevelNames.TIBET}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.TextureFix, ID);
-        CreateDefaultTests(data, TR2LevelNames.TIBET);
+        var level = _control2.Read($"Resources/{TR2LevelNames.TIBET}");
+        var data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateFillers(level));
         data.RoomEdits.AddRange(CreateRefacings(level));
@@ -21,7 +20,26 @@ public class TR2TibetTextureBuilder : TextureBuilder
 
         FixPassport(level, data);
 
-        return new() { data };
+        return [data];
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.TIBET}");
+        var types = TR2TypeUtilities.BreakableWindows()
+            .FindAll(t => level.Models.ContainsKey(t));
+        CreateModelLevel(level, [.. types]);
+        level.SoundEffects.Clear();
+
+        FixTR2Windows(level);
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR2LevelNames.TIBET);
+        foreach (var type in types)
+        {
+            data.SetMeshOnlyModel((uint)type);
+        }
+        return data;
     }
 
     private static List<TRRoomTextureEdit> CreateFillers(TR2Level level)

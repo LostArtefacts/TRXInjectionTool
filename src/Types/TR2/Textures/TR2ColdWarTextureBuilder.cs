@@ -15,16 +15,34 @@ public class TR2ColdWarTextureBuilder : TextureBuilder
     {
         TR2Level level = _control2.Read($"Resources/{TR2LevelNames.COLDWAR}");
         InjectionData data = CreateBaseData();
-        CreateDefaultTests(data, TR2LevelNames.COLDWAR);
 
         FixPassport(level, data);
 
-        return new() { data };
+        return [data];
     }
 
     private InjectionData CreateBaseData()
     {
         TR2Level level = _control2.Read($"Resources/{TR2LevelNames.COLDWAR}");
+        var types = TR2TypeUtilities.BreakableWindows()
+            .FindAll(t => level.Models.ContainsKey(t));
+        CreateModelLevel(level, [.. types, TR2Type.Skybox_H]);
+        level.SoundEffects.Clear();
+
+        FixTR2Windows(level);
+        FixSkybox(level);
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR2LevelNames.COLDWAR);
+        foreach (var type in types)
+        {
+            data.SetMeshOnlyModel((uint)type);
+        }
+        return data;
+    }
+
+    private static void FixSkybox(TR2Level level)
+    {
         TRModel skybox = level.Models[TR2Type.Skybox_H];
 
         TR2TexturePacker packer = new(level);
@@ -32,8 +50,8 @@ public class TR2ColdWarTextureBuilder : TextureBuilder
         List<TRObjectTexture> originalInfos = new(level.ObjectTextures);
 
         List<Color> basePalette = new(level.Palette.Select(c => c.ToTR1Color()));
-        ResetLevel(level, 1);
-        packer = new(level);        
+        //ResetLevel(level, 1);
+        packer = new(level);
 
         TRImage flatImg = new(8, 8);
         flatImg.Fill(Color.Black);
@@ -59,7 +77,5 @@ public class TR2ColdWarTextureBuilder : TextureBuilder
         skybox.Meshes[0].ColouredTriangles.Clear();
 
         GenerateImages8(level, basePalette);
-
-        return InjectionData.Create(level, InjectionType.TextureFix, ID);
     }
 }

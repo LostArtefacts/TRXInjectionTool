@@ -7,6 +7,7 @@ using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types;
 
@@ -943,6 +944,34 @@ public abstract class TextureBuilder : InjectionBuilder
         antarc.Sprites.Remove(TR3Type.MiscSprites_S_H);
 
         return antarc;
+    }
+
+    protected static void FixTR2Windows(TR2Level level)
+    {
+        var types = TR2TypeUtilities.BreakableWindows()
+            .Where(level.Models.ContainsKey);
+        foreach (var type in types)
+        {
+            var model = level.Models[type];
+            if (model == null)
+            {
+                continue;
+            }
+
+            // Force all shards, which share their vertices, to have a normal instead of baked light.
+            // Indices 0 and 8 are ones lit as animating items, so are skipped.
+            foreach (var mesh in model.Meshes.Where((mesh, idx) => idx != 0 && idx != 8))
+            {
+                mesh.Lights = null;
+                mesh.Normals = [.. Enumerable.Range(0, mesh.Vertices.Count)
+                    .Select(i => new TRVertex { Z = -4096 })
+                ];
+            }
+
+            // Ensure double-sided faces use their own vertices, and flip their normals for proper lighting.
+            model.Meshes = [.. model.Meshes.Select(WindowVertexUntangler.UntangleFaces)];
+            model.Animations.Clear();
+        }
     }
 
     private static TRTexturePacker GetPacker(TRLevelBase level)
