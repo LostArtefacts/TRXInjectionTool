@@ -96,6 +96,15 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
 
     public static void AmendAnimSFX(TR2Level level)
     {
+        foreach (var type in new[] { TR2Type.LaraMP5Anim_H, TR2Type.LaraRocketAnim_H })
+        {
+            var equipAnim = level.Models[type].Animations[1];
+            if (equipAnim.Commands.Count > 0)
+            {
+                (equipAnim.Commands[0] as TRSFXCommand).SoundID = (short)TR2SFX.LaraDraw;
+            }
+        }
+
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
         {
