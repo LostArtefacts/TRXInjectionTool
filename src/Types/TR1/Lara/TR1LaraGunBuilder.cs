@@ -272,9 +272,22 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             data.SFX.Add(TRSFXData.Create(id1, fx));
         }
 
-        // Explosion for rocket launcher
         var pyramid = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
-        data.SFX.Add(TRSFXData.Create(TR1SFX.Explosion, pyramid.SoundEffects[TR1SFX.Explosion]));
+        {
+            // Explosion for rocket launcher
+            var explosion = pyramid.SoundEffects[TR1SFX.Explosion];
+            data.SFX.Add(TRSFXData.Create(TR1SFX.Explosion, explosion));
+        }
+
+        {
+            // Explosion for grenade launcher. Use mode 3 to imply Normal in the engine.
+            // The provided wav is a combination of AtlanteanExplode and Explosion1 as
+            // TR2's samples sound out of place.
+            var explosion = pyramid.SoundEffects[TR1SFX.AtlanteanExplode];
+            explosion.Mode = (TR1SFXMode)3; // Normal
+            explosion.Samples = [File.ReadAllBytes("Resources/TR1/Lara/Guns/grenade.wav")];
+            data.SFX.Add(TRSFXData.Create(272, explosion));
+        }
     }
 
     private static void AddFlareSounds(InjectionData data)
