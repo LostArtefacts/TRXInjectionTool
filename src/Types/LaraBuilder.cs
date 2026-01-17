@@ -125,33 +125,40 @@ public abstract class LaraBuilder : InjectionBuilder
         PoseLeftStart = 18,
         PoseLeftContinue = 19,
         PoseLeftEnd = 20,
+        JailWakeUp = 21,
     }
 
     protected enum LaraExtraState
     {
-        Breath,
-        TrexKill,
-        ScionPickup1,
-        UseMidas,
-        MidasKill,
-        ScionPickup2,
-        TorsoKill,
-        Plunger,
-        StartAnim,
-        Airlock,
-        SharkKill,
-        YetiKill,
-        GongBong,
-        GuardKill,
-        PullDagger,
-        StartHouse,
-        EndHouse,
+        Breath       = 0,
+        TrexKill     = 1,
+        ScionPickup1 = 2,
+        UseMidas     = 3,
+        MidasKill    = 4,
+        ScionPickup2 = 5,
+        TorsoKill    = 6,
+        Plunger      = 7,
+        StartAnim    = 8,
+        Airlock      = 9,
+        SharkKill    = 10,
+        YetiKill     = 11,
+        GongBong     = 12,
+        GuardKill    = 13,
+        PullDagger   = 14,
+        StartHouse   = 15,
+        EndHouse     = 16,
+        ShivaKill    = 17,
+        RapidsDrown  = 18,
+        TrainKill    = 19,
+        JailWakeUp   = 20,
+        WillardKill  = 21,
     }
 
     private static readonly List<LaraExtraState> _extraDeathStates =
     [
         LaraExtraState.TrexKill, LaraExtraState.MidasKill, LaraExtraState.TorsoKill,
         LaraExtraState.SharkKill, LaraExtraState.YetiKill, LaraExtraState.GuardKill,
+        LaraExtraState.ShivaKill, LaraExtraState.TrainKill, LaraExtraState.WillardKill,
     ];
 
     private class ExtraAnimData(string levelName, LaraExtraState state, int animIdx)
@@ -179,6 +186,11 @@ public abstract class LaraBuilder : InjectionBuilder
         new(TR2LevelNames.LAIR, LaraExtraState.PullDagger, 2),
         new(TR2LevelNames.HOME, LaraExtraState.StartHouse, 1),
         new(TR2LevelNames.HOME, LaraExtraState.EndHouse, 2),
+        new(TR3LevelNames.RUINS, LaraExtraState.ShivaKill, 1),
+        new(TR3LevelNames.MADUBU, LaraExtraState.RapidsDrown, 25),
+        new(TR3LevelNames.ALDWYCH, LaraExtraState.TrainKill, 0),
+        new(TR3LevelNames.HSC, LaraExtraState.JailWakeUp, (int)ExtLaraAnim.JailWakeUp),
+        new(TR3LevelNames.WILLIE, LaraExtraState.WillardKill, 1),
     ];
 
     public static TRModel GetLaraPoseModel()
@@ -478,9 +490,22 @@ public abstract class LaraBuilder : InjectionBuilder
             {
                 srcModel = _control1.Read($"Resources/{data.LevelName}").Models[TR1Type.LaraMiscAnim_H];
             }
-            else
+            else if (TR2LevelNames.AsList.Contains(data.LevelName))
             {
                 srcModel = _control2.Read($"Resources/{data.LevelName}").Models[TR2Type.LaraMiscAnim_H];
+            }
+            else
+            {
+                if (data.State == LaraExtraState.JailWakeUp)
+                {
+                    // Restored from PSX, original in retail HSC is a dupe of Rig start anim
+                    srcModel = GetLaraExtModel();
+                }
+                else
+                {
+                    srcModel = _control3.Read($"Resources/TR3/{data.LevelName}").Models
+                        [data.State == LaraExtraState.RapidsDrown ? TR3Type.LaraVehicleAnimation_H : TR3Type.LaraExtraAnimation_H];
+                }
             }
 
             var anim = srcModel.Animations[data.AnimIdx];

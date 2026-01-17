@@ -56,6 +56,12 @@ public class TR3LaraAnimBuilder : LaraBuilder
             var level = CreateLevel();
             result.Add(InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations"));
         }
+        {
+            var level = CreateExtraLevel();
+            result.Add(InjectionData.Create(level, InjectionType.General, "lara_extra"));
+            result.Add(CreateAirlockEdit(level, TR3LevelNames.COASTAL, "coastal_airlock"));
+            result.Add(CreateAirlockEdit(level, TR3LevelNames.ANTARC, "antarc_airlock"));
+        }
 
         return result;
     }
@@ -63,7 +69,8 @@ public class TR3LaraAnimBuilder : LaraBuilder
     public override byte[] Publish()
     {
         var level = CreateLevel();
-        return ExportLaraWAD(level);
+        var extraLevel = CreateExtraLevel();
+        return ExportLaraWAD(level, extraLevel);
     }
 
     private TR3Level CreateLevel()
@@ -83,6 +90,19 @@ public class TR3LaraAnimBuilder : LaraBuilder
         FixJumpToFreefall(tr3Lara);
 
         return jungle;
+    }
+
+    private static TR3Level CreateExtraLevel()
+    {
+        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.RUINS}");
+        CreateModelLevel(level, TR3Type.Lara);
+
+        ImportExtraAnims(level.Models, TR3Type.LaraExtraAnimation_H);
+
+        level.Models.Remove(TR3Type.Lara);
+        level.SoundEffects.Clear();
+
+        return level;
     }
 
     private void SyncToTR2(TRModel lara)
@@ -166,7 +186,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         lara.Animations[213].NextFrame = 39;
     }
 
-    private static byte[] ExportLaraWAD(TR3Level level)
+    private static byte[] ExportLaraWAD(TR3Level level, TR3Level extraLevel)
     {
         // Generate the injection's effect on a regular level to allow TRLE builders to utilise
         // the new animations while also being able to edit the defaults. This is a stripped back
@@ -197,10 +217,10 @@ public class TR3LaraAnimBuilder : LaraBuilder
 
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
 
-        return ExportZip(level);
+        return ExportZip(level, extraLevel);
     }
 
-    private static byte[] ExportZip(TR3Level level)
+    private static byte[] ExportZip(TR3Level level, TR3Level extraLevel)
     {
         var stream = new MemoryStream();
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create);
@@ -211,6 +231,15 @@ public class TR3LaraAnimBuilder : LaraBuilder
             byte[] phdRaw = ms.ToArray();
             var entry = zip.CreateEntry("lara.tr2", CompressionLevel.Optimal);
             using var zipStream = entry.Open();
+            zipStream.Write(phdRaw, 0, phdRaw.Length);
+        }
+
+        {
+            using MemoryStream ms = new();
+            _control3.Write(extraLevel, ms);
+            byte[] phdRaw = ms.ToArray();
+            ZipArchiveEntry entry = zip.CreateEntry("lara_extra.tr2", CompressionLevel.Optimal);
+            using Stream zipStream = entry.Open();
             zipStream.Write(phdRaw, 0, phdRaw.Length);
         }
 
@@ -233,5 +262,35 @@ public class TR3LaraAnimBuilder : LaraBuilder
         {
             [TR3Type.Lara] = level.Models[TR3Type.Lara],
         };
+    }
+
+    private static InjectionData CreateAirlockEdit(TR3Level level, string targetLevel, string binName)
+    {
+        // Different SFX required for the wheel door animation
+        var model = level.Models[TR3Type.LaraExtraAnimation_H];
+        InjectionBuilder.ResetLevel(level);
+        level.Models[TR3Type.LaraExtraAnimation_H] = model;
+
+        var shore = _control3.Read($"Resources/TR3/{targetLevel}");
+        var switchAnim = model.Animations[(int)LaraExtraState.Airlock];
+        model.Animations.ForEach(a => a.Commands.Clear());
+        switchAnim.Commands.AddRange(shore.Models[TR3Type.LaraExtraAnimation_H].Animations[2].Commands);
+
+        var data = InjectionData.Create(level, InjectionType.General, binName, true);
+        data.Animations.Clear();
+        data.AnimFrames.Clear();
+        data.AnimChanges.Clear();
+        data.AnimDispatches.Clear();
+        data.Models.Clear();
+
+        data.AnimCmdEdits.Add(new()
+        {
+            TypeID = (int)TR3Type.LaraExtraAnimation_H,
+            AnimIndex = (int)LaraExtraState.Airlock,
+            RawCount = data.AnimCommands.Count,
+            TotalCount = switchAnim.Commands.Count,
+        });
+
+        return data;
     }
 }
