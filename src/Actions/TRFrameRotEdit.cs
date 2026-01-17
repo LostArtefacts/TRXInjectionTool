@@ -62,11 +62,17 @@ public class TRFrameReplacement
         return level.Models.Select(kvp => Create(tempData, kvp.Value, (uint)kvp.Key));
     }
 
+    public static IEnumerable<TRFrameReplacement> CreateFrom(TR3Level level)
+    {
+        var tempData = InjectionData.Create(level, InjectionType.General, string.Empty);
+        return level.Models.Select(kvp => Create(tempData, kvp.Value, (uint)kvp.Key));
+    }
+
     private static TRFrameReplacement Create(InjectionData tempData, TRModel model, uint type)
     {
         var replacer = new TRFrameReplacement
         {
-            ModelID = (uint)type,
+            ModelID = type,
         };
         var flatModel = tempData.Models.Find(m => m.ID == replacer.ModelID);
         var idx = tempData.Models.IndexOf(flatModel);
