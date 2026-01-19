@@ -68,6 +68,18 @@ public class TRFrameReplacement
         return level.Models.Select(kvp => Create(tempData, kvp.Value, (uint)kvp.Key));
     }
 
+    public static IEnumerable<TRFrameReplacement> CreateFrom(TR3Level level, IEnumerable<TR3Type> types)
+    {
+        var tempData = InjectionData.Create(level, InjectionType.General, string.Empty);
+        foreach (TR3Type type in types)
+        {
+            if (level.Models.TryGetValue(type, out TRModel model))
+            {
+                yield return Create(tempData, model, (uint)type);
+            }
+        }
+    }
+
     private static TRFrameReplacement Create(InjectionData tempData, TRModel model, uint type)
     {
         var replacer = new TRFrameReplacement
