@@ -70,6 +70,8 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
         HandleShotgun(level);
         HandleTR2Guns(level, gym);
 
+        level.SoundEffects.Remove(TR1SFX.LaraFeet);
+
         return level;
     }
 

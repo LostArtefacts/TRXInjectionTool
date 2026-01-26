@@ -60,6 +60,9 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
         HandleTR1Guns(level, typeStr);
         level.Models.Remove(TR2Type.Lara);
 
+        level.SoundEffects.Remove(TR2SFX.LaraFeet);
+        level.SoundEffects.Remove(TR2SFX.LaraWetFeet);
+
         return level;
     }
 
