@@ -459,9 +459,17 @@ public abstract class InjectionBuilder
         return snapped;
     }
 
+    public static TRAnimCmdEdit CreateAnimCmdEdit(TR1Level level, TR1Type type, int animIdx)
+        => CreateAnimCmdEdit(level.Models[type].Animations[animIdx], type, animIdx);
+
     public static TRAnimCmdEdit CreateAnimCmdEdit(TR2Level level, TR2Type type, int animIdx)
+        => CreateAnimCmdEdit(level.Models[type].Animations[animIdx], type, animIdx);
+
+    public static TRAnimCmdEdit CreateAnimCmdEdit(TR3Level level, TR3Type type, int animIdx)
+        => CreateAnimCmdEdit(level.Models[type].Animations[animIdx], type, animIdx);
+
+    public static TRAnimCmdEdit CreateAnimCmdEdit(TRAnimation anim, object type, int animIdx)
     {
-        TRAnimation anim = level.Models[type].Animations[animIdx];
         int rawCount = 0;
         foreach (TRAnimCommand cmd in anim.Commands)
         {
@@ -482,7 +490,7 @@ public abstract class InjectionBuilder
         return new()
         {
             AnimIndex = animIdx,
-            TypeID = (short)type,
+            TypeID = Convert.ToInt16(type),
             RawCount = rawCount,
             TotalCount = anim.Commands.Count,
         };

@@ -8,26 +8,36 @@ public class TR1MinesPushblockSFXBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level mines = _control1.Read($"Resources/{TR1LevelNames.MINES}");
-        TRDictionary<TR1Type, TRModel> pushblocks = new();
-        foreach (TR1Type blockType in TR1TypeUtilities.GetPushblockTypes())
+        var level = _control1.Read($"Resources/{TR1LevelNames.MINES}");
+        var models = new TRDictionary<TR1Type, TRModel>
         {
-            pushblocks[blockType] = mines.Models[blockType];
+            [TR1Type.PushBlock2] = level.Models[TR1Type.PushBlock2],
+            [TR1Type.PushBlock3] = level.Models[TR1Type.PushBlock3],
+            [TR1Type.PushBlock4] = level.Models[TR1Type.PushBlock4],
+        };
+
+        ResetLevel(level);
+        level.Models = models;
+        foreach (var model in models.Values)
+        {
+            model.Animations[1].Commands.Clear();
+            model.Animations[2].Commands.Add(new TRSFXCommand
+            {
+                 FrameNumber = 151,
+                 SoundID = (short)TR1SFX.BlockSound,
+            });
         }
 
-        ResetLevel(mines);
-
-        TRModel basePushblock = pushblocks[TR1Type.PushBlock1];
-        pushblocks.Remove(TR1Type.PushBlock1);
-        mines.Models = pushblocks;
-
-        foreach (TRModel pushblock in pushblocks.Values)
-        {
-            pushblock.Animations[2].Commands = basePushblock.Animations[2].Commands;
-        }
-
-        InjectionData data = InjectionData.Create(mines, InjectionType.General, "mines_pushblocks", true);
+        var data = InjectionData.Create(level, InjectionType.General, "mines_pushblocks", true);
         CreateDefaultTests(data, TR1LevelNames.MINES);
-        return new() { data };
+        data.Animations.Clear();
+        data.AnimFrames.Clear();
+        data.AnimChanges.Clear();
+        data.AnimDispatches.Clear();
+        data.Models.Clear();
+
+        data.AnimCmdEdits.AddRange(models.Keys.Select(type => CreateAnimCmdEdit(level, type, 2)));
+
+        return [data];
     }
 }
