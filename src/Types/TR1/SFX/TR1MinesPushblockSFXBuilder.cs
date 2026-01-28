@@ -2,9 +2,9 @@
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
-namespace TRXInjectionTool.Types.TR1.Misc;
+namespace TRXInjectionTool.Types.TR1.SFX;
 
-public class TR1MinesPushblockBuilder : InjectionBuilder
+public class TR1MinesPushblockSFXBuilder : InjectionBuilder
 {
     public override List<InjectionData> Build()
     {
