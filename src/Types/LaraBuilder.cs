@@ -159,6 +159,7 @@ public abstract class LaraBuilder : InjectionBuilder
         LaraExtraState.TrexKill, LaraExtraState.MidasKill, LaraExtraState.TorsoKill,
         LaraExtraState.SharkKill, LaraExtraState.YetiKill, LaraExtraState.GuardKill,
         LaraExtraState.ShivaKill, LaraExtraState.TrainKill, LaraExtraState.WillardKill,
+        LaraExtraState.RapidsDrown,
     ];
 
     private class ExtraAnimData(string levelName, LaraExtraState state, int animIdx)
