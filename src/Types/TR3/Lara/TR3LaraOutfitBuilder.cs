@@ -7,19 +7,25 @@ namespace TRXInjectionTool.Types.TR3.Lara;
 public class TR3LaraOutfitBuilder : OutfitBuilder
 {
     private const short _barefootID = 374;
+    private const int _skinBase = 393;
 
     public override string ID => "tr3-lara-outfits";
 
     protected override TRLevelBase CreateLevel(TR2Level outfitLevel)
     {
-        var level = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
+        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.JUNGLE}");
         ResetLevel(level);
 
-        level.Models[(TR3Type)393] = outfitLevel.Models[(TR2Type)270]; // skin 1
-        level.Models[(TR3Type)394] = outfitLevel.Models[(TR2Type)271]; // skin 2
-        level.Models[(TR3Type)395] = outfitLevel.Models[(TR2Type)272]; // skin extras
-        level.Models[(TR3Type)396] = outfitLevel.Models[(TR2Type)275]; // guns
-        level.Models[(TR3Type)397] = outfitLevel.Models[(TR2Type)277]; // legs
+        var skinId = _skinBase;
+        for (int i = 0; i < _outfitCount; i++)
+        {
+            level.Models[(TR3Type)skinId++] = outfitLevel.Models[(TR2Type)(_modelBase + i)];
+        }
+
+        skinId = _skinBase + _maxOutfits;
+        level.Models[(TR3Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitExtras];
+        level.Models[(TR3Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitGuns2];
+        level.Models[(TR3Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitLegs];
 
         return level;
     }

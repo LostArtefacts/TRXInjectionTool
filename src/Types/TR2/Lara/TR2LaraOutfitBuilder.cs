@@ -7,6 +7,7 @@ namespace TRXInjectionTool.Types.TR2.Lara;
 public class TR2LaraOutfitBuilder : OutfitBuilder
 {
     private const short _barefootID = 375;
+    private const int _skinBase = 302;
 
     public override string ID => "tr2-lara-outfits";
 
@@ -15,11 +16,16 @@ public class TR2LaraOutfitBuilder : OutfitBuilder
         var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
         ResetLevel(level);
 
-        level.Models[(TR2Type)270] = outfitLevel.Models[(TR2Type)270]; // skin 1
-        level.Models[(TR2Type)271] = outfitLevel.Models[(TR2Type)271]; // skin 2
-        level.Models[(TR2Type)272] = outfitLevel.Models[(TR2Type)272]; // skin extras
-        level.Models[(TR2Type)273] = outfitLevel.Models[(TR2Type)274]; // guns
-        level.Models[(TR2Type)274] = outfitLevel.Models[(TR2Type)277]; // legs
+        var skinId = _skinBase;
+        for (int i = 0; i < _outfitCount; i++)
+        {
+            level.Models[(TR2Type)skinId++] = outfitLevel.Models[(TR2Type)(_modelBase + i)];
+        }
+
+        skinId = _skinBase + _maxOutfits;
+        level.Models[(TR2Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitExtras];
+        level.Models[(TR2Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitGuns2];
+        level.Models[(TR2Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitLegs];
 
         return level;
     }

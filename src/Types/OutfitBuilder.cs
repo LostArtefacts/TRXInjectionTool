@@ -7,6 +7,15 @@ namespace TRXInjectionTool.Types;
 
 public abstract class OutfitBuilder : InjectionBuilder
 {
+    protected const int _modelBase = 302;
+    protected const int _outfitCount = 20;
+    protected const int _maxOutfits = 32;
+    protected const int _outfitExtras = 322;
+    protected const int _outfitGuns1 = 323;
+    protected const int _outfitGuns2 = 324;
+    protected const int _outfitGuns3 = 325;
+    protected const int _outfitLegs = 326;
+
     public override List<InjectionData> Build()
     {
         var outfitLevel = _control2.Read("Resources/outfits.tr2");
