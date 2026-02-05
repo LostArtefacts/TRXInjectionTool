@@ -19,7 +19,6 @@ public class TR1MinesFDBuilder : FDBuilder
             MakeMusicOneShot(86, 1, 5),
             MakeMusicOneShot(86, 2, 5),
             .. CreateCabinFlipmapFix(),
-            .. CreatePistolsFix(level),
             .. CreateFuseFix(level),
         ];
 
@@ -67,31 +66,6 @@ public class TR1MinesFDBuilder : FDBuilder
         }
 
         return edits;
-    }
-
-    private static IEnumerable<TRFloorDataEdit> CreatePistolsFix(TR1Level level)
-    {
-        for (short r = 96; r < 99; r++)
-        {
-            var room = level.Rooms[r];
-            for (ushort x = 1; x < room.NumXSectors - 1; x++)
-            {
-                for (ushort z = 1; z < room.NumZSectors - 1; z++)
-                {
-                    var sector = room.GetSector(x, z, TRUnit.Sector);
-                    if (sector.FDIndex == 0
-                        || level.FloorData[sector.FDIndex].OfType<FDTriggerEntry>().FirstOrDefault() is not FDTriggerEntry trigger)
-                    {
-                        continue;
-                    }
-
-                    Debug.Assert(trigger.Actions.Count == 1);
-                    Debug.Assert(level.Entities[trigger.Actions[0].Parameter].TypeID == TR1Type.Pistols_S_P);
-                    trigger.OneShot = false;
-                    yield return MakeTrigger(level, r, x, z, trigger);
-                }
-            }
-        }
     }
 
     private static IEnumerable<TRFloorDataEdit> CreateFuseFix(TR1Level level)

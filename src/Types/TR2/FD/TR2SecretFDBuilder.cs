@@ -28,7 +28,7 @@ public class TR2SecretFDBuilder : FDBuilder
                 data.FloorEdits.Add(MakeTrigger(level, 143, 4, 1, new()
                 {
                     Mask = 31,
-                    OneShot = true,
+                    TrigType = FDTrigType.AntiTrigger,
                     Actions = [new() { Parameter = 125 }],
                 }));
             }
