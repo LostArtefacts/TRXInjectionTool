@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Drawing;
-using TRDataControl;
+﻿using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -8,8 +6,16 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Lara;
 
-public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
+public class TR1LaraGunBuilder : InjectionBuilder
 {
+    private static readonly List<TR1SFX> _gymSoundsIDs =
+    [
+        TR1SFX.LaraShotgun,
+        TR1SFX.LaraMagnums,
+        TR1SFX.LaraUziFire,
+        TR1SFX.MenuGuns,
+    ];
+
     // These IDs aren't defined in TRLevelControl as doing so would affect
     // normal level IO (sound map limit).
     private static readonly Dictionary<TR2SFX, short> _tr2SoundIDs = new()
@@ -49,127 +55,51 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
 
     public override List<InjectionData> Build()
     {
-        var level = CreateLevel(false);
-        var data = InjectionData.Create(level, InjectionType.General, "lara_guns");
-        AddGunSounds(data);
-        AddFlareSounds(data);
+        var result = new List<InjectionData>();
 
-        var level2 = TR1LaraGymGunBuilder.CreateLevel();
-        HandleTR2Guns(level2, true);
-        var data2 = InjectionData.Create(level2, InjectionType.General, "lara_gym_guns");
-        AddGunSounds(data2);
-        AddFlareSounds(data2);
+        foreach (var isGym in new[] { false, true })
+        {
+            var gunLevel = _control2.Read($"Resources/TR1/Lara/Guns/{(isGym ? "gym" : string.Empty)}guns.tr2");
+            var level = CreateLevel(gunLevel, isGym);
 
-        return [data, data2];
+            var data = InjectionData.Create(level, InjectionType.General, $"lara{(isGym ? "_gym" : string.Empty)}_guns");
+            result.Add(data);
+
+            data.Images.AddRange(gunLevel.Images16.Select(i =>
+            {
+                var img = new TRImage(i.Pixels);
+                return new TRTexImage32 { Pixels = img.ToRGBA() };
+            }));
+
+            AddGunSounds(data, isGym);
+            AddFlareSounds(data);
+        }
+
+        return result;
     }
 
-    private static TR1Level CreateLevel(bool gym)
+    private static TR1Level CreateLevel(TR2Level gunLevel, bool gym)
     {
         var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        ResetLevel(level);
 
-        HandleShotgun(level);
-        HandleTR2Guns(level, gym);
+        foreach (var (type, model) in gunLevel.Models)
+        {
+            level.Models[(TR1Type)(int)type] = model;
+        }
+        foreach (var (type, sprite) in gunLevel.Sprites)
+        {
+            level.Sprites[(TR1Type)(int)type] = sprite;
+        }
 
-        level.SoundEffects.Remove(TR1SFX.LaraFeet);
+        level.ObjectTextures = gunLevel.ObjectTextures;
+        UpdateAnimCommands(level);
 
         return level;
     }
 
-    private static void FixRifleGlove(TR1Level level, TRMesh hand)
+    private static void UpdateAnimCommands(TR1Level level)
     {
-        var goodHand = level.Models[TR1Type.LaraShotgunAnim_H].Meshes[10];
-        hand.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
-        hand.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
-        hand.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
-        hand.ColouredTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
-        hand.TexturedRectangles.AddRange(goodHand.TexturedRectangles.Where(f => f.Vertices.All(v => v < 8)));
-        hand.TexturedTriangles.AddRange(goodHand.TexturedTriangles.Where(f => f.Vertices.All(v => v < 8)));
-        hand.ColouredRectangles.AddRange(goodHand.ColouredRectangles.Where(f => f.Vertices.All(v => v < 8)));
-        hand.ColouredTriangles.AddRange(goodHand.ColouredTriangles.Where(f => f.Vertices.All(v => v < 8)));
-    }
-
-    private static void HandleShotgun(TR1Level level)
-    {
-        var model = level.Models[TR1Type.LaraShotgunAnim_H];
-        var oldBack = model.Meshes[7];
-        oldBack.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 30));
-        oldBack.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 30));
-        oldBack.ColouredRectangles.RemoveAll(f => f.Vertices.All(v => v < 30));
-        oldBack.Vertices.RemoveRange(0, 30);
-        oldBack.Normals.RemoveRange(0, 30);
-        oldBack.TexturedFaces.Concat(oldBack.ColouredFaces).ToList().ForEach(f =>
-        {
-            for (int i = 0; i < f.Vertices.Count; i++)
-            {
-                f.Vertices[i] -= 30;
-            }
-        });
-
-        {
-            // Fix glove
-            var gloveFace = model.Meshes[10].ColouredRectangles[1];
-            gloveFace.Texture = level.Models[TR1Type.Lara].Meshes[10].TexturedRectangles[3].Texture;
-            model.Meshes[10].ColouredRectangles.Remove(gloveFace);
-            model.Meshes[10].TexturedRectangles.Add(gloveFace);
-        }
-
-        var hips = level.Models[TR1Type.Lara].Meshes[0];
-        CreateModelLevel(level, TR1Type.LaraShotgunAnim_H);
-
-        hips.TexturedFaces.Concat(hips.ColouredFaces)
-            .ToList().ForEach(f => f.Texture = 0);
-        hips.ColouredRectangles.AddRange(hips.TexturedRectangles);
-        hips.ColouredTriangles.AddRange(hips.TexturedTriangles);
-        hips.TexturedRectangles.Clear();
-        hips.TexturedTriangles.Clear();
-
-        model = level.Models[TR1Type.LaraShotgunAnim_H];
-        oldBack = model.Meshes[7];
-        for (int i = 0; i < 15; i++)
-        {
-            if (model.Meshes[i] == null || i == 7)
-            {
-                model.Meshes[i] = hips;
-            }
-        }
-
-        oldBack.Vertices.ForEach(v =>
-        {
-            v.Y += 204;
-            v.Z += 25;
-        });
-        oldBack.Centre = new() { X = 42, Y = 99, Z = 70 };
-        oldBack.CollRadius = 105;
-        model.Meshes[14] = oldBack;
-
-        var wall = _control2.Read($"Resources/{TR2LevelNames.GW}");
-        model.Animations = wall.Models[TR2Type.LaraShotgunAnim_H].Animations;
-        // Fix using holster SFX on draw
-        (model.Animations[1].Commands[0] as TRSFXCommand).SoundID = (short)TR1SFX.LaraDraw;
-    }
-
-    private static void HandleTR2Guns(TR1Level level, bool gym)
-    {
-        var dataDir = "Resources/TR1/Lara/Guns";
-        if (gym)
-        {
-            var gymDir = dataDir + "/Gym";
-            var data = new TR1DataProvider();
-            foreach (var dep in _animTypes.SelectMany(t => data.GetDependencies(t)))
-            {
-                var file = Path.Combine(dataDir, TR1TypeUtilities.GetName(dep).ToUpper() + ".TRB");
-                File.Copy(file, Path.Combine(gymDir, Path.GetFileName(file)), true);
-            }
-            dataDir = gymDir;
-        }
-
-        new TR1DataImporter
-        {
-            Level = level,
-            DataFolder = dataDir,
-            TypesToImport = _animTypes,
-        }.Import();
-
         foreach (var fx in _animTypes.SelectMany(t => level.Models[t].Animations
             .SelectMany(a => a.Commands.OfType<TRSFXCommand>())))
         {
@@ -188,11 +118,6 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             if (type == TR1Type.LaraAutoAnim_H || type == TR1Type.LaraDeagleAnim_H)
             {
                 continue;
-            }
-
-            if (type == TR1Type.LaraMP5Anim_H || type == TR1Type.LaraRocketAnim_H)
-            {
-                FixRifleGlove(level, level.Models[type].Meshes[10]);
             }
 
             var equipAnim = level.Models[type].Animations[type == TR1Type.LaraGrenadeAnim_H ? 0 : 1];
@@ -214,17 +139,9 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
                 }
             }
         }
-
-        if (gym)
-        {
-            var col = Color.FromArgb(220, 160, 100);
-            var i = level.Palette.FindIndex(c => c.Red == col.R && c.Green == col.G && c.Blue == col.B);
-            Debug.Assert(i > 0);
-            level.Models[TR1Type.LaraFlareAnim_H].Meshes[13].ColouredRectangles[0].Texture = (ushort)i;
-        }
     }
 
-    private static void AddGunSounds(InjectionData data)
+    private static void AddGunSounds(InjectionData data, bool isGym)
     {
         var level2 = _control2.Read($"Resources/{TR2LevelNames.GW}");
         foreach (var (id2, id1) in _tr2SoundIDs)
@@ -290,6 +207,12 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             explosion.Samples = [File.ReadAllBytes("Resources/TR1/Lara/Guns/grenade.wav")];
             data.SFX.Add(TRSFXData.Create(272, explosion));
         }
+
+        if (isGym)
+        {
+            data.SFX.AddRange(_gymSoundsIDs.Select(
+                id => TRSFXData.Create(id, pyramid.SoundEffects[id])));
+        }
     }
 
     private static void AddFlareSounds(InjectionData data)
@@ -319,10 +242,4 @@ public class TR1LaraGunBuilder : InjectionBuilder, IPublisher
             }
         }
     }
-
-    public string GetPublishedName()
-        => "lara_guns.phd";
-
-    public TRLevelBase Publish()
-        => CreateLevel(false);
 }
