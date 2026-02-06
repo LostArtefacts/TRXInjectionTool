@@ -1,13 +1,24 @@
-﻿using TRImageControl;
+using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Types;
 
 namespace TRXInjectionTool.Types.TR1.Lara;
 
 public class TR1LaraGunBuilder : InjectionBuilder
 {
+    private static readonly TR1Type[] _backGunTypeIds =
+    [
+        TR1Type.LaraShotgunAnim_H,
+        TR1Type.LaraM16Anim_H,
+        TR1Type.LaraGrenadeAnim_H,
+        TR1Type.LaraHarpoonAnim_H,
+        TR1Type.LaraMP5Anim_H,
+        TR1Type.LaraRocketAnim_H,
+    ];
+
     private static readonly List<TR1SFX> _gymSoundsIDs =
     [
         TR1SFX.LaraShotgun,
@@ -55,6 +66,8 @@ public class TR1LaraGunBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
+        var cavesLevel = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+
         var result = new List<InjectionData>();
 
         foreach (var isGym in new[] { false, true })
@@ -73,6 +86,11 @@ public class TR1LaraGunBuilder : InjectionBuilder
 
             AddGunSounds(data, isGym);
             AddFlareSounds(data);
+            LaraBackGunMeshEditor.AddBackGunMeshEdits(
+                cavesLevel.Models,
+                level.Models,
+                _backGunTypeIds,
+                data);
         }
 
         return result;

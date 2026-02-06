@@ -1,13 +1,24 @@
-﻿using TRImageControl;
+using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Types;
 
 namespace TRXInjectionTool.Types.TR2.Lara;
 
 public class TR2LaraGunBuilder : InjectionBuilder
 {
+    private static readonly TR2Type[] _backGunTypeIds =
+    [
+        TR2Type.LaraShotgunAnim_H,
+        TR2Type.LaraM16Anim_H,
+        TR2Type.LaraGrenadeAnim_H,
+        TR2Type.LaraHarpoonAnim_H,
+        TR2Type.LaraMP5Anim_H,
+        TR2Type.LaraRocketAnim_H,
+    ];
+
     // These IDs aren't defined in TRLevelControl as doing so would affect
     // normal level IO (sound map limit).
     private static readonly Dictionary<TR1SFX, short> _tr1SoundIDs = new()
@@ -46,12 +57,14 @@ public class TR2LaraGunBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
+        var gwLevel = _control2.Read($"Resources/{TR2LevelNames.GW}");
+
         var result = new List<InjectionData>();
         foreach (var type in Enum.GetValues<LevelType>())
         {
             var name = GetTypeName(type);
             var gunLevel = _control2.Read($"Resources/TR2/Lara/Guns/{name}guns.tr2");
-            var level = CreateLevel(gunLevel, type);            
+            var level = CreateLevel(gunLevel, type);
 
             var data = InjectionData.Create(level, InjectionType.General,
                 $"lara_{name}{(name.Length > 0 ? "_" : string.Empty)}guns");
@@ -64,6 +77,11 @@ public class TR2LaraGunBuilder : InjectionBuilder
             }));
 
             AddGunSounds(data, type);
+            LaraBackGunMeshEditor.AddBackGunMeshEdits(
+                gwLevel.Models,
+                level.Models,
+                _backGunTypeIds,
+                data);
         }
 
         return result;
@@ -78,6 +96,7 @@ public class TR2LaraGunBuilder : InjectionBuilder
         {
             level.Models[type] = model;
         }
+
         foreach (var (type, sprite) in gunLevel.Sprites)
         {
             level.Sprites[type] = sprite;
