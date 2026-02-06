@@ -39,7 +39,6 @@ public static class AssetPublisher
         [
             new TR3FontBuilder(),
             new TR3PDABuilder(),
-            new TR3LaraGunBuilder(),
         ],
     };
 
