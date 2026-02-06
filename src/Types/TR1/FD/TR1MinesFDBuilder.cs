@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using TRLevelControl.Helpers;
+﻿using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;

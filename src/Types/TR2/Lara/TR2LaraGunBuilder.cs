@@ -1,4 +1,4 @@
-﻿using TRDataControl;
+﻿using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -6,7 +6,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Lara;
 
-public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
+public class TR2LaraGunBuilder : InjectionBuilder
 {
     // These IDs aren't defined in TRLevelControl as doing so would affect
     // normal level IO (sound map limit).
@@ -33,71 +33,64 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
 
     public override string ID => "tr2_lara_guns";
 
+    private enum LevelType
+    {
+        Normal,
+        Gym,
+        House,
+        Vegas,
+    }
+
+    private static string GetTypeName(LevelType type)
+        => type == LevelType.Normal ? string.Empty : type.ToString().ToLower();
+
     public override List<InjectionData> Build()
     {
         var result = new List<InjectionData>();
-        foreach (var typeStr in new[] { string.Empty, "Unwater" })
+        foreach (var type in Enum.GetValues<LevelType>())
         {
-            var level = CreateLevel(typeStr);
+            var name = GetTypeName(type);
+            var gunLevel = _control2.Read($"Resources/TR2/Lara/Guns/{name}guns.tr2");
+            var level = CreateLevel(gunLevel, type);            
+
             var data = InjectionData.Create(level, InjectionType.General,
-                $"lara_{typeStr.ToLower()}{(typeStr.Length > 0 ? "_" : string.Empty)}guns");
-            AddGunSounds(data);
+                $"lara_{name}{(name.Length > 0 ? "_" : string.Empty)}guns");
             result.Add(data);
+
+            data.Images.AddRange(gunLevel.Images16.Select(i =>
+            {
+                var img = new TRImage(i.Pixels);
+                return new TRTexImage32 { Pixels = img.ToRGBA() };
+            }));
+
+            AddGunSounds(data, type);
         }
 
         return result;
     }
 
-    private static TR2Level CreateLevel(string typeStr)
+    private static TR2Level CreateLevel(TR2Level gunLevel, LevelType levelType)
     {
         var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
-        ResetLevel(level, 1);
-        level.Models[TR2Type.Lara] = new()
+        ResetLevel(level);
+
+        foreach (var (type, model) in gunLevel.Models)
         {
-            Meshes = [new() { Normals = [] }],
-        };
+            level.Models[type] = model;
+        }
+        foreach (var (type, sprite) in gunLevel.Sprites)
+        {
+            level.Sprites[type] = sprite;
+        }
 
-        HandleTR1Guns(level, typeStr);
-        level.Models.Remove(TR2Type.Lara);
+        level.ObjectTextures = gunLevel.ObjectTextures;
 
-        level.SoundEffects.Remove(TR2SFX.LaraFeet);
-        level.SoundEffects.Remove(TR2SFX.LaraWetFeet);
+        UpdateAnimCommands(level, levelType);
 
         return level;
     }
 
-    private static void HandleTR1Guns(TR2Level level, string typeStr)
-    {
-        var dataDir = "Resources/TR2/Objects";
-        if (typeStr.Length > 0)
-        {
-            var gymDir = dataDir + $"/{typeStr}";
-            var data = new TR2DataProvider();
-            foreach (var dep in _animTypes.SelectMany(t => data.GetDependencies(t)))
-            {
-                var file = Path.Combine(dataDir, TR2TypeUtilities.GetName(dep).ToUpper() + ".TRB");
-                File.Copy(file, Path.Combine(gymDir, Path.GetFileName(file)), true);
-            }
-            dataDir = gymDir;
-        }
-
-        new TR2DataImporter
-        {
-            Level = level,
-            DataFolder = dataDir,
-            TypesToImport = _animTypes,
-        }.Import();
-
-        level.Models[TR2Type.Magnums_M_H].Meshes[0].TexturedTriangles.Clear();
-
-        FixGloves(level, TR2Type.LaraDeagleAnim_H);
-        FixGloves(level, TR2Type.LaraMP5Anim_H);
-        FixGloves(level, TR2Type.LaraRocketAnim_H);
-
-        AmendAnimSFX(level);
-    }
-
-    public static void AmendAnimSFX(TR2Level level)
+    private static void UpdateAnimCommands(TR2Level level, LevelType levelType)
     {
         foreach (var type in new[] { TR2Type.LaraMP5Anim_H, TR2Type.LaraRocketAnim_H })
         {
@@ -120,21 +113,14 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
                 fx.SoundID = id3;
             }
         }
+
+        if (levelType == LevelType.Gym)
+        {
+            TR2GunUtils.FixHolsterSFX(level, false);
+        }
     }
 
-    public static void FixGloves(TR2Level level, TR2Type type)
-    {
-        // Gloves are messed up, can't work out why. Do this for now until
-        // proper controlled outfits are implemented.
-        var handA = level.Models[type].Meshes[10];
-        var handB = level.Models[TR2Type.LaraMagnumAnim_H].Meshes[10];
-        handA.TexturedTriangles.RemoveAll(f => f.Vertices.All(v => v < 8));
-        handA.TexturedRectangles.RemoveAll(f => f.Vertices.All(v => v < 8));
-        handA.TexturedTriangles.AddRange(handB.TexturedTriangles.Where(f => f.Vertices.All(v => v < 8)));
-        handA.TexturedRectangles.AddRange(handB.TexturedRectangles.Where(f => f.Vertices.All(v => v < 8)));
-    }
-
-    public static void AddGunSounds(InjectionData data)
+    private static void AddGunSounds(InjectionData data, LevelType levelType)
     {
         var level = _control1.Read($"Resources/{TR1LevelNames.PYRAMID}");
         foreach (var (id1, id2) in _tr1SoundIDs)
@@ -157,11 +143,11 @@ public class TR2LaraGunBuilder : InjectionBuilder, IPublisher
             }
             data.SFX.Add(TRSFXData.Create(id1, fx));
         }
+
+        if (levelType == LevelType.Gym)
+        {
+            var venice = _control2.Read($"Resources/{TR2LevelNames.VENICE}");
+            data.SFX.Add(TRSFXData.Create(TR2SFX.GlassBreak, venice.SoundEffects[TR2SFX.GlassBreak]));
+        }
     }
-
-    public string GetPublishedName()
-        => "lara_guns.tr2";
-
-    public TRLevelBase Publish()
-        => CreateLevel(string.Empty);
 }
