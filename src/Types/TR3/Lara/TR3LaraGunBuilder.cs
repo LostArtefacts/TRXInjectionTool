@@ -3,22 +3,11 @@ using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
-using TRXInjectionTool.Types;
 
 namespace TRXInjectionTool.Types.TR3.Lara;
 
 public class TR3LaraGunBuilder : InjectionBuilder
 {
-    private static readonly TR3Type[] _backGunTypeIds =
-    [
-        TR3Type.LaraShotgunAnimation_H,
-        TR3Type.LaraHarpoonAnimation_H,
-        TR3Type.LaraMP5Animation_H,
-        TR3Type.LaraGrenadeAnimation_H,
-        TR3Type.LaraRocketAnimation_H,
-        (TR3Type)388, // M16
-    ];
-
     // These IDs aren't defined in TRLevelControl as doing so would affect
     // normal level IO (sound map limit).
     private static readonly Dictionary<TR1SFX, short> _tr1SoundIDs = new()
@@ -70,11 +59,6 @@ public class TR3LaraGunBuilder : InjectionBuilder
             }));
 
             AddGunSounds(data, isGym);
-            LaraBackGunMeshEditor.AddBackGunMeshEdits(
-                jungleLevel.Models,
-                level.Models,
-                _backGunTypeIds,
-                data);
         }
 
         return result;
