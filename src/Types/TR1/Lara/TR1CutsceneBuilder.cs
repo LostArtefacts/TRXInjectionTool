@@ -1,4 +1,4 @@
-﻿using TRLevelControl;
+using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -50,12 +50,6 @@ public class TR1CutsceneBuilder : InjectionBuilder
                 model.Meshes.Clear();
             }
         }
-
-        level.Models[TR1Type.Lara].Animations[0].Commands.Add(new TRFXCommand
-        {
-            EffectID = (short)TR1FX.ShadowOff,
-            FrameNumber = 1,
-        });
 
         level.Models[TR1Type.Lara].Animations[0].NextFrame = (ushort)level.Models[TR1Type.Lara].Animations[0].FrameEnd;
 
@@ -163,11 +157,6 @@ public class TR1CutsceneBuilder : InjectionBuilder
         var cut = _control1.Read($"Resources/{TR1LevelNames.ATLANTIS_CUT}");
 
         level.Models[TR1Type.Lara].Animations = cut.Models[TR1Type.CutsceneActor1].Animations;
-        level.Models[TR1Type.Lara].Animations[0].Commands.Add(new TRFXCommand
-        {
-            EffectID = (short)TR1FX.ShadowOff,
-            FrameNumber = 1,
-        });
 
         // Fix drifty Lara
         var lockFrame = level.Models[TR1Type.Lara].Animations[0].Frames[318];
