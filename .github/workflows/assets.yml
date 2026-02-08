@@ -23,7 +23,7 @@ jobs:
       run: |
         cd src/Resources/Published
         sshpass -p "$SFTP_PASS" sftp -o StrictHostKeyChecking=no $SFTP_USER@lostartefacts.dev <<EOF
-        cd uploads
+        cd uploads/pub
         put tr1-assets.zip
         put tr2-assets.zip
         bye
