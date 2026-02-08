@@ -22,8 +22,7 @@ public class TR3SkyboxBuilder : InjectionBuilder
         new("area51_sky", TR3LevelNames.AREA51),   // HSC, Area51
         new("antarc_sky", TR3LevelNames.ANTARC),   // Antarctica, Antarctica cutscene
         new("cavern_sky", TR3LevelNames.WILLIE),   // Meteorite Cavern
-        // Future TRLA task
-        // new("scotland_sky", TR3LevelNames.SCOTLAND), // Fling, Will's Den
+        new("scotland_sky", "SCOTLAND.TR2"),       // Fling, Will's Den
     ];
 
     public override string ID => "tr3_skyboxes";
