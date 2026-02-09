@@ -7,74 +7,29 @@ namespace TRXInjectionTool.Types.TR3.Lara;
 
 public class TR3CutsceneBuilder : InjectionBuilder
 {
-    private static readonly List<TR3Type> _actors =
+    private static readonly List<CutSetup> _setups =
     [
-        TR3Type.Lara, TR3Type.CutsceneActor1, TR3Type.CutsceneActor2, TR3Type.CutsceneActor3,
-        TR3Type.CutsceneActor4, TR3Type.CutsceneActor5, TR3Type.CutsceneActor6,
-        TR3Type.CutsceneActor7, TR3Type.CutsceneActor8, TR3Type.CutsceneActor9,
+        new(TR3LevelNames.JUNGLE_CUT, 16384, [TR3Type.CutsceneActor1], AmendJungleCut),
+        new(TR3LevelNames.RUINS_CUT, 16384, [TR3Type.CutsceneActor1, TR3Type.CutsceneActor8]),
+        new(TR3LevelNames.COASTAL_CUT, 16384, [TR3Type.CutsceneActor1]),
+        new(TR3LevelNames.CRASH_CUT, 16384, []),
+        new(TR3LevelNames.THAMES_CUT, -16384, [TR3Type.CutsceneActor7]),
+        new(TR3LevelNames.LUDS_CUT, 16384, []),
+        new(TR3LevelNames.NEVADA_CUT, 16384, []),
+        new(TR3LevelNames.HSC_CUT, 16384, [], AmendHSCCut),
+        new(TR3LevelNames.ANTARC_CUT, 16384, [TR3Type.CutsceneActor8]),
+        new(TR3LevelNames.TINNOS_CUT, 16384, [TR3Type.CutsceneActor1, TR3Type.CutsceneActor4]),
     ];
 
     public override string ID => "tr3_cutscenes";
 
     public override List<InjectionData> Build()
     {
-        return
-        [
-            CreateCut6Data(),
-            CreateCut9Data(),
-            CreateCut1Data(),
-            CreateCut4Data(),
-            CreateCut2Data(),
-            CreateCut5Data(),
-            CreateCut11Data(),
-            CreateCut7Data(),
-            CreateCut8Data(),
-            CreateCut3Data(),
-            CreateCut12Data(),
-        ];
+        return [.. _setups.Select(s => s.CreateData())];
     }
 
-    private static InjectionData CreateBaseData(string levelName)
+    private static void AmendJungleCut(InjectionData data)
     {
-        var level = _control3.Read($"Resources/TR3/{levelName}");
-        var actors = _actors.Where(level.Models.ContainsKey).ToArray();
-        foreach (var type in actors)
-        {
-            var model = level.Models[type];
-            var endAnim = model.Animations[^1];
-            endAnim.NextAnimation = (ushort)(model.Animations.Count - 1);
-            endAnim.NextFrame = (ushort)endAnim.FrameEnd;
-            model.MeshTrees.Clear();
-            model.Meshes.Clear();
-        }
-
-        CreateModelLevel(level, actors);
-        level.SoundEffects.Clear();
-        level.Images16.Clear();
-        level.Images8.Clear();
-
-        return InjectionData.Create(level, InjectionType.General,
-            $"{Path.GetFileNameWithoutExtension(levelName).ToLower()}_setup");
-    }
-
-    private static InjectionData CreateCommonCutData(string levelName, short laraRot)
-    {
-        var cut = _control3.Read($"Resources/TR3/{levelName}");
-        var data = CreateBaseData(levelName);
-
-        var laraIdx = cut.Entities.FindIndex(e => e.TypeID == TR3Type.Lara);
-        if (cut.Entities[laraIdx].Angle != laraRot)
-        {
-            data.ItemPosEdits.Add(ItemBuilder.SetAngle(cut, (short)laraIdx, laraRot));
-        }
-
-        return data;
-    }
-
-    private static InjectionData CreateCut6Data()
-    {
-        var data = CreateCommonCutData(TR3LevelNames.JUNGLE_CUT, 16384);
-
         // Room1 has incorrect portals into room 0 on the south wall (room 0 is north), which can
         // cause Room_GetSector to loop infinitely.
         var cut = _control3.Read($"Resources/TR3/{TR3LevelNames.JUNGLE_CUT}");
@@ -99,42 +54,99 @@ public class TR3CutsceneBuilder : InjectionBuilder
                 });
             }
         }
-
-        return data;
     }
 
-    private static InjectionData CreateCut9Data()
-        => CreateCommonCutData(TR3LevelNames.RUINS_CUT, 16384);
-
-    private static InjectionData CreateCut1Data()
-        => CreateCommonCutData(TR3LevelNames.COASTAL_CUT, 16384);
-
-    private static InjectionData CreateCut4Data()
-        => CreateCommonCutData(TR3LevelNames.CRASH_CUT, 16384);
-
-    private static InjectionData CreateCut2Data()
-        => CreateCommonCutData(TR3LevelNames.THAMES_CUT, -16384);
-
-    private static InjectionData CreateCut5Data()
-        => CreateCommonCutData(TR3LevelNames.ALDWYCH_CUT, 16384);
-
-    private static InjectionData CreateCut11Data()
-        => CreateCommonCutData(TR3LevelNames.LUDS_CUT, 16384);
-
-    private static InjectionData CreateCut7Data()
-        => CreateCommonCutData(TR3LevelNames.NEVADA_CUT, 16384);
-
-    private static InjectionData CreateCut8Data()
+    private static void AmendHSCCut(InjectionData data)
     {
-        var data = CreateCommonCutData(TR3LevelNames.HSC_CUT, 16384);
+        // Remove the draw guns command from Lara for the drink can, now handled in Lua.
         data.AnimCommands.Clear();
         data.Animations[0].NumAnimCommands = 0;
-        return data;
     }
 
-    private static InjectionData CreateCut3Data()
-        => CreateCommonCutData(TR3LevelNames.ANTARC_CUT, 16384);
+    private class CutSetup(string levelName, short laraAngle, 
+        List<TR3Type> hideShadowTargets, Action<InjectionData> postAction = null)
+    {
+        private static readonly List<TR3Type> _actors =
+        [
+            TR3Type.Lara, TR3Type.CutsceneActor1, TR3Type.CutsceneActor2, TR3Type.CutsceneActor3,
+            TR3Type.CutsceneActor4, TR3Type.CutsceneActor5, TR3Type.CutsceneActor6,
+            TR3Type.CutsceneActor7, TR3Type.CutsceneActor8, TR3Type.CutsceneActor9,
+        ];
 
-    private static InjectionData CreateCut12Data()
-        => CreateCommonCutData(TR3LevelNames.TINNOS_CUT, 16384);
+        public string LevelName { get; set; } = new(levelName);
+        public short LaraAngle { get; init; } = laraAngle;
+        public List<TR3Type> HideShadowTargets { get; set; } = hideShadowTargets;
+        public Action<InjectionData> PostAction { get; set; } = postAction;
+
+        public InjectionData CreateData()
+        {
+            var level = _control3.Read($"Resources/TR3/{LevelName}");
+            var actors = _actors.Where(level.Models.ContainsKey).ToArray();
+            foreach (var type in actors)
+            {
+                var model = level.Models[type];
+                var endAnim = model.Animations[^1];
+                endAnim.NextAnimation = (ushort)(model.Animations.Count - 1);
+                endAnim.NextFrame = (ushort)endAnim.FrameEnd;
+                model.MeshTrees.Clear();
+                model.Meshes.Clear();
+            }
+
+            var laraEdit = RotateLara(level);
+            HideShadows(level);
+
+            CreateModelLevel(level, actors);
+            level.SoundEffects.Clear();
+            level.Images16.Clear();
+            level.Images8.Clear();
+
+            var data = InjectionData.Create(level, InjectionType.General,
+                $"{Path.GetFileNameWithoutExtension(levelName).ToLower()}_setup");
+            if (laraEdit != null)
+            {
+                data.ItemPosEdits.Add(laraEdit);
+            }
+
+            PostAction?.Invoke(data);
+            return data;
+        }
+
+        private void HideShadows(TR3Level level)
+        {
+            foreach (var type in HideShadowTargets)
+            {
+                level.Models[type].Animations[0].Commands.Add(new TRFXCommand
+                {
+                    EffectID = 59,
+                    FrameNumber = 1,
+                });
+            }
+
+            if (LevelName == TR3LevelNames.TINNOS_CUT)
+            {
+                // Hide Willard's shadow when he falls into the pit
+                level.Models[TR3Type.CutsceneActor5].Animations[8].Commands.Add(new TRFXCommand
+                {
+                    EffectID = 59,
+                    FrameNumber = 343,
+                });
+                // Spider Willard hidden at the start, unhide when he shows up
+                level.Models[TR3Type.CutsceneActor1].Animations[9].Commands.Add(new TRFXCommand
+                {
+                    EffectID = 58,
+                    FrameNumber = 245,
+                });
+            }
+        }
+
+        private TRItemPosEdit RotateLara(TR3Level level)
+        {
+            var laraIdx = level.Entities.FindIndex(e => e.TypeID == TR3Type.Lara);
+            if (level.Entities[laraIdx].Angle != LaraAngle)
+            {
+                return ItemBuilder.SetAngle(level, (short)laraIdx, LaraAngle);
+            }
+            return null;
+        }
+    }
 }
