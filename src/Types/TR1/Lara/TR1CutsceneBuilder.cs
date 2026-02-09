@@ -127,7 +127,15 @@ public class TR1CutsceneBuilder : InjectionBuilder
             }
         ];
 
-        var data = InjectionData.Create(level, InjectionType.General, "cut3_setup");
+        // Hide scion's shadow
+        level.Models[TR1Type.CutsceneActor3] = cut.Models[TR1Type.CutsceneActor3];
+        level.Models[TR1Type.CutsceneActor3].Animations[0].Commands.Add(new TRFXCommand
+        {
+            EffectID = (short)TR1FX.ShadowOff,
+            FrameNumber = 1,
+        });
+
+        var data = InjectionData.Create(level, InjectionType.General, "cut3_setup", removeMeshData: true);
 
         var lara = cut.Entities[2].Clone() as TR1Entity;
         lara.TypeID = TR1Type.Lara;

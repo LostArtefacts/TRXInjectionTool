@@ -12,8 +12,33 @@ public class TR2CutsceneBuilder : InjectionBuilder
     {
         return
         [
+            CreateCut2Data(),
             CreateCut3Data(),
+            CreateCut4Data(),
         ];
+    }
+
+    private static InjectionData CreateCut2Data()
+    {
+        var cut = _control2.Read($"Resources/{TR2LevelNames.OPERA_CUT}");
+        var models = new TRDictionary<TR2Type, TRModel>
+        {
+            [TR2Type.CutsceneActor5] = cut.Models[TR2Type.CutsceneActor5], // Cockpit
+            [TR2Type.CutsceneActor7] = cut.Models[TR2Type.CutsceneActor7], // Rail hook
+        };
+        ResetLevel(cut);
+        cut.Models = models;
+
+        foreach (var model in cut.Models.Values)
+        {
+            model.Animations[0].Commands.Add(new TRFXCommand
+            {
+                EffectID = (short)TR2FX.ShadowOff,
+                FrameNumber = 1,
+            });
+        }
+
+        return InjectionData.Create(cut, InjectionType.General, "cut2_setup", true);
     }
 
     private static InjectionData CreateCut3Data()
@@ -56,5 +81,32 @@ public class TR2CutsceneBuilder : InjectionBuilder
                 model.Animations[anim].Frames[i] = deathPoseFrame;
             }
         }
+    }
+
+    private static InjectionData CreateCut4Data()
+    {
+        var cut = _control2.Read($"Resources/{TR2LevelNames.XIAN_CUT}");
+        var models = new TRDictionary<TR2Type, TRModel>
+        {
+            [TR2Type.CutsceneActor5] = cut.Models[TR2Type.CutsceneActor5], // Bartoli
+            [TR2Type.CutsceneActor6] = cut.Models[TR2Type.CutsceneActor6], // Goon
+            [TR2Type.CutsceneActor8] = cut.Models[TR2Type.CutsceneActor8], // Goon
+            [TR2Type.CutsceneActor9] = cut.Models[TR2Type.CutsceneActor9], // Goon
+            [TR2Type.CutsceneActor10] = cut.Models[TR2Type.CutsceneActor10], // Goon
+        };
+        ResetLevel(cut);
+        cut.Models = models;
+
+        // Hide shadows when the goons go into the jade
+        foreach (var model in cut.Models.Values)
+        {
+            model.Animations[7].Commands.Add(new TRFXCommand
+            {
+                EffectID = (short)TR2FX.ShadowOff,
+                FrameNumber = 94,
+            });
+        }
+
+        return InjectionData.Create(cut, InjectionType.General, "cut4_setup", true);
     }
 }
