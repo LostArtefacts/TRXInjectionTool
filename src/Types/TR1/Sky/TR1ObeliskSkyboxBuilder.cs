@@ -9,6 +9,8 @@ namespace TRXInjectionTool.Types.TR1.Sky;
 
 public class TR1ObeliskSkyboxBuilder : InjectionBuilder
 {
+    private static readonly List<short> _skyRooms = [59];
+
     public override List<InjectionData> Build()
     {
         TR1Level caves = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
@@ -51,6 +53,11 @@ public class TR1ObeliskSkyboxBuilder : InjectionBuilder
         }
 
         InjectionData data = InjectionData.Create(caves, InjectionType.Skybox, "obelisk_skybox");
-        return new() { data };
+        CreateDefaultTests(data, TR1LevelNames.OBELISK);
+
+        var obelisk = _control1.Read($"Resources/{TR1LevelNames.OBELISK}");
+        data.FloorEdits.AddRange(FDBuilder.AddRoomFlags(_skyRooms, TRRoomFlag.Skybox, obelisk.Rooms));
+
+        return [data];
     }
 }

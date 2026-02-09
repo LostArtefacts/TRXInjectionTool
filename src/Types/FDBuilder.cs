@@ -223,7 +223,7 @@ public abstract class FDBuilder : InjectionBuilder
         return fd;
     }
 
-    protected static IEnumerable<TRFloorDataEdit> AddRoomFlags<R>(List<short> roomIndices, TRRoomFlag flag, List<R> rooms)
+    public static IEnumerable<TRFloorDataEdit> AddRoomFlags<R>(List<short> roomIndices, TRRoomFlag flag, List<R> rooms)
         where R : TRRoom
     {
         var allRooms = roomIndices
