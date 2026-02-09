@@ -54,6 +54,17 @@ public class TR3CutsceneBuilder : InjectionBuilder
                 });
             }
         }
+
+        // Lift the inside of Tony's box off the floor to see the base
+        data.MeshEdits.Add(new()
+        {
+            ModelID = (uint)TR3Type.CutsceneActor1,
+            VertexEdits = [.. Enumerable.Range(0, 9).Select(idx => new TRVertexEdit
+            {
+                Index = (short)idx,
+                Change = new() { Y = -2 },
+            })]
+        });
     }
 
     private static void AmendHSCCut(InjectionData data)
