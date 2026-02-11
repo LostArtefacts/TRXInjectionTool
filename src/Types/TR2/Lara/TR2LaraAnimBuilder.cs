@@ -117,6 +117,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         FixJumpToFreefall(tr2Lara);
         FixLadderClimbOnSFX(tr2Lara);
         FixHandstandSFX(tr2Lara);
+        FixSprintSFX(tr2Lara, InjAnim.RunToSprintLeft, InjAnim.RunToSprintRight);
 
         return wall;
     }

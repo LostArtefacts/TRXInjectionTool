@@ -438,6 +438,34 @@ public abstract class LaraBuilder : InjectionBuilder
         }));
     }
 
+    protected static void FixSprintSFX(TRModel lara, object runToLeftIdx, object runToRightIdx)
+    {
+        var cmdMap = new Dictionary<int, int>
+        {
+            [Convert.ToInt32(runToLeftIdx)] = 4,
+            [Convert.ToInt32(runToRightIdx)] = 3,
+        };
+        foreach (var (animIdx, frameIdx) in cmdMap)
+        {
+            var anim = lara.Animations[animIdx];
+            var cmds = anim.Commands.FindAll(
+                c => (c is TRSFXCommand s && s.FrameNumber == frameIdx) || (c is TRFootprintCommand f && f.FrameNumber == frameIdx))
+                .Select(c => c.Clone());
+            foreach (var cmd in cmds)
+            {
+                if (cmd is TRSFXCommand s)
+                {
+                    s.FrameNumber = 23;
+                }
+                else if (cmd is TRFootprintCommand f)
+                {
+                    f.FrameNumber = 23;
+                }
+                anim.Commands.Add(cmd);
+            }
+        }
+    }
+
     protected static void AddChange
         (TRModel lara, object animIdx, object goalStateID, short low, short high, object nextAnimIdx, short nextFrame)
         => AddChange(lara.Animations[Convert.ToInt32(animIdx)], goalStateID, low, high, nextAnimIdx, nextFrame);

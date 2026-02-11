@@ -232,6 +232,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         FixJumpToFreefall(tr1Lara);
         ImportClimbing(tr1Lara);
         FixHandstandSFX(tr1Lara);
+        FixSprintSFX(tr1Lara, InjAnim.RunToSprintLeft, InjAnim.RunToSprintRight);
 
         SyncToTR2(tr1Lara);
 
