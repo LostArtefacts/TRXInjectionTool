@@ -89,6 +89,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         ImportIdlePose(tr3Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr3Lara);
         FixSprintSFX(tr3Lara, TR3LaraAnim.RunToSprintLeft, TR3LaraAnim.RunToSprintRight);
+        AddChange(tr3Lara, TR3LaraAnim.SlideToRun, TR3LaraState.Sprint, 14, 14, TR3LaraAnim.RunToSprintLeft, 0);
 
         return jungle;
     }

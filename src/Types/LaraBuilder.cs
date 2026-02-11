@@ -93,6 +93,7 @@ public abstract class LaraBuilder : InjectionBuilder
         SprintRollRightToRun = 309,
         SprintToRunLeft = 243,
         SprintToRunRight = 244,
+        SlideToRun = 246,
     }
 
     protected enum TR3LaraState
