@@ -1,7 +1,9 @@
-﻿using TRLevelControl.Helpers;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRImageControl;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types.TR3.Lara;
 
@@ -9,14 +11,14 @@ public class TR3CutsceneBuilder : InjectionBuilder
 {
     private static readonly List<CutSetup> _setups =
     [
-        new(TR3LevelNames.JUNGLE_CUT, 16384, [TR3Type.CutsceneActor1], AmendJungleCut),
+        new(TR3LevelNames.JUNGLE_CUT, 16384, [TR3Type.CutsceneActor1], postAction: AmendJungleCut),
         new(TR3LevelNames.RUINS_CUT, 16384, [TR3Type.CutsceneActor1, TR3Type.CutsceneActor8]),
         new(TR3LevelNames.COASTAL_CUT, 16384, [TR3Type.CutsceneActor1]),
         new(TR3LevelNames.CRASH_CUT, 16384, []),
         new(TR3LevelNames.THAMES_CUT, -16384, [TR3Type.CutsceneActor7]),
         new(TR3LevelNames.LUDS_CUT, 16384, []),
         new(TR3LevelNames.NEVADA_CUT, 16384, []),
-        new(TR3LevelNames.HSC_CUT, 16384, [], AmendHSCCut),
+        new(TR3LevelNames.HSC_CUT, 16384, [], postAction: AmendHSCCut),
         new(TR3LevelNames.ANTARC_CUT, 16384, [TR3Type.CutsceneActor8]),
         new(TR3LevelNames.TINNOS_CUT, 16384, [TR3Type.CutsceneActor1, TR3Type.CutsceneActor4]),
     ];
@@ -25,7 +27,11 @@ public class TR3CutsceneBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
-        return [.. _setups.Select(s => s.CreateData())];
+        return
+        [
+            .. _setups.Select(s => s.CreateData()),
+            CreateCut3ShellData(),
+        ];
     }
 
     private static void AmendJungleCut(InjectionData data)
@@ -74,7 +80,16 @@ public class TR3CutsceneBuilder : InjectionBuilder
         data.Animations[0].NumAnimCommands = 0;
     }
 
-    private class CutSetup(string levelName, short laraAngle, 
+    private static InjectionData CreateCut3ShellData()
+    {
+        var jungle = _control3.Read($"Resources/TR3/{TR3LevelNames.JUNGLE}");
+        var palette = jungle.Palette16.Select(c => c.ToColor()).ToList();
+        CreateModelLevel(jungle, TR3Type.YellowShellCasing_H);
+        TRFaceConverter.ConvertFlatFaces(jungle, palette);
+        return InjectionData.Create(jungle, InjectionType.General, "cut3_shell");
+    }
+
+    private class CutSetup(string levelName, short laraAngle,
         List<TR3Type> hideShadowTargets, Action<InjectionData> postAction = null)
     {
         private static readonly List<TR3Type> _actors =
