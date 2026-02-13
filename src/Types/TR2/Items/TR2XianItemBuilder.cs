@@ -12,16 +12,26 @@ public class TR2XianItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "xian_itemrots");
         CreateDefaultTests(data, TR2LevelNames.XIAN);
 
-        data.ItemPosEdits = new()
-        {
+        data.ItemPosEdits =
+        [
             SetAngle(xian, 0, 16384),
             SetAngle(xian, 88, 16384),
             SetAngle(xian, 103, -16384),
             SetAngle(xian, 137, -32768),
             SetAngle(xian, 160, 16384),
             SetAngle(xian, 217, 16384),
-        };
+        ];
 
-        return new() { data };
+        // Move switches and spike ceilings into their correct rooms.
+        data.ItemPosEdits.AddRange(xian.Entities
+            .Select((item, idx) => new { item, idx })
+            .Where(x => x.item.Room == 81 && !TR2TypeUtilities.IsAnyPickupType(x.item.TypeID))
+            .Select(x =>
+            {
+                var room = x.item.TypeID == TR2Type.WallSwitch ? 74 : 82;
+                return MoveToRoom(xian, (short)x.idx, (short)room);
+            }));
+
+        return [data];
     }
 }

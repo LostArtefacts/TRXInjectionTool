@@ -5,28 +5,24 @@ namespace TRXInjectionTool.Types;
 
 public abstract class ItemBuilder : InjectionBuilder
 {
-    protected static TRItemPosEdit SetAngle(TR1Level level, short itemIndex, short angle)
+    protected static TRItemPosEdit CreateItemPosEdit(TRLevelBase level, short itemIndex, Action<ITRLocatable> modAction)
     {
-        TR1Entity item = level.Entities[itemIndex].Clone() as TR1Entity;
-        item.Angle = angle;
-
-        return new()
+        var item = level switch
         {
-            Index = itemIndex,
-            Item = item,
+            TR1Level l => (ITRLocatable)l.Entities[itemIndex].Clone(),
+            TR2Level l => (ITRLocatable)l.Entities[itemIndex].Clone(),
+            TR3Level l => (ITRLocatable)l.Entities[itemIndex].Clone(),
+            _ => throw new InvalidOperationException("TR1-3 items supported only.")
         };
-    }
 
-    public static TRItemPosEdit SetAngle(TR2Level level, short itemIndex, short angle)
-    {
-        // Convert to a TR1Entity
-        TR2Entity item = level.Entities[itemIndex];
+        modAction(item);
+
         return new()
         {
             Index = itemIndex,
             Item = new()
             {
-                Angle = angle,
+                Angle = item.Angle,
                 X = item.X,
                 Y = item.Y,
                 Z = item.Z,
@@ -35,23 +31,11 @@ public abstract class ItemBuilder : InjectionBuilder
         };
     }
 
-    public static TRItemPosEdit SetAngle(TR3Level level, short itemIndex, short angle)
-    {
-        // Convert to a TR1Entity
-        var item = level.Entities[itemIndex];
-        return new()
-        {
-            Index = itemIndex,
-            Item = new()
-            {
-                Angle = angle,
-                X = item.X,
-                Y = item.Y,
-                Z = item.Z,
-                Room = item.Room,
-            },
-        };
-    }
+    public static TRItemPosEdit SetAngle(TRLevelBase level, short itemIndex, short angle)
+        => CreateItemPosEdit(level, itemIndex, i => i.Angle = angle);
+
+    public static TRItemPosEdit MoveToRoom(TRLevelBase level, short itemIndex, short room)
+        => CreateItemPosEdit(level, itemIndex, i => i.Room = room);
 
     public static TRMeshEdit FixEgyptToppledChair(TR1Type type, TR1Level level)
     {
