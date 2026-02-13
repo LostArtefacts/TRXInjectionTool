@@ -12,11 +12,12 @@ public class TR2FloatingItemBuilder : ItemBuilder
         InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.ItemRotation, "floating_itemrots");
         CreateDefaultTests(data, TR2LevelNames.FLOATER);
 
-        data.ItemPosEdits = new()
-        {
+        data.ItemPosEdits =
+        [
             SetAngle(floating, 1, -32768),
-        };
+            MoveToRoom(floating, 95, 117), // Move the switch to the correct room
+        ];
 
-        return new() { data };
+        return [data];
     }
 }
