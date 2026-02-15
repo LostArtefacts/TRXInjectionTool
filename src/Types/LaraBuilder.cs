@@ -32,6 +32,7 @@ public abstract class LaraBuilder : InjectionBuilder
         StandStill = 11,
         RunJumpRightStart = 16,
         RunJumpLeftStart = 18,
+        Freefall = 23,
         JumpForwardEndToFreefall = 49,
         JumpBack = 75,
         JumpForward = 77,
@@ -94,6 +95,7 @@ public abstract class LaraBuilder : InjectionBuilder
         SprintToRunLeft = 243,
         SprintToRunRight = 244,
         SlideToRun = 246,
+        CrawlIdle = 263,
     }
 
     protected enum TR3LaraState
@@ -127,6 +129,7 @@ public abstract class LaraBuilder : InjectionBuilder
         PoseLeftContinue = 19,
         PoseLeftEnd = 20,
         JailWakeUp = 21,
+        CrawlJumpDown = 22,
     }
 
     protected enum LaraExtraState
@@ -336,6 +339,19 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(lara, 96, 28, 21, 22, startAnimID, 0);
         // Hang to jump back
         AddChange(lara, 96, 25, 21, 22, startAnimID + 2, 0);
+    }
+
+    protected static void ImportCrawlJumpDown(TRModel lara, 
+        object crawlJumpStateID, object crawlJumpAnimID, object crawlIdleAnimID)
+    {
+        var laraExt = GetLaraExtModel();
+        var anim = laraExt.Animations[(int)ExtLaraAnim.CrawlJumpDown].Clone();
+        anim.NextAnimation = (ushort)LaraAnim.Freefall;
+        anim.StateID = Convert.ToUInt16(crawlJumpStateID);
+        lara.Animations.Add(anim);
+
+        var crawlAnim = lara.Animations[Convert.ToInt32(crawlIdleAnimID)];
+        AddChange(crawlAnim, crawlJumpStateID, 0, 44, crawlJumpAnimID, 0);
     }
 
     protected void ImportSprint<A, S>(TRModel lara, object slideToRunAnim,
