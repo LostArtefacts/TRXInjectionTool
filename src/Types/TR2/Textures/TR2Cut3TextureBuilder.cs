@@ -3,7 +3,6 @@ using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
-using TRXInjectionTool.Types.TR2.Lara;
 using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types.TR2.Textures;

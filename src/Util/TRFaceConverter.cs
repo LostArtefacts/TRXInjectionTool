@@ -1,9 +1,7 @@
-using Newtonsoft.Json;
 using System.Drawing;
 using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl.Model;
-using TRXInjectionTool.Actions;
 
 namespace TRXInjectionTool.Util;
 
