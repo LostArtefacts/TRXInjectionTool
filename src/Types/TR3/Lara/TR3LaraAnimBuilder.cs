@@ -35,6 +35,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         PoseLeftStart = 324,
         PoseLeftContinue = 325,
         PoseLeftEnd = 326,
+        CrawlJumpDown = 327,
     };
 
     enum InjState : int
@@ -46,6 +47,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         PoseEnd = 93,
         PoseLeft = 94,
         PoseRight = 95,
+        CrawlJumpDown = 96,
     };
 
     public override List<InjectionData> Build()
@@ -90,6 +92,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         FixJumpToFreefall(tr3Lara);
         FixSprintSFX(tr3Lara, TR3LaraAnim.RunToSprintLeft, TR3LaraAnim.RunToSprintRight);
         AddChange(tr3Lara, TR3LaraAnim.SlideToRun, TR3LaraState.Sprint, 14, 14, TR3LaraAnim.RunToSprintLeft, 0);
+        ImportCrawlJumpDown(tr3Lara, InjState.CrawlJumpDown, InjAnim.CrawlJumpDown, TR3LaraAnim.CrawlIdle);
 
         return jungle;
     }
