@@ -92,6 +92,7 @@ public abstract class LaraBuilder : InjectionBuilder
         SprintRollLeftToRun = 232,
         SprintToRollRight = 308,
         SprintRollRightToRun = 309,
+        CrouchIdle = 222,
         SprintToRunLeft = 243,
         SprintToRunRight = 244,
         SlideToRun = 246,
@@ -101,6 +102,7 @@ public abstract class LaraBuilder : InjectionBuilder
     protected enum TR3LaraState
     {
         Kick = 69,
+        CrouchIdle = 71,
         Sprint = 73,
         SprintRoll = 74
     }
@@ -130,6 +132,8 @@ public abstract class LaraBuilder : InjectionBuilder
         PoseLeftEnd = 20,
         JailWakeUp = 21,
         CrawlJumpDown = 22,
+        CrouchTurnLeft = 23,
+        CrouchTurnRight = 24,
     }
 
     protected enum LaraExtraState
@@ -352,6 +356,31 @@ public abstract class LaraBuilder : InjectionBuilder
 
         var crawlAnim = lara.Animations[Convert.ToInt32(crawlIdleAnimID)];
         AddChange(crawlAnim, crawlJumpStateID, 0, 44, crawlJumpAnimID, 0);
+    }
+
+    private static void ImportCrouchTurnAnim(TRModel lara, ExtLaraAnim extAnimID,
+        object stateID, object animID, object idleStateID, object idleAnimID)
+    {
+        var laraExt = GetLaraExtModel();
+        var anim = laraExt.Animations[Convert.ToInt32(extAnimID)].Clone();
+        anim.StateID = Convert.ToUInt16(stateID);
+        anim.NextAnimation = Convert.ToUInt16(animID);
+        lara.Animations.Add(anim);
+
+        var idleAnim = lara.Animations[Convert.ToInt32(idleAnimID)];
+        AddChange(idleAnim, stateID, 0, 44, animID, 0);
+        AddChange(anim, idleStateID, 24, 25, idleAnimID, 0);
+    }
+
+    protected static void ImportCrouchTurn(TRModel lara,
+        object crouchLeftStateID, object crouchLeftAnimID,
+        object crouchRightStateID, object crouchRightAnimID,
+        object crouchIdleStateID, object crouchIdleAnimID)
+    {
+        ImportCrouchTurnAnim(lara, ExtLaraAnim.CrouchTurnLeft, 
+            crouchLeftStateID, crouchLeftAnimID, crouchIdleStateID, crouchIdleAnimID);
+        ImportCrouchTurnAnim(lara, ExtLaraAnim.CrouchTurnRight, 
+            crouchRightStateID, crouchRightAnimID, crouchIdleStateID, crouchIdleAnimID);
     }
 
     protected void ImportSprint<A, S>(TRModel lara, object slideToRunAnim,
