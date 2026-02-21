@@ -31,12 +31,86 @@ public class TR2LaraAnimBuilder : LaraBuilder
         [TR3LaraState.SprintRoll] = InjState.SprintRoll,
     };
 
+    private static readonly Dictionary<TR3LaraAnim, InjAnim> _crawlAnimMap = new()
+    {
+        [TR3LaraAnim.StandToCrouch] = InjAnim.StandToCrouch,
+        [TR3LaraAnim.StandToCrouchEnd] = InjAnim.StandToCrouchEnd,
+        [TR3LaraAnim.StandToCrouchAbort] = InjAnim.StandToCrouchAbort,
+        [TR3LaraAnim.RunToCrouchLeftStart] = InjAnim.RunToCrouchLeftStart,
+        [TR3LaraAnim.RunToCrouchRightStart] = InjAnim.RunToCrouchRightStart,
+        [TR3LaraAnim.RunToCrouchLeftEnd] = InjAnim.RunToCrouchLeftEnd,
+        [TR3LaraAnim.RunToCrouchRightEnd] = InjAnim.RunToCrouchRightEnd,
+        [TR3LaraAnim.SprintToCrouchLeft] = InjAnim.SprintToCrouchLeft,
+        [TR3LaraAnim.SprintToCrouchRight] = InjAnim.SprintToCrouchRight,
+        [TR3LaraAnim.HangToCrouchStart] = InjAnim.HangToCrouchStart,
+        [TR3LaraAnim.HangToCrouchEnd] = InjAnim.HangToCrouchEnd,
+        [TR3LaraAnim.CrouchIdle] = InjAnim.CrouchIdle,
+        [TR3LaraAnim.CrouchToStand] = InjAnim.CrouchToStand,
+        [TR3LaraAnim.CrouchPickup] = InjAnim.CrouchPickup,
+        [TR3LaraAnim.CrouchPickupFlare] = InjAnim.CrouchPickupFlare,
+        [TR3LaraAnim.CrouchHitFront] = InjAnim.CrouchHitFront,
+        [TR3LaraAnim.CrouchHitBack] = InjAnim.CrouchHitBack,
+        [TR3LaraAnim.CrouchHitRight] = InjAnim.CrouchHitRight,
+        [TR3LaraAnim.CrouchHitLeft] = InjAnim.CrouchHitLeft,
+        [TR3LaraAnim.CrouchRollForwardStart] = InjAnim.CrouchRollForwardStart,
+        [TR3LaraAnim.CrouchRollForwardContinue] = InjAnim.CrouchRollForwardContinue,
+        [TR3LaraAnim.CrouchRollForwardEnd] = InjAnim.CrouchRollForwardEnd,
+        [TR3LaraAnim.CrouchRollForwardStartAlternate] = InjAnim.CrouchRollForwardStartAlternate,
+        [TR3LaraAnim.CrouchToCrawlStart] = InjAnim.CrouchToCrawlStart,
+        [TR3LaraAnim.CrouchToCrawlContinue] = InjAnim.CrouchToCrawlContinue,
+        [TR3LaraAnim.CrouchToCrawlEnd] = InjAnim.CrouchToCrawlEnd,
+        [TR3LaraAnim.CrawlIdle] = InjAnim.CrawlIdle,
+        [TR3LaraAnim.CrawlToCrouchStart] = InjAnim.CrawlToCrouchStart,
+        [TR3LaraAnim.CrawlToCrouchContinue] = InjAnim.CrawlToCrouchContinue,
+        [TR3LaraAnim.CrawlToCrouchlEndUnused] = InjAnim.CrawlToCrouchlEndUnused,
+        [TR3LaraAnim.CrawlIdleToForward] = InjAnim.CrawlIdleToForward,
+        [TR3LaraAnim.CrawlForward] = InjAnim.CrawlForward,
+        [TR3LaraAnim.CrawlForwardToIdleStartRight] = InjAnim.CrawlForwardToIdleStartRight,
+        [TR3LaraAnim.CrawlForwardToIdleEndRight] = InjAnim.CrawlForwardToIdleEndRight,
+        [TR3LaraAnim.CrawlForwardToIdleStartLeft] = InjAnim.CrawlForwardToIdleStartLeft,
+        [TR3LaraAnim.CrawlForwardToIdleEndLeft] = InjAnim.CrawlForwardToIdleEndLeft,
+        [TR3LaraAnim.CrawlTurnLeft] = InjAnim.CrawlTurnLeft,
+        [TR3LaraAnim.CrawlTurnRight] = InjAnim.CrawlTurnRight,
+        [TR3LaraAnim.CrawlIdleToBackward] = InjAnim.CrawlIdleToBackward,
+        [TR3LaraAnim.CrawlBackward] = InjAnim.CrawlBackward,
+        [TR3LaraAnim.CrawlBackwardToIdleStartRight] = InjAnim.CrawlBackwardToIdleStartRight,
+        [TR3LaraAnim.CrawlBackwardToIdleEndRight] = InjAnim.CrawlBackwardToIdleEndRight,
+        [TR3LaraAnim.CrawlBackwardToIdleStartLeft] = InjAnim.CrawlBackwardToIdleStartLeft,
+        [TR3LaraAnim.CrawlBackwardToIdleEndLeft] = InjAnim.CrawlBackwardToIdleEndLeft,
+        [TR3LaraAnim.CrawlTurnLeftEarlyEnd] = InjAnim.CrawlTurnLeftEarlyEnd,
+        [TR3LaraAnim.CrawlTurnRightEarlyEnd] = InjAnim.CrawlTurnRightEarlyEnd,
+        [TR3LaraAnim.CrawlToHangStart] = InjAnim.CrawlToHangStart,
+        [TR3LaraAnim.CrawlToHangContinue] = InjAnim.CrawlToHangContinue,
+        [TR3LaraAnim.CrawlToHangEnd] = InjAnim.CrawlToHangEnd,
+        [TR3LaraAnim.CrawlPickup] = InjAnim.CrawlPickup,
+        [TR3LaraAnim.CrawlHitFront] = InjAnim.CrawlHitFront,
+        [TR3LaraAnim.CrawlHitBack] = InjAnim.CrawlHitBack,
+        [TR3LaraAnim.CrawlHitRight] = InjAnim.CrawlHitRight,
+        [TR3LaraAnim.CrawlHitLeft] = InjAnim.CrawlHitLeft,
+        [TR3LaraAnim.CrawlDeath] = InjAnim.CrawlDeath,
+    };
+
+    private static readonly Dictionary<TR3LaraState, InjState> _crawlStateMap = new()
+    {
+        [TR3LaraState.CrouchIdle] = InjState.CrouchIdle,
+        [TR3LaraState.CrouchRoll] = InjState.CrouchRoll,
+        [TR3LaraState.CrawlIdle] = InjState.CrawlIdle,
+        [TR3LaraState.CrawlForward] = InjState.CrawlForward,
+        [TR3LaraState.CrawlTurnLeft] = InjState.CrawlTurnLeft,
+        [TR3LaraState.CrawlTurnRight] = InjState.CrawlTurnRight,
+        [TR3LaraState.CrawlBackward] = InjState.CrawlBackward,
+        [TR3LaraState.ClimbToCrawl] = InjState.ClimbToCrawl,
+        [TR3LaraState.CrawlToClimb] = InjState.CrawlToClimb,
+    };
+
     public override string ID => "tr2_lara_anims";
     public override TRGameVersion GameVersion => TRGameVersion.TR2;
     protected override short JumpSFX => (short)TR2SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR2SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR2SFX.LaraWetFeet;
     protected override short LandSFX => (short)TR2SFX.LaraLand;
+    protected override short KneesShuffleSFX => 376;
+    protected override short ClimbOnSFX => (short)TR2SFX.LaraClimb3;
     protected override short ResponsiveState => (short)InjState.Responsive;
 
     enum InjAnim : int
@@ -66,6 +140,64 @@ public class TR2LaraAnimBuilder : LaraBuilder
         PoseLeftStart = 240,
         PoseLeftContinue = 241,
         PoseLeftEnd = 242,
+        StandToCrouch = 243,
+        StandToCrouchEnd = 244,
+        StandToCrouchAbort = 245,
+        RunToCrouchLeftStart = 246,
+        RunToCrouchRightStart = 247,
+        RunToCrouchLeftEnd = 248,
+        RunToCrouchRightEnd = 249,
+        SprintToCrouchLeft = 250,
+        SprintToCrouchRight = 251,
+        HangToCrouchStart = 252,
+        HangToCrouchEnd = 253,
+        CrouchIdle = 254,
+        CrouchToStand = 255,
+        CrouchPickup = 256,
+        CrouchPickupFlare = 257,
+        CrouchHitFront = 258,
+        CrouchHitBack = 259,
+        CrouchHitRight = 260,
+        CrouchHitLeft = 261,
+        CrouchRollForwardStart = 262,
+        CrouchRollForwardContinue = 263,
+        CrouchRollForwardEnd = 264,
+        CrouchRollForwardStartAlternate = 265,
+        CrouchToCrawlStart = 266,
+        CrouchToCrawlContinue = 267,
+        CrouchToCrawlEnd = 268,
+        CrawlIdle = 269,
+        CrawlToCrouchStart = 270,
+        CrawlToCrouchContinue = 271,
+        CrawlToCrouchlEndUnused = 272,
+        CrawlIdleToForward = 273,
+        CrawlForward = 274,
+        CrawlForwardToIdleStartRight = 275,
+        CrawlForwardToIdleEndRight = 276,
+        CrawlForwardToIdleStartLeft = 277,
+        CrawlForwardToIdleEndLeft = 278,
+        CrawlTurnLeft = 279,
+        CrawlTurnRight = 280,
+        CrawlIdleToBackward = 281,
+        CrawlBackward = 282,
+        CrawlBackwardToIdleStartRight = 283,
+        CrawlBackwardToIdleEndRight = 284,
+        CrawlBackwardToIdleStartLeft = 285,
+        CrawlBackwardToIdleEndLeft = 286,
+        CrawlTurnLeftEarlyEnd = 287,
+        CrawlTurnRightEarlyEnd = 288,
+        CrawlToHangStart = 289,
+        CrawlToHangContinue = 290,
+        CrawlToHangEnd = 291,
+        CrawlPickup = 292,
+        CrawlHitFront = 293,
+        CrawlHitBack = 294,
+        CrawlHitRight = 295,
+        CrawlHitLeft = 296,
+        CrawlDeath = 297,
+        CrawlJumpDown = 298,
+        CrouchTurnLeft = 299,
+        CrouchTurnRight = 300,
     };
 
     enum InjState : int
@@ -79,6 +211,18 @@ public class TR2LaraAnimBuilder : LaraBuilder
         PoseLeft = 77,
         PoseRight = 78,
         Controlled = 79,
+        CrouchIdle = 80,
+        CrouchRoll = 81,
+        CrawlIdle = 82,
+        CrawlForward = 83,
+        CrawlTurnLeft = 84,
+        CrawlTurnRight = 85,
+        CrawlBackward = 86,
+        ClimbToCrawl = 87,
+        CrawlToClimb = 88,
+        CrawlJumpDown = 89,
+        CrouchTurnLeft = 90,
+        CrouchTurnRight = 91,
     };
 
     public override List<InjectionData> Build()
@@ -87,7 +231,9 @@ public class TR2LaraAnimBuilder : LaraBuilder
         
         {
             var level = CreateLevel();
-            result.Add(InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations"));
+            var data = InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations");
+            ImportKneesShuffle(data);
+            result.Add(data);
         }
         {
             var level = CreateExtraLevel();
@@ -112,12 +258,17 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportNeutralTwist(tr2Lara, (short)InjAnim.JumpNeutralRoll, (short)InjState.NeutralRoll);
         ImportControlledDrop(tr2Lara, (short)InjAnim.ControlledDropContinue);
         ImportHangToJump(tr2Lara, (short)InjAnim.HangToJumpUp);
-        ImportSprint(tr2Lara, InjAnim.SlideToRun, _sprintAnimMap, _sprintStateMap);
+        ImportSprint(tr2Lara, InjAnim.SlideToRun, _sprintAnimMap, _sprintStateMap, _crawlAnimMap, _crawlStateMap);
         ImportIdlePose(tr2Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr2Lara);
         FixLadderClimbOnSFX(tr2Lara);
         FixHandstandSFX(tr2Lara);
         FixSprintSFX(tr2Lara, InjAnim.RunToSprintLeft, InjAnim.RunToSprintRight);
+        ImportCrawling(tr2Lara, _crawlAnimMap, _crawlStateMap);
+        ImportCrawlJumpDown(tr2Lara, InjState.CrawlJumpDown, InjAnim.CrawlJumpDown, InjAnim.CrawlIdle);
+        ImportCrouchTurn(tr2Lara, InjState.CrouchTurnLeft, InjAnim.CrouchTurnLeft,
+            InjState.CrouchTurnRight, InjAnim.CrouchTurnRight,
+            InjState.CrouchIdle, InjAnim.CrouchIdle);
 
         return wall;
     }

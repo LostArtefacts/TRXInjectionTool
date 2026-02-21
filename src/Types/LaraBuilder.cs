@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
+using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types;
 
@@ -13,6 +15,8 @@ public abstract class LaraBuilder : InjectionBuilder
     protected abstract short DryFeetSFX { get; }
     protected abstract short WetFeetSFX { get; }
     protected abstract short LandSFX { get; }
+    protected abstract short KneesShuffleSFX { get; }
+    protected abstract short ClimbOnSFX { get; }
     protected abstract short ResponsiveState { get; }
 
     protected enum LaraState
@@ -92,19 +96,82 @@ public abstract class LaraBuilder : InjectionBuilder
         SprintRollLeftToRun = 232,
         SprintToRollRight = 308,
         SprintRollRightToRun = 309,
-        CrouchIdle = 222,
         SprintToRunLeft = 243,
         SprintToRunRight = 244,
         SlideToRun = 246,
+
+        StandToCrouch = 217,
+        CrouchRollForwardStart = 218,
+        CrouchRollForwardContinue = 219,
+        CrouchRollForwardEnd = 220,
+        CrouchToStand = 221,
+        CrouchIdle = 222,
+        StandToCrouchEnd = 245,
+        CrouchRollForwardStartAlternate = 247,
+        CrouchToCrawlStart = 258,        
+        CrouchToCrawlEnd = 264,
+        CrouchToCrawlContinue = 273,        
+        HangToCrouchStart = 287,
+        HangToCrouchEnd = 288,
+        CrouchPickup = 291,
+        CrouchHitFront = 293,
+        CrouchHitBack = 294,
+        CrouchHitRight = 295,
+        CrouchHitLeft = 296,
+        StandToCrouchAbort = 303,
+        RunToCrouchLeftStart = 304,
+        RunToCrouchRightStart = 305,
+        RunToCrouchLeftEnd = 306,
+        RunToCrouchRightEnd = 307,
+        SprintToCrouchLeft = 310,
+        SprintToCrouchRight = 311,
+        CrouchPickupFlare = 312,
+
+        CrawlToCrouchStart = 259,
+        CrawlForward = 260,
+        CrawlIdleToForward = 261,
+        CrawlForwardToIdleStartRight = 262,
         CrawlIdle = 263,
+        CrawlToCrouchlEndUnused = 265,
+        CrawlForwardToIdleEndRight = 266,
+        CrawlForwardToIdleStartLeft = 267,
+        CrawlForwardToIdleEndLeft = 268,
+        CrawlTurnLeft = 269,
+        CrawlTurnRight = 270,
+        CrawlToCrouchContinue = 274,
+        CrawlIdleToBackward = 275,
+        CrawlBackward = 276,
+        CrawlBackwardToIdleStartRight = 277,
+        CrawlBackwardToIdleEndRight = 278,
+        CrawlBackwardToIdleStartLeft = 279,
+        CrawlBackwardToIdleEndLeft = 280,
+        CrawlTurnLeftEarlyEnd = 281,
+        CrawlTurnRightEarlyEnd = 282,
+        CrawlToHangStart = 289,
+        CrawlToHangContinue = 290,
+        CrawlPickup = 292,
+        CrawlHitFront = 297,
+        CrawlHitBack = 298,
+        CrawlHitRight = 299,
+        CrawlHitLeft = 300,
+        CrawlDeath = 301,
+        CrawlToHangEnd = 302,
     }
 
     protected enum TR3LaraState
     {
         Kick = 69,
         CrouchIdle = 71,
+        CrouchRoll = 72,
         Sprint = 73,
-        SprintRoll = 74
+        SprintRoll = 74,
+        CrawlIdle = 80,
+        CrawlForward = 81,
+        CrawlTurnLeft = 84,
+        CrawlTurnRight = 85,
+        CrawlBackward = 86,
+        ClimbToCrawl = 87,
+        CrawlToClimb = 88,
     }
 
     protected enum ExtLaraAnim
@@ -358,13 +425,15 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(crawlAnim, crawlJumpStateID, 0, 44, crawlJumpAnimID, 0);
     }
 
-    private static void ImportCrouchTurnAnim(TRModel lara, ExtLaraAnim extAnimID,
+    private void ImportCrouchTurnAnim(TRModel lara, ExtLaraAnim extAnimID,
         object stateID, object animID, object idleStateID, object idleAnimID)
     {
         var laraExt = GetLaraExtModel();
         var anim = laraExt.Animations[Convert.ToInt32(extAnimID)].Clone();
         anim.StateID = Convert.ToUInt16(stateID);
         anim.NextAnimation = Convert.ToUInt16(animID);
+        anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == 24)
+            .ToList().ForEach(s => s.SoundID = KneesShuffleSFX);
         lara.Animations.Add(anim);
 
         var idleAnim = lara.Animations[Convert.ToInt32(idleAnimID)];
@@ -372,7 +441,7 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(anim, idleStateID, 24, 25, idleAnimID, 0);
     }
 
-    protected static void ImportCrouchTurn(TRModel lara,
+    protected void ImportCrouchTurn(TRModel lara,
         object crouchLeftStateID, object crouchLeftAnimID,
         object crouchRightStateID, object crouchRightAnimID,
         object crouchIdleStateID, object crouchIdleAnimID)
@@ -384,12 +453,13 @@ public abstract class LaraBuilder : InjectionBuilder
     }
 
     protected void ImportSprint<A, S>(TRModel lara, object slideToRunAnim,
-        Dictionary<TR3LaraAnim, A> animMap, Dictionary<TR3LaraState, S> stateMap)
+        Dictionary<TR3LaraAnim, A> sprintAnimMap, Dictionary<TR3LaraState, S> sprintStateMap,
+        Dictionary<TR3LaraAnim, A> crawlAnimMap, Dictionary<TR3LaraState, S> crawlStateMap)
         where A : Enum
         where S : Enum
     {
         var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
-        foreach (var (tr3Idx, newIdx) in animMap)
+        foreach (var (tr3Idx, newIdx) in sprintAnimMap)
         {
             var anim = tr3Lara.Animations[(int)tr3Idx].Clone();
             var animIdx = Convert.ToInt16(newIdx);
@@ -402,11 +472,11 @@ public abstract class LaraBuilder : InjectionBuilder
 
             if (Enum.IsDefined(typeof(TR3LaraState), (int)anim.StateID))
             {
-                anim.StateID = Convert.ToUInt16(stateMap[(TR3LaraState)anim.StateID]);
+                anim.StateID = Convert.ToUInt16(sprintStateMap[(TR3LaraState)anim.StateID]);
             }
             if (Enum.IsDefined(typeof(TR3LaraAnim), (int)anim.NextAnimation))
             {
-                anim.NextAnimation = Convert.ToUInt16(animMap[(TR3LaraAnim)anim.NextAnimation]);
+                anim.NextAnimation = Convert.ToUInt16(sprintAnimMap[(TR3LaraAnim)anim.NextAnimation]);
             }
 
             anim.Changes.RemoveAll(c => c.Dispatches.Any(d => !Enum.IsDefined(typeof(TR3LaraAnim), (int)d.NextAnimation)));
@@ -414,21 +484,32 @@ public abstract class LaraBuilder : InjectionBuilder
             {
                 if (Enum.IsDefined(typeof(TR3LaraState), (int)change.StateID))
                 {
-                    change.StateID = Convert.ToUInt16(stateMap[(TR3LaraState)change.StateID]);
+                    var state = (TR3LaraState)change.StateID;
+                    if (sprintStateMap.TryGetValue(state, out var s))
+                        change.StateID = Convert.ToUInt16(s);
+                    else if (crawlStateMap.TryGetValue(state, out var c))
+                        change.StateID = Convert.ToUInt16(c);
+                    else
+                        throw new Exception($"Cannot find mapped state for {state}");
                 }
                 foreach (var dispatch in change.Dispatches)
                 {
-                    if (Enum.IsDefined(typeof(TR3LaraAnim), (int)dispatch.NextAnimation))
-                    {
-                        dispatch.NextAnimation = Convert.ToInt16(animMap[(TR3LaraAnim)dispatch.NextAnimation]);
-                    }
+                    if (!Enum.IsDefined(typeof(TR3LaraAnim), (int)dispatch.NextAnimation))
+                        continue;
+                    var nextAnim = (TR3LaraAnim)dispatch.NextAnimation;
+                    if (sprintAnimMap.TryGetValue(nextAnim, out var s))
+                        dispatch.NextAnimation = Convert.ToInt16(s);
+                    else if (crawlAnimMap.TryGetValue(nextAnim, out var c))
+                        dispatch.NextAnimation = Convert.ToInt16(c);
+                    else
+                        throw new Exception($"Cannot find mapped next animation for {nextAnim}");
                 }
             }
         }
 
-        AddChange(lara, 0, stateMap[TR3LaraState.Sprint], 0, 1, animMap[TR3LaraAnim.RunToSprintLeft], 0);
-        AddChange(lara, 0, stateMap[TR3LaraState.Sprint], 11, 12, animMap[TR3LaraAnim.RunToSprintRight], 0);
-        AddChange(lara, slideToRunAnim, stateMap[TR3LaraState.Sprint], 14, 14, animMap[TR3LaraAnim.RunToSprintLeft], 0);
+        AddChange(lara, 0, sprintStateMap[TR3LaraState.Sprint], 0, 1, sprintAnimMap[TR3LaraAnim.RunToSprintLeft], 0);
+        AddChange(lara, 0, sprintStateMap[TR3LaraState.Sprint], 11, 12, sprintAnimMap[TR3LaraAnim.RunToSprintRight], 0);
+        AddChange(lara, slideToRunAnim, sprintStateMap[TR3LaraState.Sprint], 14, 14, sprintAnimMap[TR3LaraAnim.RunToSprintLeft], 0);
     }
 
     protected static void ImportIdlePose<S>(TRModel lara, S startState, S endState, S leftState, S rightState)
@@ -510,6 +591,84 @@ public abstract class LaraBuilder : InjectionBuilder
                 anim.Commands.Add(cmd);
             }
         }
+    }
+
+    protected void ImportCrawling<A, S>(TRModel lara,
+        Dictionary<TR3LaraAnim, A> animMap, Dictionary<TR3LaraState, S> stateMap)
+        where A : Enum
+        where S : Enum
+    {
+        var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
+        foreach (var (tr3Idx, newIdx) in animMap)
+        {
+            var anim = tr3Lara.Animations[(int)tr3Idx].Clone();
+            var animIdx = Convert.ToInt16(newIdx);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+
+            anim.Commands.RemoveAll(a => a is TRFootprintCommand);
+            anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == 17)
+                .ToList().ForEach(s => s.SoundID = WetFeetSFX);
+            anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == 24)
+                .ToList().ForEach(s => s.SoundID = KneesShuffleSFX);
+
+            if (tr3Idx == TR3LaraAnim.HangToCrouchStart)
+            {
+                anim.Commands.Add(new TRSFXCommand
+                {
+                    SoundID = ClimbOnSFX,
+                    FrameNumber = 13,
+                });
+            }
+            else if (tr3Idx == TR3LaraAnim.CrawlDeath)
+            {
+                anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID != (short)TR3SFX.LaraKneesDeath)
+                    .ToList().ForEach(s => s.SoundID = KneesShuffleSFX);
+            }
+
+            if (Enum.IsDefined(typeof(TR3LaraState), (int)anim.StateID))
+            {
+                anim.StateID = Convert.ToUInt16(stateMap[(TR3LaraState)anim.StateID]);
+            }
+            if (Enum.IsDefined(typeof(TR3LaraAnim), (int)anim.NextAnimation))
+            {
+                anim.NextAnimation = Convert.ToUInt16(animMap[(TR3LaraAnim)anim.NextAnimation]);
+            }
+
+            foreach (var change in anim.Changes)
+            {
+                if (Enum.IsDefined(typeof(TR3LaraState), (int)change.StateID))
+                {
+                    change.StateID = Convert.ToUInt16(stateMap[(TR3LaraState)change.StateID]);
+                }
+                foreach (var dispatch in change.Dispatches)
+                {
+                    if (Enum.IsDefined(typeof(TR3LaraAnim), (int)dispatch.NextAnimation))
+                    {
+                        dispatch.NextAnimation = Convert.ToInt16(animMap[(TR3LaraAnim)dispatch.NextAnimation]);
+                    }
+                }
+            }
+        }
+
+        AddChange(lara, LaraAnim.Run, stateMap[TR3LaraState.CrouchIdle], 0, 4, animMap[TR3LaraAnim.RunToCrouchLeftStart], 0);
+        AddChange(lara, LaraAnim.Run, stateMap[TR3LaraState.CrouchIdle], 10, 14, animMap[TR3LaraAnim.RunToCrouchRightStart], 0);
+        AddChange(lara, LaraAnim.StandStill, stateMap[TR3LaraState.CrouchIdle], 0, 1, animMap[TR3LaraAnim.StandToCrouch], 0);
+        AddChange(lara, LaraAnim.ReachToHang, stateMap[TR3LaraState.ClimbToCrawl], 12, 22, animMap[TR3LaraAnim.HangToCrouchStart], 0);
+        AddChange(lara, LaraAnim.StandIdle, stateMap[TR3LaraState.CrouchIdle], 0, 44, animMap[TR3LaraAnim.StandToCrouch], 0);
+    }
+
+    protected void ImportKneesShuffle(InjectionData data)
+    {
+        var jungle = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
+        var shuffle = jungle.SoundEffects[TR3SFX.LaraKneesShuffle];
+        shuffle.Range = 10;
+        shuffle.Volume *= 2;
+        if (data.GameVersion == TRGameVersion.TR1)
+        {
+            shuffle.Mode = (TR3SFXMode)TR1SFXMode.Restart;
+        }
+        data.SFX.Add(TRSFXData.Create(KneesShuffleSFX, shuffle));
     }
 
     protected static void AddChange
