@@ -17,6 +17,8 @@ public class TR3LaraAnimBuilder : LaraBuilder
     protected override short DryFeetSFX => (short)TR3SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR3SFX.LaraWetFeet;
     protected override short LandSFX => (short)TR3SFX.LaraLand;
+    protected override short KneesShuffleSFX => (short)TR3SFX.LaraKneesShuffle;
+    protected override short ClimbOnSFX => (short)TR3SFX.LaraClimb3;
     protected override short ResponsiveState => (short)InjState.Responsive;
 
     enum InjAnim : int
