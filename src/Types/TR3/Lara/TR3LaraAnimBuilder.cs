@@ -104,6 +104,10 @@ public class TR3LaraAnimBuilder : LaraBuilder
             TR3LaraState.CrouchIdle, TR3LaraAnim.CrouchIdle);
         FixVaulting(tr3Lara);
 
+        AlignJumpToReach(tr3Lara,
+            TR3LaraAnim.JumpForwardStartToGrabEarly, TR3LaraAnim.JumpForwardStartToGrabLate,
+            TR3LaraAnim.RunToGrabLeft, TR3LaraAnim.RunToGrabRight);
+
         return jungle;
     }
 

@@ -26,6 +26,7 @@ public abstract class LaraBuilder : InjectionBuilder
         Pose = 4,
         Death = 8,
         Freefall = 9,
+        Reach = 11,
         Glide = 18,
         PullUp = 19,
         Roll = 45,
@@ -36,7 +37,9 @@ public abstract class LaraBuilder : InjectionBuilder
         Run = 0,
         StandStill = 11,
         RunJumpRightStart = 16,
+        RunJumpRightContinue = 17,
         RunJumpLeftStart = 18,
+        RunJumpLeftContinue = 19,
         Freefall = 23,
         Climb3Click = 42,
         Climb2Click = 50,
@@ -46,6 +49,8 @@ public abstract class LaraBuilder : InjectionBuilder
         JumpForward = 77,
         UnderwaterSwimForward = 86,
         UnderwaterSwimGlide = 87,
+        JumpForwardToReach = 94,
+        JumpForwardToReachLate = 100,
         ReachToHang = 96,
         ClimbOnEnd = 102,
         StandIdle = 103,
@@ -104,6 +109,10 @@ public abstract class LaraBuilder : InjectionBuilder
         SprintToRunLeft = 243,
         SprintToRunRight = 244,
         SlideToRun = 246,
+        JumpForwardStartToGrabEarly = 248,
+        JumpForwardStartToGrabLate = 249,
+        RunToGrabRight = 250,
+        RunToGrabLeft = 251,
 
         StandToCrouch = 217,
         CrouchRollForwardStart = 218,
@@ -796,4 +805,57 @@ public abstract class LaraBuilder : InjectionBuilder
             });
         }
     }
+
+    protected static void ImportResponsiveReach<A>(TRModel lara, Dictionary<TR3LaraAnim, A> animMap)
+        where A : Enum
+    {
+        var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
+        foreach (var (tr3Idx, newIdx) in animMap)
+        {
+            var anim = tr3Lara.Animations[(int)tr3Idx].Clone();
+            var animIdx = Convert.ToInt16(newIdx);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+        }
+
+        AlignJumpToReach(lara,
+            animMap[TR3LaraAnim.JumpForwardStartToGrabEarly], animMap[TR3LaraAnim.JumpForwardStartToGrabLate],
+            animMap[TR3LaraAnim.RunToGrabLeft], animMap[TR3LaraAnim.RunToGrabRight]);
+    }
+
+    protected static void AlignJumpToReach<A>(TRModel lara,
+        A jumpStartToGrabEarly, A jumpStartToGrabLate,
+        A runToGrabLeftAnim, A runToGrabRightAnim)
+        where A : Enum
+    {
+        // Import TR3 early jump-grab state changes. This also restores the abilty to grab
+        // cancel in TR3 (JumpForwardToReachLate) - broken state change in OG.
+
+        {
+            var anim = lara.Animations[(int)LaraAnim.JumpForward];
+            anim.Changes.RemoveAll(c => c.StateID == (ushort)LaraState.Reach);
+            AddChange(anim, LaraState.Reach, 5, 6, jumpStartToGrabEarly, 0);
+            AddChange(anim, LaraState.Reach, 9, 10, jumpStartToGrabLate, 0);
+            AddChange(anim, LaraState.Reach, 17, 28, LaraAnim.JumpForwardToReach, 0);
+            AddChange(anim, LaraState.Reach, 28, 40, LaraAnim.JumpForwardToReachLate, 0);
+            SortChanges(anim);
+        }
+
+        {
+            var anim = lara.Animations[(int)LaraAnim.RunJumpRightContinue];
+            anim.Changes.RemoveAll(c => c.StateID == (ushort)LaraState.Reach);
+            AddChange(anim, LaraState.Reach, 5, 6, runToGrabLeftAnim, 0); // Left is correct
+            SortChanges(anim);
+        }
+
+        {
+            var anim = lara.Animations[(int)LaraAnim.RunJumpLeftContinue];
+            anim.Changes.RemoveAll(c => c.StateID == (ushort)LaraState.Reach);
+            AddChange(anim, LaraState.Reach, 5, 6, runToGrabRightAnim, 0); // Right is correct
+            SortChanges(anim);
+        }
+    }
+
+    private static void SortChanges(TRAnimation anim)
+        => anim.Changes.Sort((c1, c2) => c1.StateID.CompareTo(c2.StateID));
 }

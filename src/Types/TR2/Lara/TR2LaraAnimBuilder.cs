@@ -103,6 +103,14 @@ public class TR2LaraAnimBuilder : LaraBuilder
         [TR3LaraState.CrawlToClimb] = InjState.CrawlToClimb,
     };
 
+    private static readonly Dictionary<TR3LaraAnim, InjAnim> _responsiveReachAnimMap = new()
+    {
+        [TR3LaraAnim.JumpForwardStartToGrabEarly] = InjAnim.JumpForwardStartToGrabEarly,
+        [TR3LaraAnim.JumpForwardStartToGrabLate] = InjAnim.JumpForwardStartToGrabLate,
+        [TR3LaraAnim.RunToGrabRight] = InjAnim.RunToGrabRight,
+        [TR3LaraAnim.RunToGrabLeft] = InjAnim.RunToGrabLeft,
+    };
+
     public override string ID => "tr2_lara_anims";
     public override TRGameVersion GameVersion => TRGameVersion.TR2;
     protected override short JumpSFX => (short)TR2SFX.LaraJump;
@@ -198,6 +206,10 @@ public class TR2LaraAnimBuilder : LaraBuilder
         CrawlJumpDown = 298,
         CrouchTurnLeft = 299,
         CrouchTurnRight = 300,
+        JumpForwardStartToGrabEarly = 301,
+        JumpForwardStartToGrabLate = 302,
+        RunToGrabRight = 303,
+        RunToGrabLeft = 304,
     };
 
     enum InjState : int
@@ -270,6 +282,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
             InjState.CrouchTurnRight, InjAnim.CrouchTurnRight,
             InjState.CrouchIdle, InjAnim.CrouchIdle);
         FixVaulting(tr2Lara);
+        ImportResponsiveReach(tr2Lara, _responsiveReachAnimMap);
 
         return wall;
     }
