@@ -27,6 +27,7 @@ public abstract class LaraBuilder : InjectionBuilder
         Death = 8,
         Freefall = 9,
         Glide = 18,
+        PullUp = 19,
         Roll = 45,
     }
 
@@ -37,12 +38,16 @@ public abstract class LaraBuilder : InjectionBuilder
         RunJumpRightStart = 16,
         RunJumpLeftStart = 18,
         Freefall = 23,
+        Climb3Click = 42,
+        Climb2Click = 50,
+        Climb2ClickEnd = 51,
         JumpForwardEndToFreefall = 49,
         JumpBack = 75,
         JumpForward = 77,
         UnderwaterSwimForward = 86,
         UnderwaterSwimGlide = 87,
         ReachToHang = 96,
+        ClimbOnEnd = 102,
         StandIdle = 103,
         StandDeath = 138,
         RollStart = 146,
@@ -765,6 +770,30 @@ public abstract class LaraBuilder : InjectionBuilder
                     anim.FrameEnd++;
                 }
             }
+        }
+    }
+
+    protected static void FixVaulting(TRModel lara)
+    {
+        {
+            var anim = lara.Animations[(int)LaraAnim.Climb3Click];
+            anim.StateID = (ushort)LaraState.PullUp;
+            anim.Commands.OfType<TRSetPositionCommand>().First().Z = 0;
+            anim.NextAnimation = (ushort)LaraAnim.ClimbOnEnd;
+        }
+
+        {
+            var anim = lara.Animations[(int)LaraAnim.Climb2Click];
+            anim.StateID = (ushort)LaraState.PullUp;
+        }
+
+        {
+            var anim = lara.Animations[(int)LaraAnim.Climb2ClickEnd];
+            anim.StateID = (ushort)LaraState.PullUp;
+            anim.Commands.Add(new TRSetPositionCommand
+            {
+                Z = 72,
+            });
         }
     }
 }

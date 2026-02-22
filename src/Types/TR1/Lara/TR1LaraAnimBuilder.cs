@@ -388,6 +388,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportCrouchTurn(tr1Lara, InjState.CrouchTurnLeft, InjAnim.CrouchTurnLeft,
             InjState.CrouchTurnRight, InjAnim.CrouchTurnRight,
             InjState.CrouchIdle, InjAnim.CrouchIdle);
+        FixVaulting(tr1Lara);
 
         return caves;
     }

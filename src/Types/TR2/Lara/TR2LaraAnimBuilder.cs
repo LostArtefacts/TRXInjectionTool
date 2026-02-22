@@ -269,6 +269,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportCrouchTurn(tr2Lara, InjState.CrouchTurnLeft, InjAnim.CrouchTurnLeft,
             InjState.CrouchTurnRight, InjAnim.CrouchTurnRight,
             InjState.CrouchIdle, InjAnim.CrouchIdle);
+        FixVaulting(tr2Lara);
 
         return wall;
     }

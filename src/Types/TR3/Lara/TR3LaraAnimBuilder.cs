@@ -102,6 +102,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         ImportCrouchTurn(tr3Lara, InjState.CrouchTurnLeft, InjAnim.CrouchTurnLeft, 
             InjState.CrouchTurnRight, InjAnim.CrouchTurnRight,
             TR3LaraState.CrouchIdle, TR3LaraAnim.CrouchIdle);
+        FixVaulting(tr3Lara);
 
         return jungle;
     }
