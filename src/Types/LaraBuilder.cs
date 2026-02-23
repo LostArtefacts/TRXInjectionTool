@@ -45,6 +45,7 @@ public abstract class LaraBuilder : InjectionBuilder
         RunJumpLeftStart = 18,
         RunJumpLeftContinue = 19,
         Freefall = 23,
+        JumpUp = 28,
         Climb3Click = 42,
         Climb2Click = 50,
         Climb2ClickEnd = 51,
@@ -55,6 +56,7 @@ public abstract class LaraBuilder : InjectionBuilder
         UnderwaterSwimGlide = 87,
         JumpForwardToReach = 94,
         JumpForwardToReachLate = 100,
+        Reach = 95,
         ReachToHang = 96,
         ClimbOnEnd = 102,
         StandIdle = 103,
@@ -178,6 +180,23 @@ public abstract class LaraBuilder : InjectionBuilder
 
         MonkeyIdle = 234,
         MonkeyFall = 235,
+        MonkeyGrab = 233,
+        MonkeyForward = 236,
+        MonkeyStopLeft = 237,
+        MonkeyStopRight = 238,
+        MonkeyIdleToForwardLeft = 239,
+        MonkeyIdleToForwardRight = 252,
+        MonkeyShimmyLeft = 253,
+        MonkeyShimmyLeftEnd = 254,
+        MonkeyShimmyRight = 255,
+        MonkeyShimmyRightEnd = 256,
+        MonkeyTurnAround = 257,
+        MonkeyTurnLeft = 271,
+        MonkeyTurnRight = 272,
+        MonkeyTurnLeftEarlyEnd = 283,
+        MonkeyTurnLeftLateEnd = 284,
+        MonkeyTurnRightEarlyEnd = 285,
+        MonkeyTurnRightLateEnd = 286,
     }
 
     protected enum TR3LaraState
@@ -194,6 +213,13 @@ public abstract class LaraBuilder : InjectionBuilder
         CrawlBackward = 86,
         ClimbToCrawl = 87,
         CrawlToClimb = 88,
+        MonkeyIdle = 75,
+        MonkeyForward = 76,
+        MonkeyLeft = 77,
+        MonkeyRight = 78,
+        MonkeyRoll = 79,
+        MonkeyTurnLeft = 82,
+        MonkeyTurnRight = 83,
     }
 
     protected enum ExtLaraAnim
@@ -924,6 +950,82 @@ public abstract class LaraBuilder : InjectionBuilder
             Debug.Assert(lara.Animations.Count == animIdx);
             lara.Animations.Add(anim);
             anim.StateID = Convert.ToUInt16(monkeyIdleState);
+        }
+    }
+
+    protected void ImportMonkeySwing<A, S>(TRModel lara,
+        Dictionary<TR3LaraAnim, A> animMap, Dictionary<TR3LaraState, S> stateMap)
+        where A : Enum
+        where S : Enum
+    {
+        var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
+        var skipAnims = new[] { TR3LaraAnim.SwingInSlow, TR3LaraAnim.MonkeyIdle, TR3LaraAnim.MonkeyFall };
+
+        foreach (var (tr3Idx, newIdx) in animMap)
+        {
+            if (skipAnims.Contains(tr3Idx))
+            {
+                // Handled in ImportSwingInSlow, but mapping needed for other anim changes
+                continue;
+            }
+
+            var anim = tr3Lara.Animations[(int)tr3Idx].Clone();
+            var animIdx = Convert.ToInt16(newIdx);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+
+            anim.Commands.RemoveAll(a => a is TRFootprintCommand);
+            anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == 17)
+                .ToList().ForEach(s => s.SoundID = WetFeetSFX);
+            anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == 24)
+                .ToList().ForEach(s => s.SoundID = KneesShuffleSFX);
+
+            if (Enum.IsDefined(typeof(TR3LaraState), (int)anim.StateID))
+            {
+                anim.StateID = Convert.ToUInt16(stateMap[(TR3LaraState)anim.StateID]);
+            }
+            if (Enum.IsDefined(typeof(TR3LaraAnim), (int)anim.NextAnimation))
+            {
+                anim.NextAnimation = Convert.ToUInt16(animMap[(TR3LaraAnim)anim.NextAnimation]);
+            }
+
+            foreach (var change in anim.Changes)
+            {
+                if (Enum.IsDefined(typeof(TR3LaraState), (int)change.StateID))
+                {
+                    change.StateID = Convert.ToUInt16(stateMap[(TR3LaraState)change.StateID]);
+                }
+                foreach (var dispatch in change.Dispatches)
+                {
+                    if (Enum.IsDefined(typeof(TR3LaraAnim), (int)dispatch.NextAnimation))
+                    {
+                        dispatch.NextAnimation = Convert.ToInt16(animMap[(TR3LaraAnim)dispatch.NextAnimation]);
+                    }
+                }
+            }
+        }
+
+        AddChange(lara, LaraAnim.JumpUp, stateMap[TR3LaraState.MonkeyIdle], 0, 11, animMap[TR3LaraAnim.MonkeyGrab], 0);
+        AddChange(lara, LaraAnim.Reach, stateMap[TR3LaraState.MonkeyIdle], 0, 1, animMap[TR3LaraAnim.SwingInSlow], 0);
+
+        // Other changes not handled in ImportSwingInSlow
+        foreach (var idx in new[] { TR3LaraAnim.SwingInSlow, TR3LaraAnim.MonkeyIdle })
+        {
+            var swingInSrc = tr3Lara.Animations[(int)idx].Clone();
+            var swingInDst = lara.Animations[Convert.ToInt32(animMap[idx])];
+            foreach (var change in swingInSrc.Changes)
+            {
+                if (!stateMap.TryGetValue((TR3LaraState)change.StateID, out var stateID))
+                    continue;
+
+                swingInDst.Changes.Add(change);
+                change.StateID = Convert.ToUInt16(stateID);
+                foreach (var dispatch in change.Dispatches)
+                {
+                    dispatch.NextAnimation = Convert.ToInt16(animMap[(TR3LaraAnim)dispatch.NextAnimation]);
+                }
+            }
+            SortChanges(swingInDst);
         }
     }
 }

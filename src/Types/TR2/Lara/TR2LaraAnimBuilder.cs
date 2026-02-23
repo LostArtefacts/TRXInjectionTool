@@ -111,6 +111,41 @@ public class TR2LaraAnimBuilder : LaraBuilder
         [TR3LaraAnim.RunToGrabLeft] = InjAnim.RunToGrabLeft,
     };
 
+    private static readonly Dictionary<TR3LaraAnim, InjAnim> _monkeyAnimMap = new()
+    {
+        [TR3LaraAnim.SwingInSlow] = InjAnim.SwingInSlow,
+        [TR3LaraAnim.MonkeyIdle] = InjAnim.MonkeyIdle,
+        [TR3LaraAnim.MonkeyFall] = InjAnim.MonkeyFall,
+        [TR3LaraAnim.MonkeyGrab] = InjAnim.MonkeyGrab,
+        [TR3LaraAnim.MonkeyForward] = InjAnim.MonkeyForward,
+        [TR3LaraAnim.MonkeyStopLeft] = InjAnim.MonkeyStopLeft,
+        [TR3LaraAnim.MonkeyStopRight] = InjAnim.MonkeyStopRight,
+        [TR3LaraAnim.MonkeyIdleToForwardLeft] = InjAnim.MonkeyIdleToForwardLeft,
+        [TR3LaraAnim.MonkeyIdleToForwardRight] = InjAnim.MonkeyIdleToForwardRight,
+        [TR3LaraAnim.MonkeyShimmyLeft] = InjAnim.MonkeyShimmyLeft,
+        [TR3LaraAnim.MonkeyShimmyLeftEnd] = InjAnim.MonkeyShimmyLeftEnd,
+        [TR3LaraAnim.MonkeyShimmyRight] = InjAnim.MonkeyShimmyRight,
+        [TR3LaraAnim.MonkeyShimmyRightEnd] = InjAnim.MonkeyShimmyRightEnd,
+        [TR3LaraAnim.MonkeyTurnAround] = InjAnim.MonkeyTurnAround,
+        [TR3LaraAnim.MonkeyTurnLeft] = InjAnim.MonkeyTurnLeft,
+        [TR3LaraAnim.MonkeyTurnRight] = InjAnim.MonkeyTurnRight,
+        [TR3LaraAnim.MonkeyTurnLeftEarlyEnd] = InjAnim.MonkeyTurnLeftEarlyEnd,
+        [TR3LaraAnim.MonkeyTurnLeftLateEnd] = InjAnim.MonkeyTurnLeftLateEnd,
+        [TR3LaraAnim.MonkeyTurnRightEarlyEnd] = InjAnim.MonkeyTurnRightEarlyEnd,
+        [TR3LaraAnim.MonkeyTurnRightLateEnd] = InjAnim.MonkeyTurnRightLateEnd,
+    };
+
+    private static readonly Dictionary<TR3LaraState, InjState> _monkeyStateMap = new()
+    {
+        [TR3LaraState.MonkeyIdle] = InjState.MonkeyIdle,
+        [TR3LaraState.MonkeyForward] = InjState.MonkeyForward,
+        [TR3LaraState.MonkeyLeft] = InjState.MonkeyLeft,
+        [TR3LaraState.MonkeyRight] = InjState.MonkeyRight,
+        [TR3LaraState.MonkeyRoll] = InjState.MonkeyRoll,
+        [TR3LaraState.MonkeyTurnLeft] = InjState.MonkeyTurnLeft,
+        [TR3LaraState.MonkeyTurnRight] = InjState.MonkeyTurnRight,
+    };
+
     public override string ID => "tr2_lara_anims";
     public override TRGameVersion GameVersion => TRGameVersion.TR2;
     protected override short JumpSFX => (short)TR2SFX.LaraJump;
@@ -213,6 +248,23 @@ public class TR2LaraAnimBuilder : LaraBuilder
         SwingInSlow = 305,
         MonkeyIdle = 306,
         MonkeyFall = 307,
+        MonkeyGrab = 308,
+        MonkeyForward = 309,
+        MonkeyStopLeft = 310,
+        MonkeyStopRight = 311,
+        MonkeyIdleToForwardLeft = 312,
+        MonkeyIdleToForwardRight = 313,
+        MonkeyShimmyLeft = 314,
+        MonkeyShimmyLeftEnd = 315,
+        MonkeyShimmyRight = 316,
+        MonkeyShimmyRightEnd = 317,
+        MonkeyTurnAround = 318,
+        MonkeyTurnLeft = 319,
+        MonkeyTurnRight = 320,
+        MonkeyTurnLeftEarlyEnd = 321,
+        MonkeyTurnLeftLateEnd = 322,
+        MonkeyTurnRightEarlyEnd = 323,
+        MonkeyTurnRightLateEnd = 324,
     };
 
     enum InjState : int
@@ -239,6 +291,12 @@ public class TR2LaraAnimBuilder : LaraBuilder
         CrouchTurnLeft = 90,
         CrouchTurnRight = 91,
         MonkeyIdle = 92,
+        MonkeyForward = 93,
+        MonkeyLeft = 94,
+        MonkeyRight = 95,
+        MonkeyRoll = 96,
+        MonkeyTurnLeft = 97,
+        MonkeyTurnRight = 98,
     };
 
     public override List<InjectionData> Build()
@@ -290,6 +348,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportSwingInSlow(tr2Lara, InjAnim.SwingInSlow,
             InjAnim.MonkeyIdle, InjAnim.MonkeyFall, InjState.MonkeyIdle,
             InjAnim.HangToCrouchStart, InjState.ClimbToCrawl);
+        ImportMonkeySwing(tr2Lara, _monkeyAnimMap, _monkeyStateMap);
 
         return wall;
     }
