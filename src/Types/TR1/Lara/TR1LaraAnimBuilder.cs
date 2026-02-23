@@ -306,6 +306,9 @@ public class TR1LaraAnimBuilder : LaraBuilder
         JumpForwardStartToGrabLate = 302,
         RunToGrabRight = 303,
         RunToGrabLeft = 304,
+        SwingInSlow = 305,
+        MonkeyIdle = 306,
+        MonkeyFall = 307,
     };
 
     enum InjState : int
@@ -345,6 +348,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         CrawlJumpDown = 89,
         CrouchTurnLeft = 90,
         CrouchTurnRight = 91,
+        MonkeyIdle = 92,
     };
 
     public override List<InjectionData> Build()
@@ -402,6 +406,9 @@ public class TR1LaraAnimBuilder : LaraBuilder
             InjState.CrouchIdle, InjAnim.CrouchIdle);
         FixVaulting(tr1Lara);
         ImportResponsiveReach(tr1Lara, _responsiveReachAnimMap);
+        ImportSwingInSlow(tr1Lara, InjAnim.SwingInSlow,
+            InjAnim.MonkeyIdle, InjAnim.MonkeyFall, InjState.MonkeyIdle,
+            InjAnim.HangToCrouchStart, InjState.ClimbToCrawl);
 
         return caves;
     }

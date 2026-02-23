@@ -40,6 +40,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         CrawlJumpDown = 327,
         CrouchTurnLeft = 328,
         CrouchTurnRight = 329,
+        SwingInFast = 330,
     };
 
     enum InjState : int
@@ -107,6 +108,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         AlignJumpToReach(tr3Lara,
             TR3LaraAnim.JumpForwardStartToGrabEarly, TR3LaraAnim.JumpForwardStartToGrabLate,
             TR3LaraAnim.RunToGrabLeft, TR3LaraAnim.RunToGrabRight);
+        ImportSwingInFast(tr3Lara, InjAnim.SwingInFast);
 
         return jungle;
     }

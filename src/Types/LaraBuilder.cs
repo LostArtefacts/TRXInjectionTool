@@ -27,9 +27,13 @@ public abstract class LaraBuilder : InjectionBuilder
         Death = 8,
         Freefall = 9,
         Reach = 11,
+        Land = 14,
         Glide = 18,
         PullUp = 19,
+        ShimmyLeft = 30,
+        ShimmyRight = 31,
         Roll = 45,
+        Handstand = 54,
     }
 
     protected enum LaraAnim
@@ -97,6 +101,7 @@ public abstract class LaraBuilder : InjectionBuilder
 
     protected enum TR3LaraAnim
     {
+        SwingInSlow = 150,
         Sprint = 223,
         RunToSprintLeft = 224,
         RunToSprintRight = 225,
@@ -170,6 +175,9 @@ public abstract class LaraBuilder : InjectionBuilder
         CrawlHitLeft = 300,
         CrawlDeath = 301,
         CrawlToHangEnd = 302,
+
+        MonkeyIdle = 234,
+        MonkeyFall = 235,
     }
 
     protected enum TR3LaraState
@@ -858,4 +866,64 @@ public abstract class LaraBuilder : InjectionBuilder
 
     private static void SortChanges(TRAnimation anim)
         => anim.Changes.Sort((c1, c2) => c1.StateID.CompareTo(c2.StateID));
+
+    private static TRAnimation ImportSwingIn<A>(TRModel destLara, TRModel srcLara, A swingInAnim)
+        where A : Enum
+    {
+        var anim = srcLara.Animations[(int)TR3LaraAnim.SwingInSlow].Clone();
+        var animIdx = Convert.ToInt16(swingInAnim);
+        Debug.Assert(destLara.Animations.Count == animIdx);
+        destLara.Animations.Add(anim);
+        return anim;
+    }
+
+    protected static void ImportSwingInFast<A>(TRModel lara, A swingInAnim)
+        where A : Enum
+    {
+        var tr2Lara = _control2.Read($"Resources/{TR2LevelNames.GW}").Models[TR2Type.Lara];
+        ImportSwingIn(lara, tr2Lara, swingInAnim);
+    }
+
+    protected static void ImportSwingInSlow<A, S>(TRModel lara, A swingInAnim,
+        A monkeyIdleAnim, A monkeyFallAnim, S monkeyIdleState,
+        A climbToCrawlAnim, S climbToCrawlState)
+        where A : Enum
+        where S : Enum
+    {
+        var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
+        {
+            var anim = ImportSwingIn(lara, tr3Lara, swingInAnim);
+            anim.StateID = Convert.ToUInt16(monkeyIdleState);
+            anim.NextAnimation = Convert.ToUInt16(monkeyIdleAnim);
+            
+            anim.Changes.RemoveAll(c => c.StateID != (ushort)LaraState.PullUp && c.StateID != (ushort)LaraState.Handstand);
+            AddChange(anim, climbToCrawlState, 54, 60, climbToCrawlAnim, 0);
+            AddChange(anim, climbToCrawlState, 78, 84, climbToCrawlAnim, 0);
+            AddChange(anim, climbToCrawlState, 54, 60, climbToCrawlAnim, 0);
+            SortChanges(anim);
+        }
+
+        {
+            var anim = tr3Lara.Animations[(int)TR3LaraAnim.MonkeyIdle].Clone();
+            var animIdx = Convert.ToUInt16(monkeyIdleAnim);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+            anim.StateID = Convert.ToUInt16(monkeyIdleState);
+            anim.NextAnimation = animIdx;
+
+            var defaultChanges = new[] { LaraState.PullUp, LaraState.ShimmyLeft, LaraState.ShimmyRight, LaraState.Handstand };
+            anim.Changes.RemoveAll(c => !defaultChanges.Contains((LaraState)c.StateID));
+            AddChange(anim, LaraState.Land, 0, 48, monkeyFallAnim, 0);
+            AddChange(anim, climbToCrawlState, 0, 48, climbToCrawlAnim, 0);
+            SortChanges(anim);
+        }
+
+        {
+            var anim = tr3Lara.Animations[(int)TR3LaraAnim.MonkeyFall].Clone();
+            var animIdx = Convert.ToUInt16(monkeyFallAnim);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+            anim.StateID = Convert.ToUInt16(monkeyIdleState);
+        }
+    }
 }
