@@ -1028,4 +1028,33 @@ public abstract class LaraBuilder : InjectionBuilder
             SortChanges(swingInDst);
         }
     }
+
+    protected static void SyncToTR3<A, S>(TRModel lara,
+        Dictionary<int, A> animMap, Dictionary<int, S> stateMap,
+        A sprintRollLeftToRun)
+        where A : Enum
+        where S : Enum
+    {
+        var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
+        foreach (var (tr3Idx, newIdx) in animMap)
+        {
+            var anim = tr3Lara.Animations[tr3Idx].Clone();
+            var animIdx = Convert.ToInt16(newIdx);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+
+            if (stateMap.TryGetValue(anim.StateID, out var state))
+            {
+                anim.StateID = Convert.ToUInt16(state);
+            }
+            if (animMap.TryGetValue(anim.NextAnimation, out var nextAnim))
+            {
+                anim.NextAnimation = Convert.ToUInt16(nextAnim);
+            }
+            else if (anim.NextAnimation == 232)
+            {
+                anim.NextAnimation = Convert.ToUInt16(sprintRollLeftToRun);
+            }
+        }
+    }
 }

@@ -265,6 +265,12 @@ public class TR2LaraAnimBuilder : LaraBuilder
         MonkeyTurnLeftLateEnd = 322,
         MonkeyTurnRightEarlyEnd = 323,
         MonkeyTurnRightLateEnd = 324,
+        SprintSlideStandRightAlternate = 325,
+        SprintSlideStandLeftAlternate = 326,
+        SprintToRollLeftBeta = 327,
+        SprintToRollAlternateStart = 328,
+        SprintToRollAlternateContinue = 329,
+        SprintToRollAlternateEnd = 330,
     };
 
     enum InjState : int
@@ -349,6 +355,8 @@ public class TR2LaraAnimBuilder : LaraBuilder
             InjAnim.MonkeyIdle, InjAnim.MonkeyFall, InjState.MonkeyIdle,
             InjAnim.HangToCrouchStart, InjState.ClimbToCrawl);
         ImportMonkeySwing(tr2Lara, _monkeyAnimMap, _monkeyStateMap);
+
+        SyncToTR3(tr2Lara);
 
         return wall;
     }
@@ -443,6 +451,25 @@ public class TR2LaraAnimBuilder : LaraBuilder
         lara.Animations[212].NextAnimation = 213;
         lara.Animations[213].NextAnimation = (ushort)LaraAnim.JumpForward;
         lara.Animations[213].NextFrame = 39;
+    }
+
+    private static void SyncToTR3(TRModel lara)
+    {
+        var animMap = new Dictionary<int, InjAnim>
+        {
+            [227] = InjAnim.SprintSlideStandRightAlternate,
+            [229] = InjAnim.SprintSlideStandLeftAlternate,
+            [231] = InjAnim.SprintToRollLeftBeta,
+            [240] = InjAnim.SprintToRollAlternateStart,
+            [241] = InjAnim.SprintToRollAlternateContinue,
+            [242] = InjAnim.SprintToRollAlternateEnd,
+        };
+        var stateMap = new Dictionary<int, InjState>
+        {
+            [74] = InjState.SprintRoll,
+        };
+
+        SyncToTR3(lara, animMap, stateMap, InjAnim.SprintRollLeftToRun);
     }
 
     private static byte[] ExportLaraWAD(TR2Level level, TR2Level extraLevel)
