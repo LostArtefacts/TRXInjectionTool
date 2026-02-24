@@ -41,6 +41,8 @@ public class TR3LaraAnimBuilder : LaraBuilder
         CrouchTurnLeft = 328,
         CrouchTurnRight = 329,
         SwingInFast = 330,
+        LadderToCrouchStart = 331,
+        LadderToCrouchEnd = 332,
     };
 
     enum InjState : int
@@ -109,6 +111,8 @@ public class TR3LaraAnimBuilder : LaraBuilder
             TR3LaraAnim.JumpForwardStartToGrabEarly, TR3LaraAnim.JumpForwardStartToGrabLate,
             TR3LaraAnim.RunToGrabLeft, TR3LaraAnim.RunToGrabRight);
         ImportSwingInFast(tr3Lara, InjAnim.SwingInFast);
+        ImportLadderToCrouch(tr3Lara, TR2LaraAnim.LadderIdle, TR3LaraAnim.CrouchIdle, TR3LaraState.ClimbToCrawl,
+            InjAnim.LadderToCrouchStart, InjAnim.LadderToCrouchEnd);
 
         return jungle;
     }

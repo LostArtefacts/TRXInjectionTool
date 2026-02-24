@@ -249,6 +249,8 @@ public abstract class LaraBuilder : InjectionBuilder
         CrawlJumpDown = 22,
         CrouchTurnLeft = 23,
         CrouchTurnRight = 24,
+        LadderToCrouchStart = 25,
+        LadderToCrouchEnd = 26,
     }
 
     protected enum LaraExtraState
@@ -1056,5 +1058,51 @@ public abstract class LaraBuilder : InjectionBuilder
                 anim.NextAnimation = Convert.ToUInt16(sprintRollLeftToRun);
             }
         }
+    }
+
+    protected void ImportLadderToCrouch<A, B, C, S>(TRModel lara, A idleLadderAnim, B crouchIdleAnim, S climbToCrawlState,
+        C ladderToCrouchStartAnim, C ladderToCrouchEndAnim)
+        where A : Enum
+        where B : Enum
+        where C : Enum
+        where S : Enum
+    {
+        var laraExt = GetLaraExtModel();
+
+        {
+            var anim = laraExt.Animations[(int)ExtLaraAnim.LadderToCrouchStart].Clone();
+            var animIdx = Convert.ToInt16(ladderToCrouchStartAnim);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            anim.NextAnimation = Convert.ToUInt16(ladderToCrouchEndAnim);
+            anim.StateID = Convert.ToUInt16(climbToCrawlState);
+            lara.Animations.Add(anim);
+
+            anim.Commands.Add(new TRSFXCommand
+            {
+                SoundID = 5,
+                FrameNumber = 18,
+            });
+            anim.Commands.Add(new TRSFXCommand
+            {
+                SoundID = KneesShuffleSFX,
+                FrameNumber = 32,
+            });
+            anim.Commands.Add(new TRSFXCommand
+            {
+                SoundID = KneesShuffleSFX,
+                FrameNumber = 44,
+            });
+        }
+
+        {
+            var anim = laraExt.Animations[(int)ExtLaraAnim.LadderToCrouchEnd].Clone();
+            var animIdx = Convert.ToInt16(ladderToCrouchEndAnim);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            anim.NextAnimation = Convert.ToUInt16(crouchIdleAnim);
+            anim.StateID = Convert.ToUInt16(climbToCrawlState);
+            lara.Animations.Add(anim);
+        }
+
+        AddChange(lara, idleLadderAnim, climbToCrawlState, 0, 48, ladderToCrouchStartAnim, 0);
     }
 }

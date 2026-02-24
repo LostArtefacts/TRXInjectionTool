@@ -271,6 +271,8 @@ public class TR2LaraAnimBuilder : LaraBuilder
         SprintToRollAlternateStart = 328,
         SprintToRollAlternateContinue = 329,
         SprintToRollAlternateEnd = 330,
+        LadderToCrouchStart = 331,
+        LadderToCrouchEnd = 332,
     };
 
     enum InjState : int
@@ -357,6 +359,9 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportMonkeySwing(tr2Lara, _monkeyAnimMap, _monkeyStateMap);
 
         SyncToTR3(tr2Lara);
+
+        ImportLadderToCrouch(tr2Lara, TR2LaraAnim.LadderIdle, InjAnim.CrouchIdle, InjState.ClimbToCrawl,
+            InjAnim.LadderToCrouchStart, InjAnim.LadderToCrouchEnd);
 
         return wall;
     }
