@@ -20,14 +20,13 @@ public abstract class FDBuilder : InjectionBuilder
     }
 
     protected static FDTriggerEntry GetTrigger(TR1Level level, short room, ushort x, ushort z)
-    {
-        return GetTrigger(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
-    }
+        => GetTrigger(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
 
     protected static FDTriggerEntry GetTrigger(TR2Level level, short room, ushort x, ushort z)
-    {
-        return GetTrigger(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
-    }
+        => GetTrigger(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
+
+    protected static FDTriggerEntry GetTrigger(TR3Level level, short room, ushort x, ushort z)
+        => GetTrigger(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
 
     protected static FDTriggerEntry GetTrigger(TRRoomSector sector, FDControl floorData)
     {
