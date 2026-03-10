@@ -59,21 +59,43 @@ public class TR3PickupBuilder : InjectionBuilder
         }
     }
 
-    private static readonly List<Target> _targets = new()
+    private static void FixYBounds(TRModel model)
     {
+        foreach (var frame in model.Animations.SelectMany(a => a.Frames))
+        {
+            frame.Bounds.MinY = -1;
+            frame.Bounds.MaxY = 0;
+            frame.OffsetY = -1;
+        }
+    }
+
+    private static readonly List<Target> _targets =
+    [
         new()
         {
             Level = TR3LevelNames.CRASH,
             BinName = "crash_pickup_meshes",
             ObjectFixes = new()
             {
-                [TR3Type.Quest1_M_H] = new Action<TR3ModelContext>[]
-                {
+                [TR3Type.Quest1_M_H] =
+                [
                     (ctx) => FixYaw(ctx.Model),
-                },
+                ],
             },
         },
-    };
+        new()
+        {
+            Level = TR3LevelNames.ALDWYCH,
+            BinName = "aldwych_pickup_meshes",
+            ObjectFixes = new()
+            {
+                [TR3Type.Puzzle2_P] =
+                [
+                    (ctx) => FixYBounds(ctx.Model),
+                ],
+            },
+        },
+    ];
 
     private static InjectionData FixOraDagger()
     {
