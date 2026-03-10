@@ -11,7 +11,7 @@ public class TR3GlideCameraBuilder : FDBuilder
     public override List<InjectionData> Build()
     {
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.General, "tinnos_cameras");
-        CreateDefaultTests(data, TR3LevelNames.TINNOS);
+        CreateDefaultTests(data, $"TR3/{TR3LevelNames.TINNOS}");
         data.FloorEdits.Add(FixTinnosCamera());
         return [data];
     }
