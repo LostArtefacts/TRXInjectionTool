@@ -57,9 +57,25 @@ public abstract class FDBuilder : InjectionBuilder
         };
     }
 
-    public static TRFloorDataEdit MakeTrigger(TR1Level level, short room, ushort x, ushort z, FDTriggerEntry trigger)
+    public static TRFloorDataEdit MakeTrigger(TRLevelBase level, short room, ushort x, ushort z, FDTriggerEntry trigger)
     {
-        FDTrigCreateFix fd = MakeTrigFix(level, room, x, z);
+        FDTrigCreateFix fd;
+        if (level is TR1Level level1)
+        {
+            fd = MakeTrigFix(level1, room, x, z);
+        }
+        else if (level is TR2Level level2)
+        {
+            fd = MakeTrigFix(level2, room, x, z);
+        }
+        else if (level is TR3Level level3)
+        {
+            fd = MakeTrigFix(level3, room, x, z);
+        }
+        else
+        {
+            throw new ArgumentException("TR1-3 only supported");
+        }
         fd.Entries.Add(trigger);
 
         return new()
@@ -67,39 +83,24 @@ public abstract class FDBuilder : InjectionBuilder
             RoomIndex = room,
             X = x,
             Z = z,
-            Fixes = new() { fd },
-        };
-    }
-
-    protected static TRFloorDataEdit MakeTrigger(TR2Level level, short room, ushort x, ushort z, FDTriggerEntry trigger)
-    {
-        FDTrigCreateFix fd = MakeTrigFix(level, room, x, z);
-        fd.Entries.Add(trigger);
-
-        return new()
-        {
-            RoomIndex = room,
-            X = x,
-            Z = z,
-            Fixes = new() { fd },
+            Fixes = [fd],
         };
     }
 
     protected static FDTrigCreateFix MakeTrigFix(TR1Level level, short room, ushort x, ushort z)
-    {
-        return MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
-    }
+        => MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
 
     protected static FDTrigCreateFix MakeTrigFix(TR2Level level, short room, ushort x, ushort z)
-    {
-        return MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
-    }
+        => MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
+
+    protected static FDTrigCreateFix MakeTrigFix(TR3Level level, short room, ushort x, ushort z)
+        => MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
 
     protected static FDTrigCreateFix MakeTrigFix(TRRoomSector sector, FDControl floorData)
     {
-        FDTrigCreateFix fd = new()
+        var fd = new FDTrigCreateFix
         {
-            Entries = new(),
+            Entries = [],
         };
 
         // Ensure we capture all FD excluding trigger entries.

@@ -570,4 +570,35 @@ public abstract class InjectionBuilder
         [TR2LevelNames.KINGDOM] = "kingdom",
         [TR2LevelNames.VEGAS] = "vegas",
     };
+
+    protected static readonly Dictionary<string, string> _tr3NameMap = new()
+    {
+        [TR3LevelNames.ASSAULT] = "gym",
+        [TR3LevelNames.JUNGLE] = "jungle",
+        [TR3LevelNames.RUINS] = "temple",
+        [TR3LevelNames.GANGES] = "ganges",
+        [TR3LevelNames.CAVES] = "caves",
+        [TR3LevelNames.COASTAL] = "coastal",
+        [TR3LevelNames.CRASH] = "crash",
+        [TR3LevelNames.MADUBU] = "madubu",
+        [TR3LevelNames.PUNA] = "puna",
+        [TR3LevelNames.THAMES] = "thames",
+        [TR3LevelNames.ALDWYCH] = "aldwych",
+        [TR3LevelNames.LUDS] = "luds",
+        [TR3LevelNames.CITY] = "city",
+        [TR3LevelNames.NEVADA] = "nevada",
+        [TR3LevelNames.HSC] = "compound",
+        [TR3LevelNames.AREA51] = "area51",
+        [TR3LevelNames.ANTARC] = "antarc",
+        [TR3LevelNames.RXTECH] = "mines",
+        [TR3LevelNames.TINNOS] = "tinnos",
+        [TR3LevelNames.WILLIE] = "cavern",
+        [TR3LevelNames.HALLOWS] = "stpaul",
+        [TR3LevelNames.FLING] = "scotland",
+        [TR3LevelNames.LAIR] = "willsden",
+        [TR3LevelNames.CLIFF] = "cliff",
+        [TR3LevelNames.FISHES] = "fishes",
+        [TR3LevelNames.MADHOUSE] = "zoo",
+        [TR3LevelNames.REUNION] = "reunion",
+    };
 }
