@@ -15,7 +15,7 @@ public class TR3CutsceneBuilder : InjectionBuilder
         new(TR3LevelNames.RUINS_CUT, 16384, [TR3Type.CutsceneActor1, TR3Type.CutsceneActor8]),
         new(TR3LevelNames.COASTAL_CUT, 16384, [TR3Type.CutsceneActor1]),
         new(TR3LevelNames.CRASH_CUT, 16384, []),
-        new(TR3LevelNames.THAMES_CUT, -16384, [TR3Type.CutsceneActor7]),
+        new(TR3LevelNames.THAMES_CUT, -16384, [TR3Type.CutsceneActor7], postAction: AmendThamesCut),
         new(TR3LevelNames.LUDS_CUT, 16384, []),
         new(TR3LevelNames.NEVADA_CUT, 16384, []),
         new(TR3LevelNames.HSC_CUT, 16384, [], postAction: AmendHSCCut),
@@ -71,6 +71,13 @@ public class TR3CutsceneBuilder : InjectionBuilder
                 Change = new() { Y = -2 },
             })]
         });
+    }
+
+    private static void AmendThamesCut(InjectionData data)
+    {
+        // Rooms 18-20 are mostly inside so remove the wind flag to avoid rain there.
+        var cut = _control3.Read($"Resources/TR3/{TR3LevelNames.THAMES_CUT}");
+        data.FloorEdits.AddRange(FDBuilder.RemoveRoomFlags([18,19,20], TRRoomFlag.Wind, cut.Rooms));
     }
 
     private static void AmendHSCCut(InjectionData data)

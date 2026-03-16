@@ -225,21 +225,25 @@ public abstract class FDBuilder : InjectionBuilder
 
     public static IEnumerable<TRFloorDataEdit> AddRoomFlags<R>(List<short> roomIndices, TRRoomFlag flag, List<R> rooms)
         where R : TRRoom
-    {
-        var allRooms = roomIndices
-            .Concat(roomIndices.Where(r => rooms[r].AlternateRoom != -1).Select(r => rooms[r].AlternateRoom))
-            .Distinct();
+        => AmendRoomFlags(roomIndices, flag, rooms, true);
 
-        return allRooms.Select(r => new TRFloorDataEdit
-        {
-            RoomIndex = r,
-            Fixes = new()
+    public static IEnumerable<TRFloorDataEdit> RemoveRoomFlags<R>(List<short> roomIndices, TRRoomFlag flag, List<R> rooms)
+        where R : TRRoom
+        => AmendRoomFlags(roomIndices, flag, rooms, false);
+
+    private static IEnumerable<TRFloorDataEdit> AmendRoomFlags<R>(List<short> roomIndices, TRRoomFlag flag, List<R> rooms, bool add)
+        where R : TRRoom
+    {
+        return roomIndices
+            .Concat(roomIndices.Where(r => rooms[r].AlternateRoom != -1).Select(r => rooms[r].AlternateRoom))
+            .Distinct()
+            .Select(r => new TRFloorDataEdit
             {
-                new FDRoomProperties
+                RoomIndex = r,
+                Fixes = [new FDRoomProperties
                 {
-                    Flags = rooms[r].Flags | flag,
-                }
-            }
-        });
+                    Flags = add ? (rooms[r].Flags | flag) : (rooms[r].Flags & ~flag),
+                }]
+            });
     }
 }
