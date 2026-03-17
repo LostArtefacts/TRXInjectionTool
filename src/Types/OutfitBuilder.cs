@@ -8,13 +8,13 @@ namespace TRXInjectionTool.Types;
 public abstract class OutfitBuilder : InjectionBuilder
 {
     protected const int _modelBase = 302;
-    protected const int _outfitCount = 20;
+    protected const int _outfitCount = 23;
     protected const int _maxOutfits = 32;
-    protected const int _outfitExtras = 322;
-    protected const int _outfitGuns1 = 323;
-    protected const int _outfitGuns2 = 324;
-    protected const int _outfitGuns3 = 325;
-    protected const int _outfitLegs = 326;
+    protected const int _outfitExtras = 334;
+    protected const int _outfitGuns1 = 335;
+    protected const int _outfitGuns2 = 336;
+    protected const int _outfitGuns3 = 337;
+    protected const int _outfitLegs = 338;
 
     public override List<InjectionData> Build()
     {
