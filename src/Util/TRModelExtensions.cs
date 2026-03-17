@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using TRLevelControl;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -88,6 +89,30 @@ public static class TRModelExtensions
             }
             face.Vertices[^1] = first;
         }
+    }
+
+    public static void AlterColour(this TR3RoomVertex vertex, float factor)
+    {
+        var colour = (ushort)vertex.Lighting;
+
+        var a1 = (colour >> 15) & 0x01;
+        var r5 = (colour >> 10) & 0x1F;
+        var g5 = (colour >> 5) & 0x1F;
+        var b5 = colour & 0x1F;
+
+        var r8 = (r5 << 3) | (r5 >> 2);
+        var g8 = (g5 << 3) | (g5 >> 2);
+        var b8 = (b5 << 3) | (b5 >> 2);
+
+        r8 = (byte)Math.Clamp((int)(r8 * factor), 0, 255);
+        g8 = (byte)Math.Clamp((int)(g8 * factor), 0, 255);
+        b8 = (byte)Math.Clamp((int)(b8 * factor), 0, 255);
+
+        var r5n = (byte)(r8 >> 3);
+        var g5n = (byte)(g8 >> 3);
+        var b5n = (byte)(b8 >> 3);
+
+        vertex.Lighting = (short)((a1 << 15) | (r5n << 10) | (g5n << 5) | b5n);
     }
 
     public static void Serialize(this LM.TRModel model, TRLevelWriter writer, TRGameVersion version, bool isMeshOnly)
