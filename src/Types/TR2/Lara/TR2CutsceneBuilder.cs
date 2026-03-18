@@ -25,17 +25,35 @@ public class TR2CutsceneBuilder : InjectionBuilder
         {
             [TR2Type.CutsceneActor5] = cut.Models[TR2Type.CutsceneActor5], // Cockpit
             [TR2Type.CutsceneActor7] = cut.Models[TR2Type.CutsceneActor7], // Rail hook
+            [TR2Type.CutsceneActor8] = cut.Models[TR2Type.CutsceneActor8], // Bartoli
         };
         ResetLevel(cut);
         cut.Models = models;
 
-        foreach (var model in cut.Models.Values)
+        foreach (var type in new[] { TR2Type.CutsceneActor5, TR2Type.CutsceneActor7 })
         {
-            model.Animations[0].Commands.Add(new TRFXCommand
+            models[type].Animations[0].Commands.Add(new TRFXCommand
             {
                 EffectID = (short)TR2FX.ShadowOff,
                 FrameNumber = 1,
             });
+        }
+
+        {
+            // Fix frozen Bartoli remaining on-screen at the end of his animation set
+            var bartoliAnim = models[TR2Type.CutsceneActor8].Animations[^1];
+            const short shift = 20;
+            for (int i = 99; i < bartoliAnim.Frames.Count; i++)
+            {
+                bartoliAnim.Frames[i].OffsetZ = bartoliAnim.Frames[i - 1].OffsetZ;
+                bartoliAnim.Frames[i].Bounds = bartoliAnim.Frames[i - 1].Bounds.Clone();
+                if (i < 104)
+                {
+                    bartoliAnim.Frames[i].OffsetZ += shift;
+                    bartoliAnim.Frames[i].Bounds.MinZ += shift;
+                    bartoliAnim.Frames[i].Bounds.MaxZ += shift;
+                }
+            }
         }
 
         return InjectionData.Create(cut, InjectionType.General, "cut2_setup", true);
