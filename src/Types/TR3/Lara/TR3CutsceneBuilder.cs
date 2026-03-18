@@ -16,7 +16,7 @@ public class TR3CutsceneBuilder : InjectionBuilder
         new(TR3LevelNames.COASTAL_CUT, 16384, [TR3Type.CutsceneActor1]),
         new(TR3LevelNames.CRASH_CUT, 16384, []),
         new(TR3LevelNames.THAMES_CUT, -16384, [TR3Type.CutsceneActor7], postAction: AmendThamesCut),
-        new(TR3LevelNames.LUDS_CUT, 16384, []),
+        new(TR3LevelNames.LUDS_CUT, 16384, [], postAction: AmendLudsCut),
         new(TR3LevelNames.NEVADA_CUT, 16384, []),
         new(TR3LevelNames.HSC_CUT, 16384, [], postAction: AmendHSCCut),
         new(TR3LevelNames.ANTARC_CUT, 16384, [TR3Type.CutsceneActor8]),
@@ -80,6 +80,20 @@ public class TR3CutsceneBuilder : InjectionBuilder
         data.FloorEdits.AddRange(FDBuilder.RemoveRoomFlags([18,19,20], TRRoomFlag.Wind, cut.Rooms));
     }
 
+    private static void AmendLudsCut(InjectionData data)
+    {
+        // Prevents Lara walking on thin air.
+        var cut = _control3.Read($"Resources/TR3/{TR3LevelNames.LUDS_CUT}");
+        var faces = new int[] { 0,7,14,18 };
+        data.RoomEdits.AddRange(faces.SelectMany(f => cut.Rooms[0].Mesh.Rectangles[f].Vertices)
+            .Distinct()
+            .Select(v => new TRRoomVertexMove
+            {
+                VertexIndex = v,
+                VertexChange = new() { Y = -1536 },
+            }));
+    }
+
     private static void AmendHSCCut(InjectionData data)
     {
         // Remove the draw guns command from Lara for the drink can, now handled in Lua.
@@ -127,6 +141,11 @@ public class TR3CutsceneBuilder : InjectionBuilder
 
             var laraEdit = RotateLara(level);
             HideShadows(level);
+
+            if (levelName == TR3LevelNames.LUDS_CUT)
+            {
+                FixLudsLaraFrames(level.Models[TR3Type.Lara]);
+            }
 
             CreateModelLevel(level, actors);
             level.SoundEffects.Clear();
@@ -180,6 +199,30 @@ public class TR3CutsceneBuilder : InjectionBuilder
                 return ItemBuilder.SetAngle(level, (short)laraIdx, LaraAngle);
             }
             return null;
+        }
+
+        private static void FixLudsLaraFrames(TRModel lara)
+        {
+            // Avoid Lara being frozen and suddenly coming to life. Texture changes
+            // are done in tandem in AmendLudsCut so Lara isn't floating.
+            var anim = lara.Animations[0];
+            for (int i = 0; i < 50; i++)
+            {
+                anim.Frames[i].OffsetX = 5300;
+                anim.Frames[i].Bounds.MaxX += 919;
+                anim.Frames[i].Bounds.MinX += 919;
+            }
+
+            const int shift = 1439;
+            for (int i = 46; i >= 0; i--)
+            {
+                anim.Frames[96 - i] = anim.Frames[122 + 46 - i].Clone();
+                var frame = anim.Frames[96 - i];
+                frame.OffsetX += shift;
+                frame.Bounds.MaxX += shift;
+                frame.Bounds.MinX += shift;
+                frame.Rotations[14] = new();
+            }
         }
     }
 }
