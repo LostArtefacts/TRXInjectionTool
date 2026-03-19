@@ -39,6 +39,7 @@ public abstract class LaraBuilder : InjectionBuilder
     protected enum LaraAnim
     {
         Run = 0,
+        RunStart = 6,
         StandStill = 11,
         RunJumpRightStart = 16,
         RunJumpRightContinue = 17,
@@ -1058,6 +1059,12 @@ public abstract class LaraBuilder : InjectionBuilder
                 anim.NextAnimation = Convert.ToUInt16(sprintRollLeftToRun);
             }
         }
+    }
+
+    protected void AddMinimumJumpDelay(TRModel lara)
+    {
+        var anim = lara.Animations[(int)LaraAnim.RunStart];
+        AddChange(anim, ResponsiveState, 13, 13, LaraAnim.RunJumpRightStart, 1);
     }
 
     protected void ImportLadderToCrouch<A, B, C, S>(TRModel lara, A idleLadderAnim, B crouchIdleAnim, S climbToCrawlState,
