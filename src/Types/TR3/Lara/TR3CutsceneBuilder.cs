@@ -1,6 +1,6 @@
+using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
-using TRImageControl;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
@@ -31,6 +31,7 @@ public class TR3CutsceneBuilder : InjectionBuilder
         [
             .. _setups.Select(s => s.CreateData()),
             CreateCut3ShellData(),
+            CreateHSCCineData(),
         ];
     }
 
@@ -108,6 +109,12 @@ public class TR3CutsceneBuilder : InjectionBuilder
         CreateModelLevel(jungle, TR3Type.YellowShellCasing_H);
         TRFaceConverter.ConvertFlatFaces(jungle, palette);
         return InjectionData.Create(jungle, InjectionType.General, "cut3_shell");
+    }
+
+    private static InjectionData CreateHSCCineData()
+    {
+        var level = _control3.Read($"Resources/TR3/Lara/hsc_cine_frames.dat");
+        return InjectionData.Create(level, InjectionType.General, "compound_cine");
     }
 
     private class CutSetup(string levelName, short laraAngle,

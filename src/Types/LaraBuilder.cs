@@ -779,18 +779,15 @@ public abstract class LaraBuilder : InjectionBuilder
             {
                 srcModel = _control2.Read($"Resources/{data.LevelName}").Models[TR2Type.LaraMiscAnim_H];
             }
+            else if (data.State == LaraExtraState.JailWakeUp)
+            {
+                // Restored from PSX, original in retail HSC is a dupe of Rig start anim
+                srcModel = GetLaraExtModel();
+            }
             else
             {
-                if (data.State == LaraExtraState.JailWakeUp)
-                {
-                    // Restored from PSX, original in retail HSC is a dupe of Rig start anim
-                    srcModel = GetLaraExtModel();
-                }
-                else
-                {
-                    srcModel = _control3.Read($"Resources/TR3/{data.LevelName}").Models
-                        [data.State == LaraExtraState.RapidsDrown ? TR3Type.LaraVehicleAnimation_H : TR3Type.LaraExtraAnimation_H];
-                }
+                srcModel = _control3.Read($"Resources/TR3/{data.LevelName}").Models
+                    [data.State == LaraExtraState.RapidsDrown ? TR3Type.LaraVehicleAnimation_H : TR3Type.LaraExtraAnimation_H];
             }
 
             var anim = srcModel.Animations[data.AnimIdx];
@@ -815,6 +812,22 @@ public abstract class LaraBuilder : InjectionBuilder
                     anim.Frames.Add(anim.Frames[^1]);
                     anim.FrameEnd++;
                 }
+            }
+            else if (data.State == LaraExtraState.JailWakeUp)
+            {
+                // Lara needs to rotate 90deg so she is properly aligned on the bed. At the end
+                // of the animation rotate another 180deg to face away from the bed when the
+                // player regains control.
+                anim.Commands.Add(new TRFXCommand
+                {
+                    EffectID = 62, // Turn 90deg
+                    FrameNumber = 0,
+                });
+                anim.Commands.Add(new TRFXCommand
+                {
+                    EffectID = 0, // Turn 180deg
+                    FrameNumber = 900,
+                });
             }
         }
     }
