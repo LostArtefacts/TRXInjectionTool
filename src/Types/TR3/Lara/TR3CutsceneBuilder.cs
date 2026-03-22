@@ -165,11 +165,13 @@ public class TR3CutsceneBuilder : InjectionBuilder
 
         private void HideShadows(TR3Level level)
         {
+            const short shadowOn = 60;
+            const short shadowOff = 61;
             foreach (var type in HideShadowTargets)
             {
                 level.Models[type].Animations[0].Commands.Add(new TRFXCommand
                 {
-                    EffectID = 59,
+                    EffectID = shadowOff,
                     FrameNumber = 1,
                 });
             }
@@ -179,13 +181,13 @@ public class TR3CutsceneBuilder : InjectionBuilder
                 // Hide Willard's shadow when he falls into the pit
                 level.Models[TR3Type.CutsceneActor5].Animations[8].Commands.Add(new TRFXCommand
                 {
-                    EffectID = 59,
+                    EffectID = shadowOff,
                     FrameNumber = 343,
                 });
                 // Spider Willard hidden at the start, unhide when he shows up
                 level.Models[TR3Type.CutsceneActor1].Animations[9].Commands.Add(new TRFXCommand
                 {
-                    EffectID = 58,
+                    EffectID = shadowOn,
                     FrameNumber = 245,
                 });
             }
