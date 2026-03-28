@@ -149,7 +149,8 @@ public static class TRModelExtensions
         ],
         [TRGameVersion.TR3] =
         [
-            (int)TR3Type.FontGraphicsSmall_S_H, (int)TR3Type.Snowflake_S_H,
+            (int)TR3Type.FontGraphicsSmall_S_H, (int)TR3Type.Snowflake_S_H, 
+            428, // Pickup aid, TODO: add to TRLevelControl
         ],
     };
 
