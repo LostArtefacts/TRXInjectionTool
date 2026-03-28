@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -10,6 +11,7 @@ public class TR3AldwychTextureBuilder : TextureBuilder
     {
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "aldwych_textures");
         FixStaircaseMesh(data, 37);
+        FixBarrierMesh(data);
         return [data];
     }
 
@@ -53,6 +55,34 @@ public class TR3AldwychTextureBuilder : TextureBuilder
             {
                 Index = (short)i,
                 Change = GetChange(i),
+            })],
+        });
+    }
+
+    private static void FixBarrierMesh(InjectionData data)
+    {
+        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.ALDWYCH}");
+        var barrier = level.StaticMeshes[TR3Type.SceneryBase + 46];
+        const short shift = 40;
+        barrier.CollisionBox.MinZ -= shift * 2;
+        barrier.CollisionBox.MaxZ -= shift * 2;
+        barrier.VisibilityBox.MinZ -= shift;
+        barrier.VisibilityBox.MaxZ -= shift;
+
+        data.StaticMeshEdits.Add(new()
+        {
+            TypeID = 46,
+            Mesh = barrier,
+        });
+
+        data.MeshEdits.Add(new()
+        {
+            ModelID = (uint)TR3Type.SceneryBase + 46,
+            EnforcedType = TRObjectType.Static3D,
+            VertexEdits = [.. Enumerable.Range(0, barrier.Mesh.Vertices.Count).Select(i => new TRVertexEdit
+            {
+                Index = (short)i,
+                Change = new() { Z = -shift },
             })],
         });
     }
