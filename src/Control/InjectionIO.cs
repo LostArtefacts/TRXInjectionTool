@@ -237,6 +237,9 @@ public static class InjectionIO
         blockCount += WriteBlock(BlockType.TextureEdits, data.TextureOverwrites.Count, writer,
             s => data.TextureOverwrites.ForEach(t => t.Serialize(s)));
 
+        blockCount += WriteBlock(BlockType.AnimTexEdits, data.AnimTextureEdits.Count, writer,
+            s => data.AnimTextureEdits.ForEach(t => t.Serialize(s)));
+
         {
             // Summary data
             List<RoomMeshMeta> meta = RoomMeshMeta.Create(data);

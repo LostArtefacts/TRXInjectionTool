@@ -46,6 +46,7 @@ public class InjectionData
     public List<TRSpriteEdit> SpriteEdits { get; set; } = [];
     public List<TRObjectTypeEdit> ObjectTypeEdits { get; set; } = [];
     public List<TRAnimEdit> AnimEdits { get; set; } = [];
+    public List<TRAnimTextureEdit> AnimTextureEdits { get; set; } = [];
 
     private readonly HashSet<uint> _meshOnlyModels = [];
 

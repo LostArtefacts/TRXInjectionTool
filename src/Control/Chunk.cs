@@ -66,4 +66,5 @@ public enum BlockType
     FrameReplace    = 32,
     ItemFlagEdits   = 33,
     AnimEdits       = 34,
+    AnimTexEdits    = 35,
 }
