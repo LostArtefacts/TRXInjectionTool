@@ -597,7 +597,7 @@ public abstract class InjectionBuilder
         [TR3LevelNames.FLING] = "scotland",
         [TR3LevelNames.LAIR] = "willsden",
         [TR3LevelNames.CLIFF] = "cliff",
-        [TR3LevelNames.FISHES] = "fishes",
+        [TR3LevelNames.FISHES] = "undersea",
         [TR3LevelNames.MADHOUSE] = "zoo",
         [TR3LevelNames.REUNION] = "reunion",
     };
