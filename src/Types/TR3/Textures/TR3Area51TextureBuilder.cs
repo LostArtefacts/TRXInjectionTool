@@ -9,8 +9,13 @@ public class TR3Area51TextureBuilder : TextureBuilder
 {
     public override List<InjectionData> Build()
     {
+        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.AREA51}");
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "area51_textures");
+        CreateDefaultTests(data, $"TR3/{TR3LevelNames.AREA51}");
+
         FixSlidingDoor(data);
+        data.TextureOverwrites.Add(TR3HSCTextureBuilder.FixGrating(level, 2023));
+
         return [data];
     }
 
