@@ -1,4 +1,4 @@
-﻿using TRLevelControl.Helpers;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
@@ -6,6 +6,8 @@ namespace TRXInjectionTool.Types.TR3.Misc;
 
 public class TR3MiscSpritesBuilder : TextureBuilder
 {
+    public override string ID => "tr3_misc_sprites";
+
     private static readonly List<TR3Type> _spriteRemap =
     [
         TR3Type.Snowflake_S_H,

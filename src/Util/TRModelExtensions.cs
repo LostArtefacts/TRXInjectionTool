@@ -145,7 +145,7 @@ public static class TRModelExtensions
         [
             (int)TR2Type.FontGraphicsSmall_S_H, (int)TR2Type.PickupAid, (int)TR1Type.Magnums_S_P,
             (int)TR1Type.MagnumAmmo_S_P, (int)TR2Type.Deagle_S_P, (int)TR2Type.DeagleAmmo_S_P,
-            (int)TR2Type.Snowflake_S_H, (int)TR2Type.Shadow_S_H,
+            (int)TR2Type.Snowflake_S_H, (int)TR2Type.Shadow_S_H, 337,
         ],
         [TRGameVersion.TR3] =
         [
