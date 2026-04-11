@@ -88,7 +88,7 @@ public abstract class FontBuilder : InjectionBuilder, IPublisher
             return;
         }
 
-        var glyphs = DeserializeFile<List<SpriteInfo>>(path) ?? [];
+        var glyphs = JsonUtils.DeserializeFile<List<SpriteInfo>>(path) ?? [];
         glyphs.Sort((g1, g2) => g1.mesh_num.CompareTo(g2.mesh_num));
         glyphDefs[fontIndex] = glyphs;
     }

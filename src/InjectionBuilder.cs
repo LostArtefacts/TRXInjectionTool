@@ -521,16 +521,6 @@ public abstract class InjectionBuilder
         };
     }
 
-    protected static T DeserializeFile<T>(string path)
-    {
-        return Deserialize<T>(File.ReadAllText(path));
-    }
-
-    protected static T Deserialize<T>(string data)
-    {
-        return JsonConvert.DeserializeObject<T>(data);
-    }
-
     public static string MakeOutputPath(InjectionData data)
     {
         return MakeOutputPath(data.GameVersion, $"{data.Name}.bin");
