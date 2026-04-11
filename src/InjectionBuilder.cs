@@ -533,6 +533,30 @@ public abstract class InjectionBuilder
         return fullPath;
     }
 
+    protected static readonly Dictionary<string, string> _tr1NameMap = new()
+    {
+        [TR1LevelNames.ASSAULT] = "gym",
+        [TR1LevelNames.CAVES] = "caves",
+        [TR1LevelNames.VILCABAMBA] = "vilcabamba",
+        [TR1LevelNames.VALLEY] = "valley",
+        [TR1LevelNames.QUALOPEC] = "qualopec",
+        [TR1LevelNames.FOLLY] = "folly",
+        [TR1LevelNames.COLOSSEUM] = "colosseum",
+        [TR1LevelNames.MIDAS] = "midas",
+        [TR1LevelNames.CISTERN] = "cistern",
+        [TR1LevelNames.TIHOCAN] = "tihocan",
+        [TR1LevelNames.KHAMOON] = "khamoon",
+        [TR1LevelNames.OBELISK] = "obelisk",
+        [TR1LevelNames.SANCTUARY] = "sanctuary",
+        [TR1LevelNames.MINES] = "mines",
+        [TR1LevelNames.ATLANTIS] = "atlantis",
+        [TR1LevelNames.PYRAMID] = "pyramid",
+        [TR1LevelNames.EGYPT] = "egypt",
+        [TR1LevelNames.CAT] = "cat",
+        [TR1LevelNames.STRONGHOLD] = "stronghold",
+        [TR1LevelNames.HIVE] = "hive",
+    };
+
     protected static readonly Dictionary<string, string> _tr2NameMap = new()
     {
         [TR2LevelNames.ASSAULT] = "gym",
