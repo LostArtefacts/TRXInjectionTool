@@ -1,4 +1,5 @@
-﻿using TRLevelControl;
+﻿using System.Text;
+using TRLevelControl;
 using TRLevelControl.Build;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -58,6 +59,7 @@ public class FDTrigItem : FDFix
 {
     public override FDFixType FixType => FDFixType.TrigItem;
     public TR1Entity Item { get; set; }
+    public string Name { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
@@ -69,7 +71,14 @@ public class FDTrigItem : FDFix
         writer.Write(Item.Angle);
         writer.Write(Item.Intensity);
         writer.Write(Item.Flags);
+
+        var name = Encoding.UTF8.GetBytes(Name ?? GenerateName());
+        writer.Write(name.Length);
+        writer.Write(name);
     }
+
+    private string GenerateName()
+        => $"t:{(int)Item.TypeID}_r:{Item.Room}_x:{Item.X}_y:{Item.Y}_z:{Item.Z}";
 }
 
 public class FDTrigTypeFix : FDFix
