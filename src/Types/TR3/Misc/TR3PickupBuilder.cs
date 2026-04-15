@@ -21,10 +21,7 @@ public class TR3PickupBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
-        List<InjectionData> result = new()
-        {
-            FixOraDagger(),
-        };
+        List<InjectionData> result = [.. FixOraDagger()];
 
         foreach (Target target in _targets)
         {
@@ -97,24 +94,28 @@ public class TR3PickupBuilder : InjectionBuilder
         },
     ];
 
-    private static InjectionData FixOraDagger()
+    private static IEnumerable<InjectionData> FixOraDagger()
     {
         // Bounding box is inaccurate, meaning it becomes embedded in the floor.
-        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.PUNA}");
-        level.Models = new()
+        // The model itself is positioned differently depending on the level.
+        foreach (var levelName in new[] { TR3LevelNames.PUNA, TR3LevelNames.WILLIE })
         {
-            [TR3Type.OraDagger_P] = level.Models[TR3Type.OraDagger_P],
-            [TR3Type.OraDagger_M_H] = level.Models[TR3Type.OraDagger_M_H],
-        };
+            var level = _control3.Read($"Resources/TR3/{levelName}");
+            level.Models = new()
+            {
+                [TR3Type.OraDagger_P] = level.Models[TR3Type.OraDagger_P],
+                [TR3Type.OraDagger_M_H] = level.Models[TR3Type.OraDagger_M_H],
+            };
 
-        foreach (var frame in level.Models.Values.SelectMany(m => m.Animations.SelectMany(a => a.Frames)))
-        {
-            frame.Bounds.MaxY += 75;
+            foreach (var frame in level.Models.Values.SelectMany(m => m.Animations.SelectMany(a => a.Frames)))
+            {
+                frame.Bounds.MaxY += 75;
+            }
+
+            var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.General, $"{_tr3NameMap[levelName]}_pickup_meshes");
+            data.FrameReplacements.AddRange(TRFrameReplacement.CreateFrom(level));
+            yield return data;
         }
-
-        var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.General, "ora_dagger");
-        data.FrameReplacements.AddRange(TRFrameReplacement.CreateFrom(level));
-        return data;
     }
 
     private static InjectionData CreateData(TR3Level level, string levelName, string binName, IEnumerable<TR3Type> types)
