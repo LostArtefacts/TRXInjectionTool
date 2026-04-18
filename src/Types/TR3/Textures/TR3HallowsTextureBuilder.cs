@@ -15,7 +15,7 @@ public class TR3HallowsTextureBuilder : TextureBuilder
 
     private static InjectionData CreateBaseData()
     {
-        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.CITY}");
+        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.NEVADA}");
         CreateModelLevel(level, TR3Type.EyeOfIsis_M_H);
         level.SoundEffects.Clear();
 
