@@ -16,6 +16,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
         TR1Level toq = _control1.Read($"Resources/{TR1LevelNames.QUALOPEC}");
         InjectionData data = CreateBaseData();
 
+        data.RoomEdits.AddRange(CreateFillers(toq));
         data.RoomEdits.AddRange(CreateRefacings(toq));
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(toq));
@@ -23,13 +24,59 @@ public class TR1ToQTextureBuilder : TextureBuilder
         FixWolfTransparency(toq, data);
         FixPassport(toq, data);
 
-        return new() { data };
+        return [data];
+    }
+
+    private static List<TRRoomTextureCreate> CreateFillers(TR1Level level)
+    {
+        return
+        [
+            new()
+            {
+                RoomIndex = 42,
+                FaceType = TRMeshFaceType.TexturedTriangle,
+                SourceRoom = 9,
+                SourceIndex = 18,
+                Vertices =
+                [
+                    level.Rooms[42].Mesh.Rectangles[35].Vertices[3],
+                    level.Rooms[42].Mesh.Triangles[18].Vertices[0],
+                    level.Rooms[42].Mesh.Rectangles[35].Vertices[0],
+                ]
+            },
+            new()
+            {
+                RoomIndex = 12,
+                FaceType = TRMeshFaceType.TexturedTriangle,
+                SourceRoom = 12,
+                SourceIndex = 107,
+                Vertices =
+                [
+                    level.Rooms[12].Mesh.Rectangles[137].Vertices[1],
+                    level.Rooms[12].Mesh.Rectangles[138].Vertices[3],
+                    level.Rooms[12].Mesh.Rectangles[138].Vertices[2],
+                ]
+            },
+            new()
+            {
+                RoomIndex = 12,
+                FaceType = TRMeshFaceType.TexturedTriangle,
+                SourceRoom = 12,
+                SourceIndex = 107,
+                Vertices =
+                [
+                    level.Rooms[12].Mesh.Rectangles[138].Vertices[2],
+                    level.Rooms[12].Mesh.Rectangles[125].Vertices[0],
+                    level.Rooms[12].Mesh.Rectangles[125].Vertices[3],
+                ]
+            },
+        ];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings(TR1Level toq)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 8,
@@ -40,31 +87,31 @@ public class TR1ToQTextureBuilder : TextureBuilder
                 TargetIndex = 87,
             },
             Reface(toq, 14, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 3, 96),
-        };
+        ];
     }
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(5, TRMeshFaceType.TexturedQuad, 211, 2),
             Rotate(8, TRMeshFaceType.TexturedQuad, 87, 1),
             Rotate(20, TRMeshFaceType.TexturedQuad, 185, 2),
             Rotate(46, TRMeshFaceType.TexturedQuad, 188, 2),
-        };
+        ];
     }
 
     private static List<TRRoomTextureMove> CreateShifts(TR1Level toq)
     {
-        return new()
-        {
+        return
+        [
             new()
             {
                 RoomIndex = 8,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 TargetIndex = 107,
-                VertexRemap = new()
-                {
+                VertexRemap =
+                [
                     new()
                     {
                         NewVertexIndex = toq.Rooms[8].Mesh.Rectangles[81].Vertices[3],
@@ -74,7 +121,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
                         Index = 1,
                         NewVertexIndex = toq.Rooms[8].Mesh.Rectangles[81].Vertices[2],
                     },
-                }
+                ]
             },
 
             new()
@@ -82,8 +129,8 @@ public class TR1ToQTextureBuilder : TextureBuilder
                 RoomIndex = 8,
                 FaceType = TRMeshFaceType.TexturedQuad,
                 TargetIndex = 6,
-                VertexRemap = new()
-                {
+                VertexRemap =
+                [
                     new()
                     {
                         NewVertexIndex = toq.Rooms[8].Mesh.Rectangles[2].Vertices[3],
@@ -93,9 +140,9 @@ public class TR1ToQTextureBuilder : TextureBuilder
                         Index = 1,
                         NewVertexIndex = toq.Rooms[8].Mesh.Rectangles[5].Vertices[0],
                     },
-                }
+                ]
             }
-        };
+        ];
     }
 
     private InjectionData CreateBaseData()
@@ -120,7 +167,7 @@ public class TR1ToQTextureBuilder : TextureBuilder
         TR1DataImporter importer = new()
         {
             Level = qualopec,
-            TypesToImport = new() { TR1Type.Larson },
+            TypesToImport = [TR1Type.Larson],
         };
         importer.Import();
 
@@ -162,12 +209,12 @@ public class TR1ToQTextureBuilder : TextureBuilder
                 Vertices = v,
             }));
 
-        verts = new()
-        {
+        verts =
+        [
             new() { 7, 28, 29, 6 },
             new() { 11, 7, 6, 10 },
             new() { 23, 11, 10, 22 },
-        };
+        ];
         statue.Mesh.TexturedRectangles.AddRange(verts.Select(v =>
             new TRMeshFace
             {

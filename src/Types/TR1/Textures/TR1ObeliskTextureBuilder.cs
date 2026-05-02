@@ -247,6 +247,27 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
                 });
             }
         }
+
+        {
+            vertices =
+            [
+                obelisk.Rooms[19].Mesh.Rectangles[0].Vertices[0],
+                obelisk.Rooms[19].Mesh.Rectangles[0].Vertices[3],
+                obelisk.Rooms[19].Mesh.Rectangles[1].Vertices[0],
+                obelisk.Rooms[19].Mesh.Rectangles[1].Vertices[3],
+            ];
+
+            foreach (ushort vertex in vertices)
+            {
+                data.RoomEdits.Add(new TRRoomVertexMove
+                {
+                    RoomIndex = 19,
+                    VertexChange = new(),
+                    VertexIndex = vertex,
+                    ShadeChange = (short)(8192 - obelisk.Rooms[19].Mesh.Vertices[vertex].Lighting)
+                });
+            }
+        }
     }
 
     private static void FixTransparentTextures(TR1Level obelisk, InjectionData data)

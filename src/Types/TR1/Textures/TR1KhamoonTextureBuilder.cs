@@ -76,7 +76,16 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
                 SourceFaceType = TRMeshFaceType.TexturedQuad,
                 SourceIndex = 78,
                 TargetIndex = 78
-            }
+            },
+            new()
+            {
+                RoomIndex = 69,
+                FaceType = TRMeshFaceType.TexturedQuad,
+                SourceRoom = 69,
+                SourceFaceType = TRMeshFaceType.TexturedQuad,
+                SourceIndex = 184,
+                TargetIndex = 109,
+            },
         };
     }
 
