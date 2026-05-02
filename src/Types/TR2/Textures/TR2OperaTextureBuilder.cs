@@ -12,16 +12,16 @@ public class TR2OperaTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR2Level opera = _control2.Read($"Resources/{TR2LevelNames.OPERA}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.TextureFix, ID);
-        CreateDefaultTests(data, TR2LevelNames.OPERA);
+        InjectionData data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateRefacings(opera));
         data.RoomEdits.AddRange(CreateRotations());
 
         FixPassport(opera, data);
         FixPushButton(data);
+        FixDressingTables(data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings(TR2Level level)
@@ -47,9 +47,45 @@ public class TR2OperaTextureBuilder : TextureBuilder
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(122, TRMeshFaceType.TexturedTriangle, 1, 1),
-        };
+        ];
+    }
+
+    private static void FixDressingTables(InjectionData data)
+    {
+        var topIds = new[] { 0, 1, 4, 5 };
+        foreach (var id in new[] { 16, 17 })
+        {
+            data.MeshEdits.Add(new()
+            {
+                EnforcedType = TRObjectType.Static3D,
+                ModelID = (uint)(TR2Type.SceneryBase) + (uint)id,
+                VertexEdits = [.. Enumerable.Range(0, 8).Select(i => new TRVertexEdit
+                {
+                    Index = (short)i,
+                    Change = new()
+                    {
+                        Y = (short)((id == 17 && topIds.Contains(i)) ? -1 : 0),
+                        Z = 2,
+                    },
+                })],
+            });
+        }
+    }
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.RIG}");
+        CreateModelLevel(level, TR2Type.AirplanePropeller);
+        level.SoundEffects.Clear();
+
+        FixTR2Propeller(level);
+
+        var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR2LevelNames.OPERA);
+        data.SetMeshOnlyModel((uint)TR2Type.AirplanePropeller);
+        return data;
     }
 }

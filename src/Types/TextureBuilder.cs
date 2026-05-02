@@ -999,6 +999,28 @@ public abstract class TextureBuilder : InjectionBuilder
         }
     }
 
+    protected static void FixTR2Propeller(TR2Level level)
+    {
+        var mesh = level.Models[TR2Type.AirplanePropeller].Meshes[0];
+        var verts = new Dictionary<ushort, ushort>
+        {
+            [12] = 13,
+            [20] = 21,
+            [13] = 6,
+            [21] = 14,
+        };
+        var faces = mesh.TexturedTriangles.FindAll(f => f.Vertices.All(verts.ContainsKey));
+        foreach (var face in faces)
+        {
+            mesh.TexturedTriangles.Add(new()
+            {
+                Type = TRFaceType.Triangle,
+                Texture = face.Texture,
+                Vertices = [.. face.Vertices.Select(v => verts[v])],
+            });
+        }
+    }
+
     private static TRTexturePacker GetPacker(TRLevelBase level)
     {
         if (level is TR1Level level1)

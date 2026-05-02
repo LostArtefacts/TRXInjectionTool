@@ -3,6 +3,7 @@ using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
+using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Textures;
@@ -16,9 +17,19 @@ public class TR2ColdWarTextureBuilder : TextureBuilder
         TR2Level level = _control2.Read($"Resources/{TR2LevelNames.COLDWAR}");
         InjectionData data = CreateBaseData();
 
+        data.RoomEdits.AddRange(CreateRefacings(level));
+
         FixPassport(level, data);
 
         return [data];
+    }
+
+    private static List<TRRoomTextureReface> CreateRefacings(TR2Level level)
+    {
+        return
+        [
+            Reface(level, 6, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1544, 38),
+        ];
     }
 
     private InjectionData CreateBaseData()

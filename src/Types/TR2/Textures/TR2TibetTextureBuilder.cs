@@ -18,6 +18,7 @@ public class TR2TibetTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.RoomEdits.AddRange(CreateRotations());
 
+        FixRoofIce(level, data);
         FixPassport(level, data);
 
         return [data];
@@ -93,8 +94,8 @@ public class TR2TibetTextureBuilder : TextureBuilder
 
     private static List<TRRoomTextureRotate> CreateRotations()
     {
-        return new()
-        {
+        return
+        [
             Rotate(12, TRMeshFaceType.TexturedTriangle, 11, 2),
             Rotate(12, TRMeshFaceType.TexturedTriangle, 13, 2),
             Rotate(12, TRMeshFaceType.TexturedTriangle, 14, 2),
@@ -113,6 +114,34 @@ public class TR2TibetTextureBuilder : TextureBuilder
             Rotate(72, TRMeshFaceType.TexturedQuad, 169, 2),
             Rotate(72, TRMeshFaceType.TexturedQuad, 192, 1),
             Rotate(72, TRMeshFaceType.TexturedQuad, 212, 2),
-        };
+        ];
+    }
+
+    private static void FixRoofIce(TR2Level level, InjectionData data)
+    {
+        data.MeshEdits.Add(new()
+        {
+            EnforcedType = TRObjectType.Static3D,
+            ModelID = (uint)(TR2Type.SceneryBase + 24),
+            VertexEdits = [.. Enumerable.Range(0, 4).Select(i => new TRVertexEdit
+            {
+                Index = (short)i,
+                Change = new()
+                {
+                    X = (short)((i == 0 || i == 3) ? 5 : 0),
+                    Y = -2,
+                    Z = 9,
+                },
+            })],
+        });
+
+        data.RoomEdits.AddRange
+        ([
+            Reface(level, 130, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1481, 1),
+            Reface(level, 130, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1481, 4),
+            Reface(level, 130, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1481, 6),
+            Reface(level, 130, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1481, 9),
+            Reface(level, 130, TRMeshFaceType.TexturedQuad, TRMeshFaceType.TexturedQuad, 1481, 12),
+        ]);
     }
 }

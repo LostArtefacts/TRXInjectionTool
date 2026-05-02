@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using TRImageControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -13,8 +15,7 @@ public class TR2VeniceTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         TR2Level venice = _control2.Read($"Resources/{TR2LevelNames.VENICE}");
-        InjectionData data = InjectionData.Create(TRGameVersion.TR2, InjectionType.TextureFix, ID);
-        CreateDefaultTests(data, TR2LevelNames.VENICE);
+        InjectionData data = CreateBaseData();
 
         data.RoomEdits.AddRange(CreateFillers(venice));
         data.RoomEdits.AddRange(CreateRefacings(venice));
@@ -142,4 +143,61 @@ public class TR2VeniceTextureBuilder : TextureBuilder
         new(106, 0, new TRVertex32 { Y = 4 }),
         new(106, 1, new TRVertex32 { Y = 522 }),
     ];
+
+    private InjectionData CreateBaseData()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.VENICE}");
+        var lantern = level.StaticMeshes[TR2Type.SceneryBase + 30];
+
+        var verts = new ushort[] { 10, 11, 14, 15 };
+        var face = lantern.Mesh.TexturedRectangles.First(f => f.Vertices.All(verts.Contains));
+        lantern.Mesh.TexturedRectangles.Add(new()
+        {
+            Texture = face.Texture,
+            Vertices = [11, 10, 14, 15],
+        });
+
+        verts = [10, 11, 17, 18];
+        face = lantern.Mesh.TexturedRectangles.First(f => f.Vertices.All(verts.Contains));
+        var newVertList = new List<List<ushort>>
+        {
+            new() { 17, 18, 10, 11 },
+            new() { 16, 17, 11, 15 },
+            new() { 17, 16, 12, 8 },
+            new() { 16, 19, 13, 12 },
+            new() { 19, 18, 9, 13 },
+            new() { 19, 16, 15, 14 },
+            new() { 18, 19, 14, 10 },
+        };
+        lantern.Mesh.TexturedRectangles.AddRange(newVertList.Select(v => new TRMeshFace
+        {
+            Type = TRFaceType.Rectangle,
+            Texture = face.Texture,
+            Vertices = v,
+        }));
+
+        var packer = new TR2TexturePacker(level);
+        var regions = packer.GetMeshRegions([lantern.Mesh])
+            .Values.SelectMany(v => v);
+        var originalInfos = level.ObjectTextures.ToList();
+
+        var dataLevel = _control2.Read($"Resources/{TR2LevelNames.VENICE}");
+        ResetLevel(dataLevel, 1);
+        var levelPacker = new TR2TexturePacker(dataLevel);
+        levelPacker.AddRectangles(regions);
+        levelPacker.Pack(true);
+        dataLevel.StaticMeshes[TR2Type.SceneryBase + 30] = lantern;
+        GenerateImages8(dataLevel, dataLevel.Palette.Select(c => c.ToTR1Color()).ToList());
+
+        dataLevel.ObjectTextures.AddRange(regions.SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        lantern.Mesh.TexturedFaces
+            .ToList().ForEach(f =>
+            {
+                f.Texture = (ushort)dataLevel.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+
+        var data = InjectionData.Create(dataLevel, InjectionType.TextureFix, ID);
+        CreateDefaultTests(data, TR2LevelNames.VENICE);
+        return data;
+    }
 }

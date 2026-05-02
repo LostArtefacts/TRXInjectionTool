@@ -36,11 +36,13 @@ public partial class TR2RigTextureBuilder : TextureBuilder
     {
         var level = _control2.Read($"Resources/{TR2LevelNames.RIG}");
         var types = TR2TypeUtilities.BreakableWindows()
-            .FindAll(t => level.Models.ContainsKey(t));
+            .FindAll(level.Models.ContainsKey);
+        types.Add(TR2Type.AirplanePropeller);
         CreateModelLevel(level, [.. types]);
         level.SoundEffects.Clear();
 
         FixTR2Windows(level);
+        FixTR2Propeller(level);
 
         var data = InjectionData.Create(level, InjectionType.TextureFix, ID);
         CreateDefaultTests(data, TR2LevelNames.RIG);
