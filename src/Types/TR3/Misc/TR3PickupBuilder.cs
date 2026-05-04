@@ -1,10 +1,11 @@
 ﻿using System.Drawing;
-using TRImageControl.Packing;
 using TRImageControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types.TR3.Misc;
 
@@ -32,6 +33,17 @@ public class TR3PickupBuilder : InjectionBuilder
                 [
                     (ctx) => FixYBounds(ctx.Model),
                 ],
+            },
+        },
+        new()
+        {
+            Level = TR3LevelNames.FISHES,
+            ObjectFixes = new()
+            {
+                [TR3Type.Puzzle1_P] = [ (ctx) => FixCircuitBulbs(ctx.Model) ],
+                [TR3Type.Puzzle4_P] = [ (ctx) => FixCircuitBulbs(ctx.Model) ],
+                [TR3Type.Puzzle1_M_H] = [ (ctx) => FixCircuitBulbs(ctx.Model) ],
+                [TR3Type.Puzzle4_M_H] = [ (ctx) => FixCircuitBulbs(ctx.Model) ],
             },
         },
     ];
@@ -126,6 +138,14 @@ public class TR3PickupBuilder : InjectionBuilder
         return data;
     }
 
+    private static void FixCircuitBulbs(TRModel model)
+    {
+        var frame = model.Animations.First().Frames.First();
+        frame.OffsetZ = 11;
+        frame.Bounds.MinZ = -22;
+        frame.Bounds.MaxZ = 21;
+    }
+
     private static InjectionData CreateData(TR3Level level, string binName, IEnumerable<TR3Type> types)
     {
         TRDictionary<TR3Type, TRModel> models = [];
@@ -133,6 +153,8 @@ public class TR3PickupBuilder : InjectionBuilder
         {
             models[type] = level.Models[type];
         }
+
+        TRFaceConverter.ConvertFlatFaces(level, [.. level.Palette16.Select(c => c.ToColor())]);
 
         TR3TexturePacker packer = new(level);
         var regions = packer.GetMeshRegions(models.Values.SelectMany(m => m.Meshes)).Values.SelectMany(v => v);
