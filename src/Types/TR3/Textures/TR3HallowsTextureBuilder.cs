@@ -10,6 +10,7 @@ public class TR3HallowsTextureBuilder : TextureBuilder
     {
         var data = CreateBaseData();
         CreateDefaultTests(data, $"TR3/{TR3LevelNames.HALLOWS}");
+        FixPushButton(data, TR3LevelNames.HALLOWS);
         return [data];
     }
 

@@ -18,6 +18,8 @@ public class TR3HSCTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.TextureOverwrites.Add(FixGrating(level, 1859));
 
+        FixPushButton(data, TR3LevelNames.HSC);
+
         return [data];
     }
 

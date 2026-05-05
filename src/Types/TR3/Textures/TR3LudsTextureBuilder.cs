@@ -12,6 +12,7 @@ public class TR3LudsTextureBuilder : TextureBuilder
     {
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "luds_textures");
         TR3AldwychTextureBuilder.FixStaircaseMesh(data, 49);
+        FixPushButton(data, TR3LevelNames.LUDS);
         data.RoomEdits.AddRange(FixRoom77());
         return [data];
     }

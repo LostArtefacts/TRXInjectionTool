@@ -13,6 +13,7 @@ public class TR3MinesTextureBuilder : TextureBuilder
         var data = CreateBaseData();
         data.AnimTextureEdits.AddRange(FixCartTracks());
         FixRopes(data);
+        FixPushButton(data, TR3LevelNames.RXTECH);
 
         var level = _control3.Read($"Resources/TR3/{TR3LevelNames.RXTECH}");
         data.RoomEdits.AddRange(CreateFillers(level));

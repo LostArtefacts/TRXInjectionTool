@@ -10,6 +10,7 @@ public class TR3CityTextureBuilder : TextureBuilder
     {
         var data = CreateBaseData();
         CreateDefaultTests(data, $"TR3/{TR3LevelNames.CITY}");
+        FixPushButton(data, TR3LevelNames.CITY);
         return [data];
     }
 

@@ -14,6 +14,7 @@ public class TR3Area51TextureBuilder : TextureBuilder
         CreateDefaultTests(data, $"TR3/{TR3LevelNames.AREA51}");
 
         FixSlidingDoor(data);
+        FixPushButton(data, TR3LevelNames.AREA51);
         data.TextureOverwrites.Add(TR3HSCTextureBuilder.FixGrating(level, 2023));
 
         return [data];

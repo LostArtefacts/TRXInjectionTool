@@ -740,15 +740,30 @@ public abstract class TextureBuilder : InjectionBuilder
         }
     }
 
-    protected static void FixPushButton(InjectionData data)
+    protected static void FixPushButton(InjectionData data, string baseLevelName = TR2LevelNames.ASSAULT)
     {
         var level = _control2.Read($"Resources/{TR2LevelNames.ASSAULT}");
+        TR2Type type;
+        TRModel model;
+        if (data.GameVersion == TRGameVersion.TR3)
+        {
+            var sourceLevel = _control3.Read($"Resources/TR3/{baseLevelName}");
+            type = (TR2Type)TR3Type.PushButtonSwitch;
+            model = sourceLevel.Models[TR3Type.PushButtonSwitch];
+        }
+        else
+        {
+            type = TR2Type.PushButtonSwitch;
+            model = level.Models[TR2Type.PushButtonSwitch];
+        }
+
+
         level.Models = new()
         {
-            [TR2Type.PushButtonSwitch] = level.Models[TR2Type.PushButtonSwitch],
+            [type] = model,
         };
 
-        foreach (var frame in level.Models[TR2Type.PushButtonSwitch].Animations.SelectMany(a => a.Frames))
+        foreach (var frame in model.Animations.SelectMany(a => a.Frames))
         {
             frame.OffsetZ += 18;
             frame.Bounds.MinZ += 18;

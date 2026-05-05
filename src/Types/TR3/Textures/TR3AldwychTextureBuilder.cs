@@ -12,6 +12,7 @@ public class TR3AldwychTextureBuilder : TextureBuilder
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "aldwych_textures");
         FixStaircaseMesh(data, 37);
         FixBarrierMesh(data);
+        FixPushButton(data, TR3LevelNames.ALDWYCH);
         return [data];
     }
 
