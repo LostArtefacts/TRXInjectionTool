@@ -11,9 +11,15 @@ public class TR3AnimatingBoundsBuilder : InjectionBuilder
     private static readonly Dictionary<string, List<TR3Type>> _targets = new()
     {
         [TR3LevelNames.COASTAL] = [TR3Type.Animating1],
+        [TR3LevelNames.CRASH] = [TR3Type.AlarmLight],
+        [TR3LevelNames.THAMES] = [TR3Type.AlarmLight],
+        [TR3LevelNames.ALDWYCH] = [TR3Type.AlarmLight],
+        [TR3LevelNames.LUDS] = [TR3Type.AlarmLight],
         [TR3LevelNames.HSC] = [TR3Type.Animating4],
-        [TR3LevelNames.HALLOWS] = [TR3Type.Animating1],
-        [TR3LevelNames.FISHES] = [TR3Type.Animating4],
+        [TR3LevelNames.AREA51] = [TR3Type.AlarmLight],
+        [TR3LevelNames.HALLOWS] = [TR3Type.Animating1, TR3Type.AlarmLight],
+        [TR3LevelNames.CLIFF] = [TR3Type.AlarmLight],
+        [TR3LevelNames.FISHES] = [TR3Type.Animating4, TR3Type.AlarmLight],
     };
 
     public override List<InjectionData> Build()
