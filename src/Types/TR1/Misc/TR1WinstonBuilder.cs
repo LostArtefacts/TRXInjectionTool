@@ -9,7 +9,7 @@ public class TR1WinstonBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
-        var tr2Level = CreateWinstonLevel(TR2LevelNames.ASSAULT);
+        var tr2Level = CreateTR2WinstonLevel(TR2LevelNames.ASSAULT);
         var tr1Level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
         ResetLevel(tr1Level);
 

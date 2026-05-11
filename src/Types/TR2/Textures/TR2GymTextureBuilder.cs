@@ -196,7 +196,7 @@ public class TR2GymTextureBuilder : TextureBuilder
 
     private InjectionData CreateBaseData()
     {
-        TR2Level level = CreateWinstonLevel(TR2LevelNames.ASSAULT);
+        TR2Level level = CreateTR2WinstonLevel(TR2LevelNames.ASSAULT);
         // Current injection limitation, do not replace SFX
         level.SoundEffects.Clear();
 

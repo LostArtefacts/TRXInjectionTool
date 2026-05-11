@@ -289,7 +289,9 @@ public class InjectionData
                 ID = soundID,
                 Chance = details.Chance,
                 Characteristics = (ushort)details.Characteristics,
-                Volume = details.Volume,
+                Volume = (ushort)(details.Volume << 7),
+                Pitch = details.Pitch,
+                Range = details.Range,
                 SampleOffset = level.SampleIndices[details.Sample],
             });
         }

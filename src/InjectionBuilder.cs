@@ -352,21 +352,30 @@ public abstract class InjectionBuilder
         return caves;
     }
 
-    protected static TR2Level CreateWinstonLevel(string levelName)
+    protected static TR2Level CreateTR2WinstonLevel(string levelName)
     {
-        TR2Level level = _control2.Read($"Resources/{levelName}");
+        var level = _control2.Read($"Resources/{levelName}");
         CreateModelLevel(level, TR2Type.Winston);
+        FixWinstonNose(level.Models[TR2Type.Winston]);
+        return level;
+    }
 
-        // Fix Winston's nose
-        var model = level.Models[TR2Type.Winston];
+    protected static TR3Level CreateTR3WinstonLevel(string levelName)
+    {
+        var level = _control3.Read($"Resources/TR3/{levelName}");
+        CreateModelLevel(level, TR3Type.Winston);
+        FixWinstonNose(level.Models[TR3Type.Winston]);
+        return level;
+    }
+
+    private static void FixWinstonNose(TRModel model)
+    {
         model.Meshes[25].TexturedTriangles.Add(new()
         {
             Type = TRFaceType.Triangle,
-            Vertices = new() { 24, 22, 25 },
+            Vertices = [24, 22, 25],
             Texture = model.Meshes[25].TexturedRectangles[9].Texture,
         });
-
-        return level;
     }
 
     protected static void PackTextures(TR1Level dataLevel, TRLevelBase sourceLevel, TRModel sky, Dictionary<string, string> regionMap)

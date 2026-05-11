@@ -62,7 +62,7 @@ public class TR2VegasTextureBuilder : TextureBuilder
 
     private InjectionData CreateBaseData()
     {
-        TR2Level level = CreateWinstonLevel(TR2LevelNames.VEGAS);
+        TR2Level level = CreateTR2WinstonLevel(TR2LevelNames.VEGAS);
         // Current injection limitation, do not replace SFX
         level.SoundEffects.Clear();
 
