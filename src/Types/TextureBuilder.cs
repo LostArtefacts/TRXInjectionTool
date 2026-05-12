@@ -184,6 +184,17 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
+    protected static TRRoomTextureMove CreateTriShift(short roomIdx, short targetIdx, List<TRRoomVertexRemap> remap)
+    {
+        return new()
+        {
+            RoomIndex = roomIdx,
+            FaceType = TRMeshFaceType.TexturedTriangle,
+            TargetIndex = targetIdx,
+            VertexRemap = remap,
+        };
+    }
+
     protected static short ShiftLighting(TRRoomMesh<TR2Type, TR2RoomVertex> mesh,
         int sourceQuad, int sourceVert, int targetQuad, int targetVert)
     {
@@ -525,11 +536,26 @@ public abstract class TextureBuilder : InjectionBuilder
         GenerateImages8(level, level.Palette.Select(c => c.ToTR1Color()).ToList());
     }
 
-    protected static void FixCatStatue(TRLevelBase level)
+    protected static void FixCatStatue(TRLevelBase level, string baseLevelName = TR1LevelNames.KHAMOON)
     {
-        var khamoon = _control1.Read($"Resources/{TR1LevelNames.KHAMOON}");
-
-        var statue = khamoon.StaticMeshes[TR1Type.SceneryBase + 31];
+        TRTexturePacker basePacker;
+        TRStaticMesh statue;
+        List<TRObjectTexture> originalInfos;
+        if (TR1LevelNames.AsList.Contains(baseLevelName))
+        {
+            var baseLevel = _control1.Read($"Resources/{baseLevelName}");
+            statue = baseLevel.StaticMeshes[TR1Type.SceneryBase + 31];
+            basePacker = new TR1TexturePacker(baseLevel);
+            originalInfos = [.. baseLevel.ObjectTextures];
+        }
+        else
+        {
+            var baseLevel = _control3.Read($"Resources/TR3/{baseLevelName}");
+            statue = baseLevel.StaticMeshes[TR3Type.SceneryBase + 15];
+            basePacker = new TR3TexturePacker(baseLevel);
+            originalInfos = [.. baseLevel.ObjectTextures];
+        }
+        
         var max = statue.Mesh.Vertices.Max(v => v.Y);
         statue.Mesh.Vertices.ForEach(v => v.Y -= max);
         statue.VisibilityBox.MaxX -= 64;
@@ -593,10 +619,8 @@ public abstract class TextureBuilder : InjectionBuilder
             .OrderByDescending(i => i)
             .ToList().ForEach(i => statue.Mesh.TexturedRectangles.RemoveAt(i));
 
-        var packer = new TR1TexturePacker(khamoon);
-        var regions = packer.GetMeshRegions(new[] { statue.Mesh })
+        var regions = basePacker.GetMeshRegions([statue.Mesh])
             .Values.SelectMany(v => v);
-        var originalInfos = khamoon.ObjectTextures.ToList();
 
         if (level is TR1Level level1)
         {
@@ -612,6 +636,14 @@ public abstract class TextureBuilder : InjectionBuilder
             levelPacker.Pack(true);
             level2.StaticMeshes[TR2Type.SceneryBase + 37] = statue;
             GenerateImages8(level2, level2.Palette.Select(c => c.ToTR1Color()).ToList());
+        }
+        else if (level is TR3Level level3)
+        {
+            var levelPacker = new TR3TexturePacker(level3);
+            levelPacker.AddRectangles(regions);
+            levelPacker.Pack(true);
+            level3.StaticMeshes[TR3Type.SceneryBase + 15] = statue;
+            GenerateImages8(level3, level3.Palette.Select(c => c.ToTR1Color()).ToList());
         }
         else
         {

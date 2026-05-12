@@ -368,7 +368,7 @@ public abstract class InjectionBuilder
         return level;
     }
 
-    private static void FixWinstonNose(TRModel model)
+    protected static void FixWinstonNose(TRModel model)
     {
         model.Meshes[25].TexturedTriangles.Add(new()
         {
