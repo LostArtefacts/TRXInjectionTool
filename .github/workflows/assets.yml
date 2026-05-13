@@ -26,5 +26,6 @@ jobs:
         cd pub
         put tr1-assets.zip
         put tr2-assets.zip
+        put tr3-assets.zip
         bye
         EOF
