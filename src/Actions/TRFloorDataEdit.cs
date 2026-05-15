@@ -168,10 +168,12 @@ public class FDRoomProperties : FDFix
 {
     public override FDFixType FixType => FDFixType.RoomProperties;
     public TRRoomFlag Flags { get; set; }
+    public TRPSXReverbMode Reverb { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write((ushort)Flags);
+        writer.Write((byte)Reverb);
     }
 }
 

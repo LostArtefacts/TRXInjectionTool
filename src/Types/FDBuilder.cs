@@ -256,6 +256,7 @@ public abstract class FDBuilder : InjectionBuilder
                 Fixes = [new FDRoomProperties
                 {
                     Flags = add ? (rooms[r].Flags | flag) : (rooms[r].Flags & ~flag),
+                    Reverb = rooms[r] is TR3Room room3 ? room3.ReverbMode : TRPSXReverbMode.Outside,
                 }]
             });
     }
