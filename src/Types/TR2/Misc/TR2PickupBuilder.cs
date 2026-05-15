@@ -8,7 +8,7 @@ using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
 
-namespace TRXInjectionTool.Types.TR2.Misc;
+namespace TRXInjectionTool.Types.TR2.Misc.Picks;
 
 public class TR2PickupBuilder : InjectionBuilder
 {
@@ -278,6 +278,8 @@ public class TR2PickupBuilder : InjectionBuilder
 
     private static InjectionData CreateData(TR2Level level, string levelName, string binName, IEnumerable<TR2Type> types)
     {
+        FixCDPlayer(level);
+
         // Always fix meds
         level.Models.Remove(TR2Type.SmallMed_M_H);
         level.Models.Remove(TR2Type.LargeMed_M_H);
@@ -301,6 +303,7 @@ public class TR2PickupBuilder : InjectionBuilder
         {
             [TR2Type.SmallMed_M_H] = level.Models[TR2Type.SmallMed_M_H],
             [TR2Type.LargeMed_M_H] = level.Models[TR2Type.LargeMed_M_H],
+            [TR2Type.CDPlayer_M_H] = level.Models[TR2Type.CDPlayer_M_H],
         };
         foreach (TR2Type type in types)
         {
@@ -331,6 +334,19 @@ public class TR2PickupBuilder : InjectionBuilder
 
         GenerateImages8(level, basePalette);
         return InjectionData.Create(level, InjectionType.General, binName);
+    }
+
+    private static void FixCDPlayer(TR2Level level)
+    {
+        var mesh = level.Models[TR2Type.CDPlayer_M_H].Meshes[0];
+        var verts = new ushort[] { 14, 19, 18, 15 };
+        var face = mesh.TexturedFaces.First(f => f.Vertices.All(verts.Contains));
+        var texInfo = level.ObjectTextures[face.Texture];
+        var tile = new TRImage(level.Images16[texInfo.Atlas].Pixels);
+        var img = tile.Export(texInfo.Bounds);
+        img.Write((c, x, y) => c.A == 0 ? Color.FromArgb(224, 224, 216) : c);
+        tile.Import(img, texInfo.Position);
+        level.Images16[texInfo.Atlas].Pixels = tile.ToRGB555();
     }
 
     private static void FixGrenades(TRModel model)

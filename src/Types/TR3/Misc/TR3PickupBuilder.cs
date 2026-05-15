@@ -7,12 +7,17 @@ using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
 
-namespace TRXInjectionTool.Types.TR3.Misc;
+namespace TRXInjectionTool.Types.TR3.Misc.Pickup;
 
 public class TR3PickupBuilder : InjectionBuilder
 {
     private static readonly List<Target> _targets =
     [
+        new()
+        {
+            Level = TR3LevelNames.JUNGLE,
+            ObjectFixes = [],
+        },
         new()
         {
             Level = TR3LevelNames.CRASH,
@@ -65,7 +70,7 @@ public class TR3PickupBuilder : InjectionBuilder
                 }
             }
 
-            var name = $"{_tr3NameMap[target.Level]}_pickup_meshes";
+            var name = $"{(target.Level == TR3LevelNames.JUNGLE ? "common" : _tr3NameMap[target.Level])}_pickup_meshes";
             var data = CreateData(level, name, target.ObjectFixes.Keys);
             result.Add(data);
         }
@@ -148,7 +153,9 @@ public class TR3PickupBuilder : InjectionBuilder
 
     private static InjectionData CreateData(TR3Level level, string binName, IEnumerable<TR3Type> types)
     {
+        FixCDPlayer(level);
         TRDictionary<TR3Type, TRModel> models = [];
+        models[TR3Type.CDPlayer_M_H] = level.Models[TR3Type.CDPlayer_M_H];
         foreach (TR3Type type in types)
         {
             models[type] = level.Models[type];
@@ -180,6 +187,19 @@ public class TR3PickupBuilder : InjectionBuilder
 
         GenerateImages8(level, basePalette);
         return InjectionData.Create(level, InjectionType.General, binName);
+    }
+
+    private static void FixCDPlayer(TR3Level level)
+    {
+        var mesh = level.Models[TR3Type.CDPlayer_M_H].Meshes[0];
+        var verts = new ushort[] { 14, 19, 18, 15 };
+        var face = mesh.TexturedFaces.First(f => f.Vertices.All(verts.Contains));
+        var texInfo = level.ObjectTextures[face.Texture];
+        var tile = new TRImage(level.Images16[texInfo.Atlas].Pixels);
+        var img = tile.Export(texInfo.Bounds);
+        img.Write((c, x, y) => c.A == 0 ? Color.FromArgb(224, 224, 216) : c);
+        tile.Import(img, texInfo.Position);
+        level.Images16[texInfo.Atlas].Pixels = tile.ToRGB555();
     }
 
     private class Target
