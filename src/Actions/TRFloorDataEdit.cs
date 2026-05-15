@@ -40,6 +40,15 @@ public enum FDFixType
     ClimbInsert,
     TrigDelete,
     Triangulation,
+    MineCart,
+}
+
+public enum MineCartType
+{
+    None,
+    Left,
+    Right,
+    Stop,
 }
 
 public abstract class FDFix
@@ -277,6 +286,17 @@ public class FDTrigDelete : FDFix
 
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
+    }
+}
+
+public class FDMineCartEdit : FDFix
+{
+    public override FDFixType FixType => FDFixType.MineCart;
+    public MineCartType Type { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write((int)Type);
     }
 }
 
