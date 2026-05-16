@@ -992,6 +992,10 @@ public class TR1LaraAnimBuilder : LaraBuilder
                 change.Dispatches.ForEach(d => d.NextAnimation = (short)InjAnim.Wade);
             }
         }
+
+        anim = lara.Animations[(int)InjAnim.CrouchIdle];
+        AddChange(anim, InjState.FlarePickup, 0, 44, InjAnim.CrouchPickupFlare, 0);
+        lara.Animations[(int)InjAnim.CrouchPickupFlare].StateID = (ushort)InjState.FlarePickup;
     }
 
     private static void ImportTR2Jumping(TRModel tr1Lara, TRModel tr2Lara)
