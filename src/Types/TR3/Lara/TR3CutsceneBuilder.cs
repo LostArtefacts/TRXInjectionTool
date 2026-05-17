@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
@@ -19,7 +20,7 @@ public class TR3CutsceneBuilder : InjectionBuilder
         new(TR3LevelNames.LUDS_CUT, 16384, [TR3Type.CutsceneActor5], postAction: AmendLudsCut),
         new(TR3LevelNames.NEVADA_CUT, 16384, []),
         new(TR3LevelNames.HSC_CUT, 16384, [], postAction: AmendHSCCut),
-        new(TR3LevelNames.ANTARC_CUT, 16384, [TR3Type.CutsceneActor8]),
+        new(TR3LevelNames.ANTARC_CUT, 16384, [TR3Type.CutsceneActor8, TR3Type.CutsceneActor2]),
         new(TR3LevelNames.TINNOS_CUT, 16384, [TR3Type.CutsceneActor1, TR3Type.CutsceneActor3, TR3Type.CutsceneActor4]),
     ];
 
@@ -135,6 +136,11 @@ public class TR3CutsceneBuilder : InjectionBuilder
         public InjectionData CreateData()
         {
             var level = _control3.Read($"Resources/TR3/{LevelName}");
+            if (levelName == TR3LevelNames.ANTARC_CUT)
+            {
+                FixBriefcaseFrames(level.Models[TR3Type.CutsceneActor8], level.Models[TR3Type.CutsceneActor2]);
+            }
+
             var actors = _actors.Where(level.Models.ContainsKey).ToArray();
             foreach (var type in actors)
             {
@@ -269,6 +275,46 @@ public class TR3CutsceneBuilder : InjectionBuilder
                     }
                 }
             }
+        }
+
+        private static void FixBriefcaseFrames(TRModel briefModel, TRModel willModel)
+        {
+            // Resampled from frame rate 4 to 1 to allow tweaking frames below.
+            var data = _control3.Read("Resources/TR3/Lara/antarc_cut_frames.dat");
+            var fixedModel = data.Models[TR3Type.CutsceneActor8];
+            Debug.Assert(fixedModel.Animations.Count == briefModel.Animations.Count);
+            for (int i = 0; i < fixedModel.Animations.Count; i++)
+            {
+                var fixedAnim = fixedModel.Animations[i];
+                var badAnim = briefModel.Animations[i];
+                fixedAnim.Commands = badAnim.Commands;
+                briefModel.Animations[i] = fixedAnim;
+            }
+
+            for (int i = 249; i < 251; i++)
+            {
+                briefModel.Animations[0].Frames[i] = briefModel.Animations[0].Frames[i - 1].Clone();
+            }
+
+            for (int i = 0; i < 82; i++)
+            {
+                briefModel.Animations[1].Frames[i] = briefModel.Animations[1].Frames[i + 1].Clone();
+            }
+
+            for (int i = 516; i < 520; i++)
+            {
+                briefModel.Animations[1].Frames[i] = briefModel.Animations[1].Frames[i - 1].Clone();
+            }
+            briefModel.Animations[1].Frames[520] = briefModel.Animations[1].Frames[521].Clone();
+
+            willModel.Animations[1].Frames[520] = willModel.Animations[1].Frames[519].Clone();
+
+            for (int i = 717; i < 719; i++)
+            {
+                briefModel.Animations[1].Frames[i] = briefModel.Animations[1].Frames[i - 1].Clone();
+                briefModel.Animations[1].Frames[i].OffsetX += 18;
+            }
+            briefModel.Animations[1].Frames[719] = briefModel.Animations[1].Frames[720].Clone();
         }
     }
 }
