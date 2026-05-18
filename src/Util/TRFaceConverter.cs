@@ -19,18 +19,29 @@ public static class TRFaceConverter
 
     public static void ConvertFlatFaces(TR2Level level, List<Color> sourcePalette, IEnumerable<TRModel> models)
     {
-        ConvertFlatFacesImpl(level, sourcePalette, models);
+        ConvertFlatFaces(level, sourcePalette, models);
     }
 
     public static void ConvertFlatFaces(TR3Level level, List<Color> sourcePalette, IEnumerable<TRModel> models)
     {
-        ConvertFlatFacesImpl(level, sourcePalette, models);
+        ConvertFlatFaces(level, sourcePalette, models);
     }
 
-    private static void ConvertFlatFacesImpl<TLevel>(
+    public static void ConvertFlatFaces<TLevel>(
         TLevel level,
         IReadOnlyList<Color> sourcePalette,
         IEnumerable<TRModel> models)
+        where TLevel : TRLevelBase
+    {
+        ConvertFlatFaces(level, sourcePalette, models
+            .SelectMany(m => m.Meshes)
+            .ToList());
+    }
+
+    public static void ConvertFlatFaces<TLevel>(
+        TLevel level,
+        IReadOnlyList<Color> sourcePalette,
+        List<TRMesh> meshList)
         where TLevel : TRLevelBase
     {
         TRTexturePacker packer = level switch
@@ -41,9 +52,6 @@ public static class TRFaceConverter
         };
 
         var objectTextures = level.ObjectTextures;
-        var meshList = models
-            .SelectMany(m => m.Meshes)
-            .ToList();
         var ids = meshList
             .SelectMany(m => m.ColouredFaces)
             .Select(f => f.Texture >> 8)

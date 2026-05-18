@@ -41,6 +41,7 @@ public enum FDFixType
     TrigDelete,
     Triangulation,
     MineCart,
+    Material,
 }
 
 public enum MineCartType
@@ -297,6 +298,17 @@ public class FDMineCartEdit : FDFix
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write((int)Type);
+    }
+}
+
+public class FDMaterialEdit : FDFix
+{
+    public override FDFixType FixType => FDFixType.Material;
+    public TRMaterial Material { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write((byte)Material);
     }
 }
 
