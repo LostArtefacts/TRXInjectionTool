@@ -79,14 +79,18 @@ public class TR3LaraAnimBuilder : LaraBuilder
 
     public override byte[] Publish()
     {
-        var level = CreateLevel();
+        var level = CreateLevel(true);
         var extraLevel = CreateExtraLevel();
         return ExportLaraWAD(level, extraLevel);
     }
 
-    private TR3Level CreateLevel()
+    private TR3Level CreateLevel(bool useSkin = false)
     {
         var jungle = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
+        if (useSkin)
+        {
+            jungle.Models[TR3Type.Lara].Meshes = jungle.Models[TR3Type.LaraSkin_H].Meshes;
+        }
         ResetLevel(jungle);
         var tr3Lara = jungle.Models[TR3Type.Lara];
         
@@ -106,6 +110,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
             InjState.CrouchTurnRight, InjAnim.CrouchTurnRight,
             TR3LaraState.CrouchIdle, TR3LaraAnim.CrouchIdle);
         FixVaulting(tr3Lara);
+        FixCrouchRoll(tr3Lara, TR3LaraAnim.CrouchRollForwardEnd);
 
         AlignJumpToReach(tr3Lara,
             TR3LaraAnim.JumpForwardStartToGrabEarly, TR3LaraAnim.JumpForwardStartToGrabLate,

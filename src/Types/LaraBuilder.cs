@@ -252,6 +252,7 @@ public abstract class LaraBuilder : InjectionBuilder
         CrouchTurnRight = 24,
         LadderToCrouchStart = 25,
         LadderToCrouchEnd = 26,
+        CrouchRollEnd = 27,
     }
 
     protected enum LaraExtraState
@@ -702,11 +703,28 @@ public abstract class LaraBuilder : InjectionBuilder
             }
         }
 
+        FixCrouchRoll(lara, animMap[TR3LaraAnim.CrouchRollForwardEnd]);
         AddChange(lara, LaraAnim.Run, stateMap[TR3LaraState.CrouchIdle], 0, 4, animMap[TR3LaraAnim.RunToCrouchLeftStart], 0);
         AddChange(lara, LaraAnim.Run, stateMap[TR3LaraState.CrouchIdle], 10, 14, animMap[TR3LaraAnim.RunToCrouchRightStart], 0);
         AddChange(lara, LaraAnim.StandStill, stateMap[TR3LaraState.CrouchIdle], 0, 1, animMap[TR3LaraAnim.StandToCrouch], 0);
         AddChange(lara, LaraAnim.ReachToHang, stateMap[TR3LaraState.ClimbToCrawl], 12, 22, animMap[TR3LaraAnim.HangToCrouchStart], 0);
         AddChange(lara, LaraAnim.StandIdle, stateMap[TR3LaraState.CrouchIdle], 0, 44, animMap[TR3LaraAnim.StandToCrouch], 0);
+    }
+
+    protected static void FixCrouchRoll<A>(TRModel lara, A crouchRollEndAnim)
+    {
+        // Manually adjusted to stop Lara's right arm raising to her knee then immediately going
+        // to the floor on the next animation.
+        var badAnim = lara.Animations[Convert.ToInt32(crouchRollEndAnim)];
+        var goodAnim = GetLaraExtModel().Animations[Convert.ToInt32(ExtLaraAnim.CrouchRollEnd)];
+        Debug.Assert(badAnim.Frames.Count == goodAnim.Frames.Count);
+        for (int i = 0; i < badAnim.Frames.Count; i++)
+        {
+            for (int bone = 8; bone < 11; bone++)
+            {
+                badAnim.Frames[i].Rotations[bone] = goodAnim.Frames[i].Rotations[bone];
+            }
+        }
     }
 
     protected void ImportKneesShuffle(InjectionData data)
