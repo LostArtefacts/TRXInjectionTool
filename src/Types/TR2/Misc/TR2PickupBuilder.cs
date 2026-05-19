@@ -8,7 +8,7 @@ using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
 
-namespace TRXInjectionTool.Types.TR2.Misc.Picks;
+namespace TRXInjectionTool.Types.TR2.Misc;
 
 public class TR2PickupBuilder : InjectionBuilder
 {

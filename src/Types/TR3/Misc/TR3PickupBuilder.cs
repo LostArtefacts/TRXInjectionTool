@@ -7,7 +7,7 @@ using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
 
-namespace TRXInjectionTool.Types.TR3.Misc.Pickup;
+namespace TRXInjectionTool.Types.TR3.Misc;
 
 public class TR3PickupBuilder : InjectionBuilder
 {

@@ -17,16 +17,6 @@ public static class TRFaceConverter
         ConvertFlatFaces(level, sourcePalette, level.Models.Values);
     }
 
-    public static void ConvertFlatFaces(TR2Level level, List<Color> sourcePalette, IEnumerable<TRModel> models)
-    {
-        ConvertFlatFaces(level, sourcePalette, models);
-    }
-
-    public static void ConvertFlatFaces(TR3Level level, List<Color> sourcePalette, IEnumerable<TRModel> models)
-    {
-        ConvertFlatFaces(level, sourcePalette, models);
-    }
-
     public static void ConvertFlatFaces<TLevel>(
         TLevel level,
         IReadOnlyList<Color> sourcePalette,
