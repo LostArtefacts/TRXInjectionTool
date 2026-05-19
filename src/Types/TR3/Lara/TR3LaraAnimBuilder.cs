@@ -108,7 +108,9 @@ public class TR3LaraAnimBuilder : LaraBuilder
         ImportCrawlJumpDown(tr3Lara, InjState.CrawlJumpDown, InjAnim.CrawlJumpDown, TR3LaraAnim.CrawlIdle);
         ImportCrouchTurn(tr3Lara, InjState.CrouchTurnLeft, InjAnim.CrouchTurnLeft, 
             InjState.CrouchTurnRight, InjAnim.CrouchTurnRight,
-            TR3LaraState.CrouchIdle, TR3LaraAnim.CrouchIdle);
+            TR3LaraState.CrouchIdle, TR3LaraAnim.CrouchIdle,
+            TR3LaraAnim.CrouchToStand, TR3LaraState.CrouchRoll, TR3LaraAnim.CrouchRollForwardStart,
+            TR3LaraState.CrawlIdle, TR3LaraAnim.CrouchToCrawlStart);
         FixVaulting(tr3Lara);
         FixCrouchRoll(tr3Lara, TR3LaraAnim.CrouchRollForwardEnd);
 

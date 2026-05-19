@@ -350,7 +350,9 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportCrawlJumpDown(tr2Lara, InjState.CrawlJumpDown, InjAnim.CrawlJumpDown, InjAnim.CrawlIdle);
         ImportCrouchTurn(tr2Lara, InjState.CrouchTurnLeft, InjAnim.CrouchTurnLeft,
             InjState.CrouchTurnRight, InjAnim.CrouchTurnRight,
-            InjState.CrouchIdle, InjAnim.CrouchIdle);
+            InjState.CrouchIdle, InjAnim.CrouchIdle,
+            InjAnim.CrouchToStand, InjState.CrouchRoll, InjAnim.CrouchRollForwardStart,
+            InjState.CrawlIdle, InjAnim.CrouchToCrawlStart);
         FixVaulting(tr2Lara);
         ImportResponsiveReach(tr2Lara, _responsiveReachAnimMap);
         ImportSwingInSlow(tr2Lara, InjAnim.SwingInSlow,
