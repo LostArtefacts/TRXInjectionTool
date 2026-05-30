@@ -8,7 +8,8 @@ import into **WadTool**:
 
 **Asset ZIP files:**  
 - https://lostartefacts.dev/pub/tr1-assets.zip  
-- https://lostartefacts.dev/pub/tr2-assets.zip  
+- https://lostartefacts.dev/pub/tr2-assets.zip
+- https://lostartefacts.dev/pub/tr3-assets.zip
 
 ---
 
