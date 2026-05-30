@@ -32,8 +32,10 @@ public abstract class LaraBuilder : InjectionBuilder
         PullUp = 19,
         ShimmyLeft = 30,
         ShimmyRight = 31,
+        Pickup = 39,
         Roll = 45,
         Handstand = 54,
+        FastPickup = 99,
     }
 
     protected enum LaraAnim
@@ -61,6 +63,7 @@ public abstract class LaraBuilder : InjectionBuilder
         ReachToHang = 96,
         ClimbOnEnd = 102,
         StandIdle = 103,
+        Pickup = 135,
         StandDeath = 138,
         RollStart = 146,
         ClimbOnHandstand = 159,
@@ -253,6 +256,7 @@ public abstract class LaraBuilder : InjectionBuilder
         LadderToCrouchStart = 25,
         LadderToCrouchEnd = 26,
         CrouchRollEnd = 27,
+        FastPickup = 28,
     }
 
     protected enum LaraExtraState
@@ -1151,5 +1155,33 @@ public abstract class LaraBuilder : InjectionBuilder
         }
 
         AddChange(lara, idleLadderAnim, climbToCrawlState, 0, 48, ladderToCrouchStartAnim, 0);
+    }
+
+    protected static void ImportFastPickup(TRModel lara)
+    {
+        var laraExt = GetLaraExtModel();
+        var anim = laraExt.Animations[(int)ExtLaraAnim.FastPickup].Clone();
+        var animIdx = lara.Animations.Count;
+        lara.Animations.Add(anim);
+        anim.NextAnimation = Convert.ToUInt16(LaraAnim.StandStill);
+        anim.StateID = Convert.ToUInt16(LaraState.Pickup);
+
+        // Retain "aha" if present
+        var cmd = lara.Animations[(int)LaraAnim.Pickup].Commands.FirstOrDefault(c => c is TRSFXCommand);
+        if (cmd != null)
+        {
+            var sfxCmd = cmd.Clone() as TRSFXCommand;
+            sfxCmd.FrameNumber = 10;
+            anim.Commands.Add(sfxCmd);
+        }
+
+        foreach (var id in new[] { LaraAnim.StandStill, LaraAnim.StandIdle })
+        {
+            var standAnim = lara.Animations[Convert.ToInt32(id)];
+            var change = standAnim.Changes.First(c => c.StateID == Convert.ToInt32(LaraState.Pickup)).Clone();
+            change.StateID = Convert.ToUInt16(LaraState.FastPickup);
+            change.Dispatches.ForEach(d => d.NextAnimation = (short)animIdx);
+            standAnim.Changes.Add(change);
+        }
     }
 }

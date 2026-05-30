@@ -121,6 +121,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         ImportLadderToCrouch(tr3Lara, TR2LaraAnim.LadderIdle, TR3LaraAnim.CrouchIdle, TR3LaraState.ClimbToCrawl,
             InjAnim.LadderToCrouchStart, InjAnim.LadderToCrouchEnd);
         AddMinimumJumpDelay(tr3Lara);
+        ImportFastPickup(tr3Lara);
 
         return jungle;
     }
