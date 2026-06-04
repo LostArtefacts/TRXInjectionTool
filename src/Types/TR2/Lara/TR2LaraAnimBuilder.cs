@@ -366,6 +366,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
             InjAnim.LadderToCrouchStart, InjAnim.LadderToCrouchEnd);
         AddMinimumJumpDelay(tr2Lara);
         ImportFastPickup(tr2Lara);
+        ImportFastPushPull(tr2Lara);
 
         return wall;
     }
