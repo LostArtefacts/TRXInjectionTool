@@ -5,7 +5,7 @@ namespace TRXInjectionTool.Actions;
 
 public class TRSFXData
 {
-    private static readonly Dictionary<TRGameVersion, List<byte[]>> _mainSFXData = [];
+    private static readonly Dictionary<string, List<byte[]>> _mainSFXData = [];
 
     public short ID { get; set; }
     public ushort Volume { get; set; }
@@ -42,20 +42,20 @@ public class TRSFXData
         return (uint)Data.Sum(data => data.Length);
     }
 
-    public void LoadSFX(TRGameVersion version)
+    public void LoadSFX(TRGameVersion version, bool gold = false)
     {
-        if (!_mainSFXData.TryGetValue(version, out var mainSFXData))
+        var id = $"Resources/{version}/main{(gold ? "_gold" : string.Empty)}.sfx";
+        if (!_mainSFXData.TryGetValue(id, out var mainSFXData))
         {
-            mainSFXData = _mainSFXData[version] = ReadMainSFX(version);
+            mainSFXData = _mainSFXData[id] = ReadMainSFX(id);
         }
 
         int sampleCount = (Characteristics & 0xFC) >> 2;
         Data = mainSFXData.GetRange((int)SampleOffset, sampleCount);
     }
 
-    private static List<byte[]> ReadMainSFX(TRGameVersion version)
+    private static List<byte[]> ReadMainSFX(string file)
     {
-        var file = $"Resources/{version}/main.sfx";
         var result = new List<byte[]>();
 
         using var reader = new TRLevelControl.TRLevelReader(File.Open(file, FileMode.Open));
@@ -87,7 +87,7 @@ public class TRSFXData
         };
     }
 
-    public static TRSFXData Create(object id, TR2SoundEffect effect)
+    public static TRSFXData Create(object id, TR2SoundEffect effect, bool gold = false)
     {
         var sfx = new TRSFXData
         {
@@ -97,11 +97,11 @@ public class TRSFXData
             Volume = effect.Volume,
             SampleOffset = effect.SampleID,
         };
-        sfx.LoadSFX(TRGameVersion.TR2);
+        sfx.LoadSFX(TRGameVersion.TR2, gold);
         return sfx;
     }
 
-    public static TRSFXData Create(object id, TR3SoundEffect effect)
+    public static TRSFXData Create(object id, TR3SoundEffect effect, bool gold = false)
     {
         var sfx = new TRSFXData
         {
@@ -113,7 +113,7 @@ public class TRSFXData
             Range = effect.Range,
             SampleOffset = effect.SampleID,
         };
-        sfx.LoadSFX(TRGameVersion.TR3);
+        sfx.LoadSFX(TRGameVersion.TR3, gold);
         return sfx;
     }
 }
