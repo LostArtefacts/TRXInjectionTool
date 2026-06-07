@@ -37,6 +37,28 @@ public abstract class ItemBuilder : InjectionBuilder
     public static TRItemPosEdit MoveToRoom(TRLevelBase level, short itemIndex, short room)
         => CreateItemPosEdit(level, itemIndex, i => i.Room = room);
 
+    public static TRItemTypeFlagEdit SetType(TRLevelBase level, short itemIndex, Enum type)
+    {
+        var flags = level switch
+        {
+            TR1Level l => l.Entities[itemIndex].Flags,
+            TR2Level l => l.Entities[itemIndex].Flags,
+            TR3Level l => l.Entities[itemIndex].Flags,
+            _ => throw new InvalidOperationException("TR1-3 items supported only.")
+        };
+        var item = new TR1Entity
+        {
+            TypeID = (TR1Type)Convert.ToInt32(type),
+            Flags = flags,
+        };
+
+        return new()
+        {
+            Index = itemIndex,
+            Item = item,
+        };
+    }
+
     public static TRMeshEdit FixEgyptToppledChair(TR1Type type, TR1Level level)
     {
         var mesh = level.StaticMeshes[type].Mesh;

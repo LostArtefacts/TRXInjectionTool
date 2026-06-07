@@ -67,4 +67,5 @@ public enum BlockType
     ItemFlagEdits   = 33,
     AnimEdits       = 34,
     AnimTexEdits    = 35,
+    ObjectLinkEdits = 36,
 }

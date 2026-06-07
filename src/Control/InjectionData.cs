@@ -45,6 +45,7 @@ public class InjectionData
     public List<TRCameraEdit> CameraEdits { get; set; } = [];
     public List<TRSpriteEdit> SpriteEdits { get; set; } = [];
     public List<TRObjectTypeEdit> ObjectTypeEdits { get; set; } = [];
+    public List<TRObjectLinkEdit> ObjectLinkEdits { get; set; } = [];
     public List<TRAnimEdit> AnimEdits { get; set; } = [];
     public List<TRAnimTextureEdit> AnimTextureEdits { get; set; } = [];
 
