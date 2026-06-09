@@ -16,6 +16,8 @@ public class TR3AIPatrolBuilder : InjectionBuilder
 
     private static InjectionData DuplicateAIPatrol(string levelName)
     {
+        // This replaces hard-coded behaviour in OG level sequences, hence is a non-optional injection.
+        // Other AI fixes are included in normal FD injections, so player can toggle.
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.General, $"{_tr3NameMap[levelName]}_patrol");
         CreateDefaultTests(data, $"TR3/{levelName}");
 
