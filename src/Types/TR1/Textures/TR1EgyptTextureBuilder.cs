@@ -19,11 +19,12 @@ public class TR1EgyptTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateShifts(egypt));
         data.RoomEdits.AddRange(FixVases(egypt));
+        data.StaticMeshEdits.Add(TR1KhamoonTextureBuilder.FixPalmTreeBounds(egypt));
 
         FixTransparentTextures(egypt, data);
         FixPassport(egypt, data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings()

@@ -16,12 +16,13 @@ public class TR1ObeliskTextureBuilder : TextureBuilder
 
         data.RoomEdits.AddRange(CreateRefacings(obelisk));
         data.RoomEdits.AddRange(CreateRotations());
+        data.StaticMeshEdits.Add(TR1KhamoonTextureBuilder.FixPalmTreeBounds(obelisk));
 
         FixCityGaps(obelisk, data);
         FixTransparentTextures(obelisk, data);
         FixPassport(obelisk, data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureReface> CreateRefacings(TR1Level obelisk)

@@ -19,11 +19,12 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateVertexShifts(khamoon));
+        data.StaticMeshEdits.Add(FixPalmTreeBounds(khamoon));
 
         FixTransparentTextures(khamoon, data);
         FixPassport(khamoon, data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureCreate> CreateFillers(TR1Level khamoon)
@@ -136,5 +137,16 @@ public class TR1KhamoonTextureBuilder : TextureBuilder
         CreateDefaultTests(data, TR1LevelNames.KHAMOON);
 
         return data;
+    }
+
+    public static TRStaticMeshEdit FixPalmTreeBounds(TR1Level level)
+    {
+        var tree = level.StaticMeshes[TR1Type.SceneryBase + 2];
+        tree.VisibilityBox.MaxY = 33;
+        return new()
+        {
+            TypeID = 2,
+            Mesh = tree,
+        };
     }
 }

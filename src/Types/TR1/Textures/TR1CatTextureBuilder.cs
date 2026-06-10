@@ -20,11 +20,12 @@ public class TR1CatTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(FixVases(cat));
         data.RoomEdits.AddRange(FixCatPositions(cat));
+        data.StaticMeshEdits.Add(TR1KhamoonTextureBuilder.FixPalmTreeBounds(cat));
 
         FixTransparentTextures(cat, data);
         FixPassport(cat, data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureCreate> CreateFillers(TR1Level cat)

@@ -17,10 +17,11 @@ public class TR1SanctuaryTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings());
         data.RoomEdits.AddRange(CreateVertexShifts(sanctuary));
         data.RoomEdits.AddRange(CreateRotations());
+        data.StaticMeshEdits.Add(TR1KhamoonTextureBuilder.FixPalmTreeBounds(sanctuary));
 
         FixPassport(sanctuary, data);
 
-        return new() { data };
+        return [data];
     }
 
     private static List<TRRoomTextureCreate> CreateFillers(TR1Level sanctuary)
