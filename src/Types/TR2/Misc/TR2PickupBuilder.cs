@@ -195,7 +195,19 @@ public class TR2PickupBuilder : InjectionBuilder
         return result;
     }
 
-    private static void Scale(TR2Type type, TRModel model, float factor)
+    public static void FixLevelDefaults(TR2Level level)
+    {
+        foreach (var (type, factor) in _defaultTargets)
+        {
+            if (level.Models.TryGetValue(type, out var model))
+            {
+                Scale(type, model, factor);
+                Fix(string.Empty, type, model);
+            }
+        }
+    }
+
+    public static void Scale(TR2Type type, TRModel model, float factor)
     {
         if (factor == 1.0f)
         {

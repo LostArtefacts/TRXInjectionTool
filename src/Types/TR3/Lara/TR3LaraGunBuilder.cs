@@ -3,6 +3,7 @@ using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Types.TR2.Misc;
 
 namespace TRXInjectionTool.Types.TR3.Lara;
 
@@ -46,7 +47,7 @@ public class TR3LaraGunBuilder : InjectionBuilder
 
         foreach (var isGym in new[] { false, true })
         {
-            var gunLevel = _control2.Read($"Resources/TR3/Lara/Guns/{(isGym ? "gym" : string.Empty)}guns.tr2");
+            var gunLevel = GetFixedSourceLevel($"{(isGym ? "gym" : string.Empty)}guns.tr2");
             var level = CreateLevel(gunLevel, isGym);
 
             var data = InjectionData.Create(level, InjectionType.General, $"lara{(isGym ? "_gym" : string.Empty)}_guns");
@@ -62,6 +63,31 @@ public class TR3LaraGunBuilder : InjectionBuilder
         }
 
         return result;
+    }
+
+    private static TR2Level GetFixedSourceLevel(string name)
+    {
+        var map = new Dictionary<TR3Type, TR2Type>()
+        {
+            [TR3Type.AutoAmmo_M_H] = TR2Type.AutoAmmo_M_H,
+            [TR3Type.M16Ammo_M_H] = TR2Type.M16Ammo_M_H,
+        };
+
+        var level = _control2.Read($"Resources/TR3/Lara/Guns/{name}");
+
+        foreach (var (type1, type2) in map)
+        {
+            level.Models.ChangeKey((TR2Type)type1, type2);
+        }
+
+        TR2PickupBuilder.FixLevelDefaults(level);
+
+        foreach (var (type1, type2) in map)
+        {
+            level.Models.ChangeKey(type2, (TR2Type)type1);
+        }
+
+        return level;
     }
 
     private static TR3Level CreateLevel(TR2Level gunLevel, bool gym)
