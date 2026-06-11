@@ -5,6 +5,7 @@ using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Types.TR2.Misc;
 using TRXInjectionTool.Util;
 
 namespace TRXInjectionTool.Types.TR3.Misc;
@@ -151,11 +152,25 @@ public class TR3PickupBuilder : InjectionBuilder
         frame.Bounds.MaxZ = 21;
     }
 
+    private static void FixGrenades(TR3Level level)
+    {
+        var model = level.Models[TR3Type.Grenades_M_H];
+        TR2PickupBuilder.Scale(TR2Type.Grenades_M_H, model, 1.4f);
+        model.MeshTrees[0].OffsetX = -26;
+        model.MeshTrees[0].OffsetY = 12;
+        model.MeshTrees[0].OffsetZ = 0;
+        model.MeshTrees[1].OffsetX = 23;
+        model.MeshTrees[1].OffsetY = 12;
+        model.MeshTrees[1].OffsetZ = 0;
+    }
+
     private static InjectionData CreateData(TR3Level level, string binName, IEnumerable<TR3Type> types)
     {
         FixCDPlayer(level);
+        FixGrenades(level);
         TRDictionary<TR3Type, TRModel> models = [];
         models[TR3Type.CDPlayer_M_H] = level.Models[TR3Type.CDPlayer_M_H];
+        models[TR3Type.Grenades_M_H] = level.Models[TR3Type.Grenades_M_H];
         foreach (TR3Type type in types)
         {
             models[type] = level.Models[type];
