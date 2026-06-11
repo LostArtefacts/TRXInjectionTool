@@ -100,7 +100,6 @@ public class TRRoomVertxFlagChange : TRRoomTextureEdit
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.SetVertexFlags;
     public ushort VertexIndex { get; set; }
     public ushort Flags { get; set; }
-    public short Adder { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer)
     {
