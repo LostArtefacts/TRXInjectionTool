@@ -10,6 +10,7 @@ namespace TRXInjectionTool.Types.TR1.Sky;
 public class TR1ColosseumSkyboxBuilder : InjectionBuilder
 {
     private static readonly List<short> _skyRooms = [18, 19, 74, 77, 78, 79, 81, 82, 83];
+    private static readonly List<short> _windyRooms = [0, 20, 63, 64, 65, 66, 67, 70, 72, 76, 84];
 
     protected static readonly Dictionary<string, string> _imageIDs = new()
     {
@@ -26,7 +27,8 @@ public class TR1ColosseumSkyboxBuilder : InjectionBuilder
         CreateDefaultTests(data, TR1LevelNames.COLOSSEUM);
 
         var colly = _control1.Read($"Resources/{TR1LevelNames.COLOSSEUM}");
-        data.FloorEdits.AddRange(FDBuilder.AddRoomFlags(_skyRooms, TRRoomFlag.Skybox, colly.Rooms));
+        data.FloorEdits.AddRange(FDBuilder.AddRoomFlags(_skyRooms, TRRoomFlag.Skybox | TRRoomFlag.Wind, colly.Rooms));
+        data.FloorEdits.AddRange(FDBuilder.AddRoomFlags(_windyRooms, TRRoomFlag.Wind, colly.Rooms));
 
         return [data];
     }
