@@ -3,6 +3,7 @@ using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
+using TRXInjectionTool.Applicability;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR3.Textures;
@@ -16,7 +17,7 @@ public class TR3HSCTextureBuilder : TextureBuilder
         CreateDefaultTests(data, $"TR3/{TR3LevelNames.HSC}");
 
         data.RoomEdits.AddRange(CreateRefacings(level));
-        data.TextureOverwrites.Add(FixGrating(level, 1859));
+        FixGrating(level, 1859, data);
 
         FixPushButton(data, TR3LevelNames.HSC);
 
@@ -62,7 +63,7 @@ public class TR3HSCTextureBuilder : TextureBuilder
         }
     }
 
-    public static TRTextureOverwrite FixGrating(TR3Level level, int textureId)
+    public static void FixGrating(TR3Level level, int textureId, InjectionData data)
     {
         var texInfo = level.ObjectTextures[textureId];
         var tile = new TRImage(level.Images16[texInfo.Atlas].Pixels);
@@ -90,7 +91,7 @@ public class TR3HSCTextureBuilder : TextureBuilder
             return c;
         });
 
-        return new()
+        data.TextureOverwrites.Add(new()
         {
             Page = texInfo.Atlas,
             X = (byte)texInfo.Bounds.X,
@@ -98,6 +99,8 @@ public class TR3HSCTextureBuilder : TextureBuilder
             Width = (ushort)texInfo.Size.Width,
             Height = (ushort)texInfo.Size.Height,
             Data = img.ToRGBA(),
-        };
+        });
+
+        data.ApplicabilityTests.Add(new TextureTest(textureId, texInfo));
     }
 }

@@ -3,6 +3,7 @@ using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
+using TRXInjectionTool.Applicability;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Textures;
@@ -218,6 +219,7 @@ public class TR1MidasTextureBuilder : TextureBuilder
             });
         }
 
+        bool testAdded = false;
         foreach (var id in new[] { 784, 786, 788, 798, 818, 832 })
         {
             var info = level.ObjectTextures[id];
@@ -226,6 +228,12 @@ public class TR1MidasTextureBuilder : TextureBuilder
             if (!img.Pixels.Any(p => p == 0))
             {
                 continue;
+            }
+
+            if (!testAdded)
+            {
+                data.ApplicabilityTests.Add(new TextureTest(id, info));
+                testAdded = true;
             }
 
             img.Write((c, x, y) =>

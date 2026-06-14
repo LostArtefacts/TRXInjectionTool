@@ -5,4 +5,5 @@ public enum ApplicabilityType
     ItemMeta = 0,
     RoomCount = 1,
     RoomMeta = 2,
+    TextureSample = 3,
 }

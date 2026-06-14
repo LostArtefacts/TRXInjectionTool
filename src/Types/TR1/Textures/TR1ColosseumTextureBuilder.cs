@@ -1,7 +1,9 @@
-﻿using TRImageControl;
+﻿using System.Diagnostics;
+using TRImageControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
+using TRXInjectionTool.Applicability;
 using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Textures;
@@ -20,7 +22,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateVertexShifts(colosseum));
         data.RoomEdits.AddRange(CreateRotations());
 
-        FixRoofTextures(data);
+        FixRoofTextures(colosseum, data);
         FixPassport(colosseum, data);
 
         return new() { data };
@@ -133,7 +135,7 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
         };
     }
 
-    private static void FixRoofTextures(InjectionData data)
+    private static void FixRoofTextures(TR1Level level, InjectionData data)
     {
         // Replace the Midas textures used on the roof of Colosseum with
         // those from the beta.
@@ -147,5 +149,13 @@ public class TR1ColosseumTextureBuilder : TextureBuilder
             Height = 64,
             Data = betaRoof.ToRGBA(),
         });
+
+        var texId = level.ObjectTextures.FindIndex(t => t.Atlas == 3
+            && t.Position.X == 128
+            && t.Position.Y == 0
+            && t.Size.Width == 64
+            && t.Size.Height == 64);
+        Debug.Assert(texId != -1);
+        data.ApplicabilityTests.Add(new TextureTest(texId, level.ObjectTextures[texId]));
     }
 }

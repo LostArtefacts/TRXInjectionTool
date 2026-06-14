@@ -6,6 +6,7 @@ using TRLevelControl;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
+using TRXInjectionTool.Applicability;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
 
@@ -299,6 +300,7 @@ public abstract class TextureBuilder : InjectionBuilder
             Height = (ushort)texInfo.Size.Height,
             Data = img.ToRGBA(),
         });
+        data.ApplicabilityTests.Add(new TextureTest(face.Texture, texInfo));
     }
 
     protected static TR1Level CreateAtlantisContinuityLevel(TR1Type startSceneryIdx)
@@ -741,6 +743,9 @@ public abstract class TextureBuilder : InjectionBuilder
                     Data = img.ToRGBA(),
                 });
             }
+
+            var first = texInfos.First();
+            data.ApplicabilityTests.Add(new TextureTest(level.ObjectTextures.IndexOf(first), first));
         }
         else if (level is TR2Level)
         {
