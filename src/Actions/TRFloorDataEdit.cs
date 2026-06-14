@@ -176,14 +176,44 @@ public class FDRoomShift : FDFix
 
 public class FDRoomProperties : FDFix
 {
+    private static readonly List<TRRoomFlag> _knownFlags =
+    [
+        TRRoomFlag.Water,
+        (TRRoomFlag)0x02, // Damaging
+        (TRRoomFlag)0x04, // Cold
+        TRRoomFlag.Skybox,
+        TRRoomFlag.DynamicLit,
+        TRRoomFlag.Wind,
+        TRRoomFlag.Inside,
+        TRRoomFlag.SwampOrNoLensflare,
+    ];
+
     public override FDFixType FixType => FDFixType.RoomProperties;
     public TRRoomFlag Flags { get; set; }
     public TRPSXReverbMode Reverb { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
-        writer.Write((ushort)Flags);
+        writer.Write(GetCleanedFlags());
         writer.Write((byte)Reverb);
+    }
+
+    private ushort GetCleanedFlags()
+    {
+        // OG levels use a lot of meaningless flags. Anything not recognised by the engine
+        // is therefore stripped here; if they later become meaningful, the known list
+        // should be altered here.
+        var flags = Flags;
+        for (int i = 0; i < sizeof(ushort) * 8; i++)
+        {
+            var flag = (TRRoomFlag)(1 << i);
+            if (!_knownFlags.Contains(flag))
+            {
+                flags &= ~flag;
+            }
+        }
+
+        return (ushort)flags;
     }
 }
 
