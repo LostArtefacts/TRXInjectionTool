@@ -486,6 +486,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         AddMinimumJumpDelay(tr1Lara);
         ImportFastPickup(tr1Lara);
         ImportFastPushPull(tr1Lara);
+        ImportPlinthPickups(tr1Lara);
 
         return caves;
     }

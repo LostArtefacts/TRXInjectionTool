@@ -123,6 +123,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         AddMinimumJumpDelay(tr3Lara);
         ImportFastPickup(tr3Lara);
         ImportFastPushPull(tr3Lara, true);
+        ImportPlinthPickups(tr3Lara, true);
 
         return jungle;
     }

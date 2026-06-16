@@ -367,6 +367,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         AddMinimumJumpDelay(tr2Lara);
         ImportFastPickup(tr2Lara);
         ImportFastPushPull(tr2Lara);
+        ImportPlinthPickups(tr2Lara);
 
         return wall;
     }

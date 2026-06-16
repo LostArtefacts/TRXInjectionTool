@@ -40,6 +40,8 @@ public abstract class LaraBuilder : InjectionBuilder
         FastPickup = 99,
         FastPushblockPull = 100,
         FastPushblockPush = 101,
+        PlinthLowPickup = 102,
+        PlinthHighPickup = 103,
     }
 
     protected enum LaraAnim
@@ -266,6 +268,8 @@ public abstract class LaraBuilder : InjectionBuilder
         FastPushblockPush = 30,
         FastPushblockPullStop = 31,
         FastPushblockPushStop = 32,
+        PlinthLowPickup = 33,
+        PlinthHighPickup = 34,
     }
 
     protected enum LaraExtraState
@@ -1264,6 +1268,43 @@ public abstract class LaraBuilder : InjectionBuilder
                 ? LaraState.PushblockPull : LaraState.PushblockPush);
             anim.NextAnimation = (ushort)LaraAnim.StandStill;
             anim.NextFrame = 0;
+        }
+    }
+
+    protected void ImportPlinthPickups(TRModel lara, bool enableFootprints = false)
+    {
+        var map = new Dictionary<ExtLaraAnim, LaraState>
+        {
+            [ExtLaraAnim.PlinthLowPickup] = LaraState.PlinthLowPickup,
+            [ExtLaraAnim.PlinthHighPickup] = LaraState.PlinthHighPickup,
+        };
+
+        var laraExt = GetLaraExtModel();
+        foreach (var (animType, animState) in map)
+        {
+            var anim = laraExt.Animations[(int)animType].Clone();
+            var animIdx = lara.Animations.Count;
+            lara.Animations.Add(anim);
+
+            anim.StateID = (ushort)LaraState.Pickup;
+            anim.Commands.OfType<TRSFXCommand>().Where(f => f.SoundID == 17)
+                .ToList().ForEach(f => f.SoundID = WetFeetSFX);
+            if (!enableFootprints)
+            {
+                anim.Commands.RemoveAll(c => c is TRFXCommand);
+            }
+
+            anim.NextAnimation = (ushort)LaraAnim.StandStill;
+            anim.NextFrame = 0;
+
+            foreach (var id in new[] { LaraAnim.StandStill, LaraAnim.StandIdle })
+            {
+                var standAnim = lara.Animations[Convert.ToInt32(id)];
+                var change = standAnim.Changes.First(c => c.StateID == Convert.ToInt32(LaraState.Pickup)).Clone();
+                change.StateID = (ushort)animState;
+                change.Dispatches.ForEach(d => d.NextAnimation = (short)animIdx);
+                standAnim.Changes.Add(change);
+            }
         }
     }
 }
