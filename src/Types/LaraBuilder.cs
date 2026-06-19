@@ -14,6 +14,7 @@ public abstract class LaraBuilder : InjectionBuilder
     protected abstract short JumpSFX { get; }
     protected abstract short DryFeetSFX { get; }
     protected abstract short WetFeetSFX { get; }
+    protected abstract short TreadSFX { get; }
     protected abstract short LandSFX { get; }
     protected abstract short KneesShuffleSFX { get; }
     protected abstract short ClimbOnSFX { get; }
@@ -49,6 +50,8 @@ public abstract class LaraBuilder : InjectionBuilder
         Run = 0,
         RunStart = 6,
         StandStill = 11,
+        TurnRightSlow = 12,
+        TurnLeftSlow = 13,
         RunJumpRightStart = 16,
         RunJumpRightContinue = 17,
         RunJumpLeftStart = 18,
@@ -56,21 +59,26 @@ public abstract class LaraBuilder : InjectionBuilder
         Freefall = 23,
         JumpUp = 28,
         Climb3Click = 42,
+        TurnRight = 44,
         Climb2Click = 50,
         Climb2ClickEnd = 51,
         JumpForwardEndToFreefall = 49,
+        TurnLeft = 69,
         JumpBack = 75,
         JumpForward = 77,
         UnderwaterSwimForward = 86,
         UnderwaterSwimGlide = 87,
         JumpForwardToReach = 94,
-        JumpForwardToReachLate = 100,
         Reach = 95,
         ReachToHang = 96,
+        ClimbOn = 97,
+        JumpForwardToReachLate = 100,
         ClimbOnEnd = 102,
         StandIdle = 103,
         PushableGrab = 120,
         Pickup = 135,
+        ShimmyLeft = 136,
+        ShimmyRight = 137,
         StandDeath = 138,
         RollStart = 146,
         ClimbOnHandstand = 159,
@@ -624,7 +632,8 @@ public abstract class LaraBuilder : InjectionBuilder
     protected static void FixLadderClimbOnSFX(TRModel lara)
     {
         var anim = lara.Animations[(int)TR2LaraAnim.LadderClimbOn];
-        var frames = new[] { 62, 77 };
+        var frames = new[] { 62, 77, 81 };
+        anim.Commands.RemoveAll(c => c is TRSFXCommand s && frames.Contains(s.SoundID));
         anim.Commands.AddRange(frames.Select(f => new TRSFXCommand
         {
             FrameNumber = (short)f,
@@ -632,15 +641,72 @@ public abstract class LaraBuilder : InjectionBuilder
         }));
     }
 
+    protected static void FixLadderUpSFX(TRModel lara)
+    {
+        var anim = lara.Animations[(int)TR2LaraAnim.LadderUp];
+        anim.Commands.OfType<TRSFXCommand>().ToList()
+            .ForEach(s => s.Environment = TRSFXEnvironment.Any);
+    }
+
     protected static void FixHandstandSFX(TRModel lara)
     {
         var anim = lara.Animations[(int)LaraAnim.ClimbOnHandstand];
-        var frames = new[] { 157, 188 };
+        var frames = new[] { 157, 188, 192 };
         anim.Commands.AddRange(frames.Select(f => new TRSFXCommand
         {
             FrameNumber = (short)f,
             SoundID = (short)TR1SFX.LaraFeet,
         }));
+    }
+
+    protected void FixHangToCrouchStartSFX(TRModel lara)
+    {
+        var anim = lara.Animations[(int)TR3LaraAnim.HangToCrouchStart];
+        anim.Commands.Add(new TRSFXCommand
+        {
+            SoundID = ClimbOnSFX,
+            FrameNumber = 13,
+        });
+        anim.Commands.Add(new TRSFXCommand
+        {
+            SoundID = (short)TR1SFX.LaraFeet,
+            FrameNumber = 56,
+        });
+    }
+
+    protected void FixWadeTurnSFX(TRModel lara)
+    {
+        foreach (var animId in new[] { LaraAnim.TurnRightSlow, LaraAnim.TurnLeftSlow })
+        {
+            var anim = lara.Animations[(int)animId];
+            if (!anim.Commands.Any(c => c is TRSFXCommand s && s.SoundID == TreadSFX))
+            {
+                anim.Commands.Add(new TRSFXCommand
+                {
+                    FrameNumber = 3,
+                    SoundID = TreadSFX,
+                    Environment = TRSFXEnvironment.Water,
+                });
+            }
+        }
+
+        foreach (var animId in new[] { LaraAnim.TurnRight, LaraAnim.TurnLeft })
+        {
+            var anim = lara.Animations[(int)animId];
+            anim.Commands.RemoveAll(c => c is TRSFXCommand s
+                && (s.SoundID == (short)TR1SFX.LaraSwim || s.SoundID == TreadSFX));
+
+            anim.Commands.Add(new TRSFXCommand
+            {
+                FrameNumber = (short)(animId == LaraAnim.TurnRight ? 9 : 12),
+                SoundID = (short)TR1SFX.LaraFloating,
+                Environment = TRSFXEnvironment.Water,
+            });
+
+            anim.Commands.OfType<TRSFXCommand>()
+                .Where(s => s.SoundID == 0)
+                .ToList().ForEach(s => s.Environment = TRSFXEnvironment.Land);
+        }
     }
 
     protected static void FixSprintSFX(TRModel lara, object runToLeftIdx, object runToRightIdx)
@@ -677,6 +743,7 @@ public abstract class LaraBuilder : InjectionBuilder
         where S : Enum
     {
         var tr3Lara = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
+        FixHangToCrouchStartSFX(tr3Lara);
         foreach (var (tr3Idx, newIdx) in animMap)
         {
             var anim = tr3Lara.Animations[(int)tr3Idx].Clone();
@@ -690,15 +757,7 @@ public abstract class LaraBuilder : InjectionBuilder
             anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == 24)
                 .ToList().ForEach(s => s.SoundID = KneesShuffleSFX);
 
-            if (tr3Idx == TR3LaraAnim.HangToCrouchStart)
-            {
-                anim.Commands.Add(new TRSFXCommand
-                {
-                    SoundID = ClimbOnSFX,
-                    FrameNumber = 13,
-                });
-            }
-            else if (tr3Idx == TR3LaraAnim.CrawlDeath)
+            if (tr3Idx == TR3LaraAnim.CrawlDeath)
             {
                 anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID != (short)TR3SFX.LaraKneesDeath)
                     .ToList().ForEach(s => s.SoundID = KneesShuffleSFX);

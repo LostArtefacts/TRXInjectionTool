@@ -151,6 +151,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
     protected override short JumpSFX => (short)TR2SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR2SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR2SFX.LaraWetFeet;
+    protected override short TreadSFX => (short)TR2SFX.LaraTread;
     protected override short LandSFX => (short)TR2SFX.LaraLand;
     protected override short KneesShuffleSFX => 376;
     protected override short ClimbOnSFX => (short)TR2SFX.LaraClimb3;
@@ -344,6 +345,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportIdlePose(tr2Lara, InjState.PoseStart, InjState.PoseEnd, InjState.PoseLeft, InjState.PoseRight);
         FixJumpToFreefall(tr2Lara);
         FixLadderClimbOnSFX(tr2Lara);
+        FixLadderUpSFX(tr2Lara);
         FixHandstandSFX(tr2Lara);
         FixSprintSFX(tr2Lara, InjAnim.RunToSprintLeft, InjAnim.RunToSprintRight);
         ImportCrawling(tr2Lara, _crawlAnimMap, _crawlStateMap);
@@ -368,6 +370,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportFastPickup(tr2Lara);
         ImportFastPushPull(tr2Lara);
         ImportPlinthPickups(tr2Lara);
+        FixWadeTurnSFX(tr2Lara);
 
         return wall;
     }

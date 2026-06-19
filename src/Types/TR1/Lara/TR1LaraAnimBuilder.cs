@@ -189,6 +189,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
     protected override short JumpSFX => (short)TR1SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR1SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR1SFX.LaraWetFeet;
+    protected override short TreadSFX => (short)TR1SFX.LaraTread;
     protected override short LandSFX => (short)TR1SFX.LaraLand;
     protected override short KneesShuffleSFX => 274;
     protected override short ClimbOnSFX => (short)TR1SFX.LaraClimb3;
@@ -487,6 +488,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportFastPickup(tr1Lara);
         ImportFastPushPull(tr1Lara);
         ImportPlinthPickups(tr1Lara);
+        FixWadeTurnSFX(tr1Lara);
 
         return caves;
     }
@@ -1067,6 +1069,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
     {
         var tr2Lara = _control2.Read($"Resources/{TR2LevelNames.GW}").Models[TR2Type.Lara];
         FixLadderClimbOnSFX(tr2Lara);
+        FixLadderUpSFX(tr2Lara);
 
         foreach (var (tr2Idx, newIdx) in _ladderAnimMap)
         {

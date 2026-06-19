@@ -16,6 +16,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
     protected override short JumpSFX => (short)TR3SFX.LaraJump;
     protected override short DryFeetSFX => (short)TR3SFX.LaraFeet;
     protected override short WetFeetSFX => (short)TR3SFX.LaraWetFeet;
+    protected override short TreadSFX => (short)TR3SFX.LaraFloating;
     protected override short LandSFX => (short)TR3SFX.LaraLand;
     protected override short KneesShuffleSFX => (short)TR3SFX.LaraKneesShuffle;
     protected override short ClimbOnSFX => (short)TR3SFX.LaraClimb3;
@@ -124,6 +125,13 @@ public class TR3LaraAnimBuilder : LaraBuilder
         ImportFastPickup(tr3Lara);
         ImportFastPushPull(tr3Lara, true);
         ImportPlinthPickups(tr3Lara, true);
+        FixHandstandSFX(tr3Lara);
+        FixClimbOnSFX(tr3Lara);
+        FixLadderClimbOnSFX(tr3Lara);
+        FixHangToCrouchStartSFX(tr3Lara);
+        FixShimmySFX(tr3Lara);
+        FixWadeTurnSFX(tr3Lara);
+        FixTreadSFX(tr3Lara);
 
         return jungle;
     }
@@ -225,6 +233,58 @@ public class TR3LaraAnimBuilder : LaraBuilder
         lara.Animations[212].NextAnimation = 213;
         lara.Animations[213].NextAnimation = (ushort)LaraAnim.JumpForward;
         lara.Animations[213].NextFrame = 39;
+    }
+
+    private static void FixClimbOnSFX(TRModel lara)
+    {
+        var anim = lara.Animations[(int)LaraAnim.ClimbOn];
+        anim.Commands.Add(new TRSFXCommand
+        {
+            FrameNumber = 36,
+            SoundID = (short)TR3SFX.LaraKneesShuffle,
+        });
+    }
+
+    private static void FixShimmySFX(TRModel lara)
+    {
+        foreach (var animId in new[] { LaraAnim.ShimmyLeft, LaraAnim.ShimmyRight })
+        {
+            var anim = lara.Animations[(int)animId];
+            anim.Commands.OfType<TRSFXCommand>()
+                .Where(s => s.SoundID == (short)TR2SFX.LaraShimmy)
+                .ToList()
+                .ForEach(s => s.SoundID = (short)TR3SFX.LaraGrabhand);
+        }
+    }
+
+    private void FixTreadSFX(TRModel lara)
+    {
+        // ID 20 was tread in TR2 but was repurposed in TR3 for the ticket booth (Aldwych only).
+        // Stale references remained in animations 1, 21, 40, 57, 58, 63, 64, 73. Using TR3's "tread" is
+        // overwhelming, so adding missing wet feet sounds is sufficient, similar to TR1.
+        foreach (var anim in lara.Animations)
+        {
+            var removed = anim.Commands.RemoveAll(c => c is TRSFXCommand s && s.SoundID == (short)TR2SFX.LaraTread);
+            if (removed == 0)
+            {
+                continue;
+            }
+            
+            var landFeetSfx = anim.Commands.OfType<TRSFXCommand>()
+                .Where(s => s.SoundID == (short)TR3SFX.LaraFeet)
+                .ToList();
+            if (landFeetSfx.Count == 0 || anim.Commands.Any(c => c is TRSFXCommand s && s.SoundID == WetFeetSFX))
+            {
+                continue;
+            }
+
+            anim.Commands.AddRange(landFeetSfx.Select(f => new TRSFXCommand
+            {
+                FrameNumber = f.FrameNumber,
+                SoundID = WetFeetSFX,
+                Environment = TRSFXEnvironment.Water,
+            }));
+        }
     }
 
     private static byte[] ExportLaraWAD(TR3Level level, TR3Level extraLevel)
