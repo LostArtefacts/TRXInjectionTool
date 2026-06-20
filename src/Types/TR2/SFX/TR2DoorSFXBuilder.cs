@@ -19,6 +19,7 @@ public class TR2DoorSFXBuilder : InjectionBuilder
             FixOpera(),
             FixPlatformDoors(),
             FixLQDoors(),
+            FixBarkhangDoors(),
             FixXianDoors(),
             FixPortcullises(),
         };
@@ -171,6 +172,45 @@ public class TR2DoorSFXBuilder : InjectionBuilder
             RawCount = data.AnimCommands.Count,
             TotalCount = 1,
         });
+
+        return data;
+    }
+
+    private static InjectionData FixBarkhangDoors()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.MONASTERY}");
+        var doors = new TRDictionary<TR2Type, TRModel>
+        {
+            [TR2Type.Door1] = level.Models[TR2Type.Door1],
+            [TR2Type.Door2] = level.Models[TR2Type.Door2],
+        };
+
+        ResetLevel(level);
+        level.Models = doors;
+
+        foreach (var (_, door) in doors)
+        {
+            door.Animations[1].Commands.OfType<TRSFXCommand>().First().FrameNumber = 38;
+            door.Animations[3].Commands.Clear();
+        }
+
+        var data = InjectionData.Create(level, InjectionType.General, "barkhang_sfx", true);
+        data.Animations.Clear();
+        data.AnimFrames.Clear();
+        data.AnimChanges.Clear();
+        data.AnimDispatches.Clear();
+        data.Models.Clear();
+
+        foreach (var type in doors.Keys)
+        {
+            data.AnimCmdEdits.Add(new()
+            {
+                TypeID = (int)type,
+                AnimIndex = 1,
+                RawCount = data.AnimCommands.Count / 2,
+                TotalCount = 1,
+            });
+        }
 
         return data;
     }
