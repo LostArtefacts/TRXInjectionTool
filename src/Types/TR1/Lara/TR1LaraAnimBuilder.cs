@@ -489,6 +489,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportFastPushPull(tr1Lara);
         ImportPlinthPickups(tr1Lara);
         FixWadeTurnSFX(tr1Lara);
+        SplitPushableEnds(tr1Lara);
 
         return caves;
     }

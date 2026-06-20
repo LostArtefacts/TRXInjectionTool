@@ -76,6 +76,8 @@ public abstract class LaraBuilder : InjectionBuilder
         ClimbOnEnd = 102,
         StandIdle = 103,
         PushableGrab = 120,
+        PushablePull = 122,
+        PushablePush = 123,
         Pickup = 135,
         ShimmyLeft = 136,
         ShimmyRight = 137,
@@ -1364,6 +1366,42 @@ public abstract class LaraBuilder : InjectionBuilder
                 change.Dispatches.ForEach(d => d.NextAnimation = (short)animIdx);
                 standAnim.Changes.Add(change);
             }
+        }
+    }
+
+    protected static void SplitPushableEnds(TRModel lara)
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.VILCABAMBA}");
+        var block = level.Models[TR1Type.PushBlock1];
+        var map = new Dictionary<LaraAnim, int>
+        {
+            [LaraAnim.PushablePull] = block.Animations[2].FrameEnd,
+            [LaraAnim.PushablePush] = block.Animations[1].FrameEnd,
+        };
+
+        foreach (var (animId, blockFrameEnd) in map)
+        {
+            var baseAnim = lara.Animations[(int)animId];
+            var endAnim = baseAnim.Clone();
+            baseAnim.NextAnimation = (ushort)lara.Animations.Count;
+            lara.Animations.Add(endAnim);
+
+            var keyFrameEnd = blockFrameEnd / baseAnim.FrameRate;
+            baseAnim.FrameEnd = (short)(keyFrameEnd * baseAnim.FrameRate);
+
+            endAnim.Frames.RemoveRange(0, keyFrameEnd);
+            endAnim.Commands.Clear();
+            endAnim.FrameEnd -= baseAnim.FrameEnd;
+
+            var shift = baseAnim.Commands
+                .OfType<TRSetPositionCommand>()
+                .First();
+            foreach (var frame in endAnim.Frames)
+            {
+                frame.OffsetZ -= shift.Z;
+                frame.Bounds.MinZ -= shift.Z;
+                frame.Bounds.MaxZ -= shift.Z;
+            }            
         }
     }
 }

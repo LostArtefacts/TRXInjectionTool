@@ -371,6 +371,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImportFastPushPull(tr2Lara);
         ImportPlinthPickups(tr2Lara);
         FixWadeTurnSFX(tr2Lara);
+        SplitPushableEnds(tr2Lara);
 
         return wall;
     }

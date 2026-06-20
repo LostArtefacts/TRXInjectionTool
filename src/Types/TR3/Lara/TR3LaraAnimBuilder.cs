@@ -132,6 +132,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         FixShimmySFX(tr3Lara);
         FixWadeTurnSFX(tr3Lara);
         FixTreadSFX(tr3Lara);
+        SplitPushableEnds(tr3Lara);
 
         return jungle;
     }
