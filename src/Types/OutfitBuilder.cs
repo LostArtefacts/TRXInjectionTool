@@ -35,11 +35,11 @@ public abstract class OutfitBuilder : InjectionBuilder
 
         blendModes.ForEach(o => data.ObjectTextures[o.Idx].Attribute = (ushort)o.Mode);
 
-        data.SFX.Add(GetBarefootSFX());
+        data.SFX.AddRange(GetBarefootSFX());
 
         return [data];
     }
 
     protected abstract TRLevelBase CreateLevel(TR2Level outfitLevel);
-    protected abstract TRSFXData GetBarefootSFX();
+    protected abstract List<TRSFXData> GetBarefootSFX();
 }

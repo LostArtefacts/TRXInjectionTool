@@ -6,7 +6,8 @@ namespace TRXInjectionTool.Types.TR1.Lara;
 
 public class TR1LaraOutfitBuilder : OutfitBuilder
 {
-    private const short _barefootID = 273;
+    private const short _barefootStepID = 273;
+    private const short _barefootLandID = 275;
     private const int _skinBase = 258;
 
     public override string ID => "tr1-lara-outfits";
@@ -30,10 +31,13 @@ public class TR1LaraOutfitBuilder : OutfitBuilder
         return level;
     }
 
-    protected override TRSFXData GetBarefootSFX()
+    protected override List<TRSFXData> GetBarefootSFX()
     {
         var gym = _control1.Read($"Resources/{TR1LevelNames.ASSAULT}");
-        var tr1Feet = gym.SoundEffects[TR1SFX.LaraFeet];
-        return TRSFXData.Create(_barefootID, tr1Feet);
+        return
+        [
+            TRSFXData.Create(_barefootStepID, gym.SoundEffects[TR1SFX.LaraFeet]),
+            TRSFXData.Create(_barefootLandID, gym.SoundEffects[TR1SFX.LaraLand]),
+        ];
     }
 }

@@ -6,7 +6,8 @@ namespace TRXInjectionTool.Types.TR3.Lara;
 
 public class TR3LaraOutfitBuilder : OutfitBuilder
 {
-    private const short _barefootID = 374;
+    private const short _barefootStepID = 374;
+    private const short _barefootLandID = 375;
     private const int _skinBase = 393;
 
     public override string ID => "tr3-lara-outfits";
@@ -30,16 +31,16 @@ public class TR3LaraOutfitBuilder : OutfitBuilder
         return level;
     }
 
-    protected override TRSFXData GetBarefootSFX()
+    protected override List<TRSFXData> GetBarefootSFX()
     {
         var gym = _control1.Read($"Resources/{TR1LevelNames.ASSAULT}");
-        var tr1Feet = gym.SoundEffects[TR1SFX.LaraFeet];
-        var data = TRSFXData.Create(_barefootID, tr1Feet);
+        var stepData = TRSFXData.Create(_barefootStepID, gym.SoundEffects[TR1SFX.LaraFeet]);
+        var landData = TRSFXData.Create(_barefootLandID, gym.SoundEffects[TR1SFX.LaraLand]);
 
         var jungle = _control3.Read($"Resources/TR3/{TR3LevelNames.JUNGLE}");
-        var tr3Feet = jungle.SoundEffects[TR3SFX.LaraFeet];
-        data.Volume = (ushort)(tr3Feet.Volume << 7);
+        stepData.Volume = (ushort)(jungle.SoundEffects[TR3SFX.LaraFeet].Volume << 7);
+        landData.Volume = (ushort)(jungle.SoundEffects[TR3SFX.LaraLand].Volume << 7);
 
-        return data;
+        return [stepData, landData];
     }
 }
