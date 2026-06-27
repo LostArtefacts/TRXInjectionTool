@@ -1402,6 +1402,9 @@ public abstract class LaraBuilder : InjectionBuilder
                 frame.Bounds.MinZ -= shift.Z;
                 frame.Bounds.MaxZ -= shift.Z;
             }            
+
+            baseAnim.Commands.RemoveAll(c => c is TREmptyHandsCommand);
+            endAnim.Commands.Add(new TREmptyHandsCommand());
         }
     }
 }
