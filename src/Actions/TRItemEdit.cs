@@ -1,4 +1,5 @@
-﻿using TRLevelControl;
+﻿using System.Text;
+using TRLevelControl;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
@@ -31,5 +32,19 @@ public class TRItemTypeFlagEdit
         writer.Write(Index);
         writer.Write((int)Item.TypeID, TRObjectType.Game, version);
         writer.Write(Item.Flags);
+    }
+}
+
+public class TRItemNameEdit
+{
+    public short Index { get; set; }
+    public string Name { get; set; }
+
+    public void Serialize(TRLevelWriter writer)
+    {
+        var name = Encoding.UTF8.GetBytes(Name);
+        writer.Write(Index);
+        writer.Write(name.Length);
+        writer.Write(name);
     }
 }

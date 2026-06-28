@@ -48,6 +48,7 @@ public class InjectionData
     public List<TRObjectLinkEdit> ObjectLinkEdits { get; set; } = [];
     public List<TRAnimEdit> AnimEdits { get; set; } = [];
     public List<TRAnimTextureEdit> AnimTextureEdits { get; set; } = [];
+    public List<TRItemNameEdit> ItemNameEdits { get; set; } = [];
 
     private readonly HashSet<uint> _meshOnlyModels = [];
 
