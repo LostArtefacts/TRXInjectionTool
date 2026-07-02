@@ -342,7 +342,7 @@ public abstract class InjectionBuilder
         // Repeat the frames in reverse so the map can close on exit. The open frame is also
         // slightly misaligned, so fix that.
         var anim = caves.Models[TR1Type.Map_M_U].Animations[0];
-        anim.Frames[^1].Rotations[1].Z++;
+        anim.Frames[^1].Rotations[1].Z += TRAngleUtils.FromGame(1);
 
         for (int i = anim.Frames.Count - 2; i >= 0; i--)
         {

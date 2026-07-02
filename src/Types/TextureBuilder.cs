@@ -816,7 +816,7 @@ public abstract class TextureBuilder : InjectionBuilder
         var door = rig.Models[TR2Type.LiftingDoor1];
         var knob = rig.Models[TR2Type.WheelKnob];
 
-        door.Animations[2].Frames[^1].Rotations[0].Y++;
+        door.Animations[2].Frames[^1].Rotations[0].Y += TRAngleUtils.FromGame(1);
         door.Animations[2].Frames.Add(door.Animations[2].Frames[^1]);
         door.Animations[2].Frames.RemoveAt(0);
 

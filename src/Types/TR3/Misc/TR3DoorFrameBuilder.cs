@@ -27,7 +27,7 @@ public class TR3DoorFrameBuilder : InjectionBuilder
                 [doorType] = level.Models[doorType],
             };
 
-            level.Models[doorType].Animations[1].Frames[0].Rotations[0].Y = 768;
+            level.Models[doorType].Animations[1].Frames[0].Rotations[0].Y = TRAngleUtils.FromGame(768);
 
             var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.General, $"{_tr3NameMap[kvp.Key]}_door{(int)doorType}_frames");
             CreateDefaultTests(data, $"TR3/{kvp.Key}");

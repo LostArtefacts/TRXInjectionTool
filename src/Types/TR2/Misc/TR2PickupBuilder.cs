@@ -388,8 +388,9 @@ public class TR2PickupBuilder : InjectionBuilder
     private static void FixYaw(TRModel model)
     {
         // Make models face the correct way in the inventory
+        var deg180 = TRAngleUtils.FromGame(512);
         model.Animations.SelectMany(a => a.Frames)
             .ToList()
-            .ForEach(f => f.Rotations.ForEach(r => r.Y = (short)(r.Y == 0 ? 512 : 0)));
+            .ForEach(f => f.Rotations.ForEach(r => r.Y = r.Y == 0 ? deg180 : 0));
     }
 }

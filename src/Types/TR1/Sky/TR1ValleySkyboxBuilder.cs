@@ -43,7 +43,7 @@ public class TR1ValleySkyboxBuilder : InjectionBuilder
             .ForEach(f => f.Texture = 2);
 
         // Rotate so the moon is above the temple
-        sky.Animations[0].Frames[0].Rotations[0].Y = 448;
+        sky.Animations[0].Frames[0].Rotations[0].Y = TRAngleUtils.FromGame(448);
 
         PackTextures(caves, chamber, sky, _imageIDs);
 

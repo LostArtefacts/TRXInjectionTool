@@ -122,7 +122,7 @@ public class TR2BoatBitsBuilder : InjectionBuilder
 
         // Steering wheel
         boatBits.Meshes.Add(boat.Meshes[1].Clone());
-        boatBits.Animations[0].Frames[0].Rotations.Add(new() { Y = 768 });
+        boatBits.Animations[0].Frames[0].Rotations.Add(new() { Y = TRAngleUtils.FromGame(768) });
 
         // Semi-random tree of bits
         for (int i = 0; i < 10; i++)

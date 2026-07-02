@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
@@ -112,18 +113,18 @@ public class TRXPoseBuilder : InjectionBuilder
         public Pose(TRAnimation animation)
         {
             var frame = animation.Frames[0];
-            Offset = new short[]
-            {
+            Offset =
+            [
                 frame.OffsetX,
                 frame.OffsetY,
                 frame.OffsetZ,
-            };
-            Rots = frame.Rotations.Select(r => new short[]
+            ];
+            Rots = [.. frame.Rotations.Select(r => new short[]
             {
-                (short)(r.X << 6),
-                (short)(r.Y << 6),
-                (short)(r.Z << 6),
-            }).ToArray();
+                (short)(TRAngleUtils.ToGame(r.X) << 6),
+                (short)(TRAngleUtils.ToGame(r.Y) << 6),
+                (short)(TRAngleUtils.ToGame(r.Z) << 6),
+            })];
         }
     }
 }

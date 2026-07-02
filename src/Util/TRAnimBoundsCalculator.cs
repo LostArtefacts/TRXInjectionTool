@@ -5,8 +5,6 @@ namespace TRXInjectionTool.Util;
 
 public static class TRAnimBoundsCalculator
 {
-    private const float _angleToRadians = MathF.Tau / 1024f;
-
     public static TRBoundingBox ComputeFrameBounds(TRModel model, TRAnimFrame frame)
     {
         if (model.Meshes.Count == 0)
@@ -79,9 +77,9 @@ public static class TRAnimBoundsCalculator
 
     private static Matrix4x4 CreateRotation(TRAnimFrameRotation rotation)
     {
-        float x = rotation.X * _angleToRadians;
-        float y = rotation.Y * _angleToRadians;
-        float z = rotation.Z * _angleToRadians;
+        float x = float.DegreesToRadians(rotation.X);
+        float y = float.DegreesToRadians(rotation.Y);
+        float z = float.DegreesToRadians(rotation.Z);
 
         Matrix4x4 rx = Matrix4x4.CreateRotationX(x);
         Matrix4x4 ry = Matrix4x4.CreateRotationY(y);
