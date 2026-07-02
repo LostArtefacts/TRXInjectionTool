@@ -8,6 +8,7 @@ using TRXInjectionTool.Types.TR2.Misc;
 using TRXInjectionTool.Types.TR2.Objects;
 using TRXInjectionTool.Types.TR3.Lara;
 using TRXInjectionTool.Types.TR3.Misc;
+using TRXInjectionTool.Types.TR4.Lara;
 
 namespace TRXInjectionTool.Types;
 
@@ -42,6 +43,7 @@ public static class AssetPublisher
             new TR3FishSpritesBuilder(),
             new TR3BatSpritesBuilder(),
         ],
+        [TRGameVersion.TR4] = [],
     };
 
     private static readonly Dictionary<TRGameVersion, bool> _runFlags = new()
@@ -49,6 +51,7 @@ public static class AssetPublisher
         [TRGameVersion.TR1] = false,
         [TRGameVersion.TR2] = false,
         [TRGameVersion.TR3] = false,
+        [TRGameVersion.TR4] = false,
     };
 
     public static void OnBuilderRun(InjectionBuilder builder)
@@ -74,6 +77,7 @@ public static class AssetPublisher
         Publish(TRGameVersion.TR1, new TR1LaraAnimBuilder());
         Publish(TRGameVersion.TR2, new TR2LaraAnimBuilder());
         Publish(TRGameVersion.TR3, new TR3LaraAnimBuilder());
+        Publish(TRGameVersion.TR4, new TR4LaraAnimBuilder());
     }
 
     private static void Publish(TRGameVersion version, LaraBuilder laraBuilder)

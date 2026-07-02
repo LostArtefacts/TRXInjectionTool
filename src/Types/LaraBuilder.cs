@@ -64,6 +64,7 @@ public abstract class LaraBuilder : InjectionBuilder
         Climb2ClickEnd = 51,
         JumpForwardEndToFreefall = 49,
         TurnLeft = 69,
+        SlideForward = 70,
         JumpBack = 75,
         JumpForward = 77,
         UnderwaterSwimForward = 86,
@@ -243,6 +244,47 @@ public abstract class LaraBuilder : InjectionBuilder
         MonkeyTurnRight = 83,
     }
 
+    protected enum TR4LaraAnim
+    {
+        FastPushblockPushStop = 417,
+        FastPushblockPullStop = 418,
+        CrawlJumpDown = 421,
+        PlinthHighPickup = 424,
+        PlinthLowPickup = 425,
+    }
+
+    protected enum TR4LaraState
+    {
+        RopeLeft = 90,
+        RopeRight = 91,
+        BlockSwitch = 92,
+        LiftTrapdoor = 93,
+        PullTrapdoor = 94,
+        TurnSwitch = 95,
+        CogSwitch = 96,
+        RailSwitch = 97,
+        HiddenPickup = 98,
+        PoleIdle = 99,
+        PoleUp = 100,
+        PoleDown = 101,
+        PoleLeft = 102,
+        PoleRight = 103,
+        Pulley = 104,
+        CrouchTurnLeft = 105,
+        CrouchTurnRight = 106,
+        ShimmyOuterLeft = 107,
+        ShimmyOuterRight = 108,
+        ShimmyInnerLeft = 109,
+        ShimmyInnerRight = 110,
+        RopeIdle = 111,
+        RopeClimb = 112,
+        RopeSlide = 113,
+        RopeForward = 114,
+        RopeBack = 115,
+        RopeForwardSoftUnused = 116,
+        PushDoors = 117,
+    }
+
     protected enum ExtLaraAnim
     {
         UWRollStart = 0,
@@ -370,6 +412,73 @@ public abstract class LaraBuilder : InjectionBuilder
         change.Dispatches[0].NextAnimation = (short)(lara.Animations.Count - 1);
         change.Dispatches[0].NextFrame = 2;
         lara.Animations[70].Changes.Add(change);
+    }
+
+    protected void ImportTR1Jumping(TRModel lara)
+    {
+        var runAnim = lara.Animations[(int)LaraAnim.Run];
+        var jumpChange = runAnim.Changes.FirstOrDefault(c => c.StateID == (ushort)LaraState.JumpForward);
+        var responsiveChange = jumpChange.Clone();
+        runAnim.Changes.Add(responsiveChange);
+        responsiveChange.StateID = (ushort)ResponsiveState;
+
+        foreach (var dispatch in jumpChange.Dispatches)
+        {
+            if (dispatch.NextAnimation == (short)LaraAnim.RunJumpRightStart)
+            {
+                dispatch.Low = 14;
+                dispatch.High = 15;
+            }
+            else
+            {
+                dispatch.Low = 3;
+                dispatch.High = 4;
+            }
+        }
+    }
+
+    protected void ImportTR1Gliding(TRModel lara)
+    {
+        var swimAnim = lara.Animations[(int)LaraAnim.UnderwaterSwimForward];
+        var glideChange = swimAnim.Changes.FirstOrDefault(c => c.StateID == (ushort)LaraState.Glide);
+        var dispatches = glideChange.Dispatches.Select(d => d.Clone()).ToList();
+        glideChange.Dispatches.RemoveAll(d => d.NextAnimation != (short)LaraAnim.UnderwaterSwimGlide);
+        glideChange.Dispatches.FirstOrDefault(d => d.Low == 0).High = 2;
+
+        swimAnim.Changes.Add(new()
+        {
+            StateID = (ushort)ResponsiveState,
+            Dispatches = dispatches,
+        });
+
+        dispatches.Sort((d1, d2) => d1.Low.CompareTo(d2.Low));
+    }
+
+    protected static void ImproveTwists(TRModel lara)
+    {
+        var laraExt = GetLaraExtModel();
+        lara.Animations[203] = laraExt.Animations[(int)ExtLaraAnim.UWRollStart];
+        lara.Animations[205] = laraExt.Animations[(int)ExtLaraAnim.UWRollEnd];
+        lara.Animations[203].NextAnimation = 205;
+        lara.Animations[203].NextFrame = 1;
+        lara.Animations[205].NextAnimation = 108;
+
+        lara.Animations[207] = laraExt.Animations[(int)ExtLaraAnim.RunJumpRollStart];
+        lara.Animations[209] = laraExt.Animations[(int)ExtLaraAnim.RunJumpRollEnd];
+        lara.Animations[210] = laraExt.Animations[(int)ExtLaraAnim.JumpFwdRollStart];
+        lara.Animations[211] = laraExt.Animations[(int)ExtLaraAnim.JumpFwdRollEnd];
+        lara.Animations[212] = laraExt.Animations[(int)ExtLaraAnim.JumpBackRollStart];
+        lara.Animations[213] = laraExt.Animations[(int)ExtLaraAnim.JumpBackRollEnd];
+
+        lara.Animations[207].NextAnimation = 209;
+        lara.Animations[209].NextAnimation = (ushort)LaraAnim.JumpBack;
+        lara.Animations[209].NextFrame = 39;
+        lara.Animations[210].NextAnimation = 211;
+        lara.Animations[211].NextAnimation = (ushort)LaraAnim.JumpBack;
+        lara.Animations[211].NextFrame = 39;
+        lara.Animations[212].NextAnimation = 213;
+        lara.Animations[213].NextAnimation = (ushort)LaraAnim.JumpForward;
+        lara.Animations[213].NextFrame = 39;
     }
 
     protected void ImportNeutralTwist(TRModel lara, short animID, short stateID)
@@ -635,7 +744,7 @@ public abstract class LaraBuilder : InjectionBuilder
     {
         var anim = lara.Animations[(int)TR2LaraAnim.LadderClimbOn];
         var frames = new[] { 62, 77, 81 };
-        anim.Commands.RemoveAll(c => c is TRSFXCommand s && frames.Contains(s.SoundID));
+        anim.Commands.RemoveAll(c => c is TRSFXCommand s && frames.Contains(s.FrameNumber));
         anim.Commands.AddRange(frames.Select(f => new TRSFXCommand
         {
             FrameNumber = (short)f,
@@ -659,6 +768,16 @@ public abstract class LaraBuilder : InjectionBuilder
             FrameNumber = (short)f,
             SoundID = (short)TR1SFX.LaraFeet,
         }));
+    }
+
+    protected static void FixClimbOnSFX(TRModel lara)
+    {
+        var anim = lara.Animations[(int)LaraAnim.ClimbOn];
+        anim.Commands.Add(new TRSFXCommand
+        {
+            FrameNumber = 36,
+            SoundID = (short)TR3SFX.LaraKneesShuffle,
+        });
     }
 
     protected void FixHangToCrouchStartSFX(TRModel lara)
