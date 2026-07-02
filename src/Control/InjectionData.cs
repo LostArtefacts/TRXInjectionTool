@@ -87,7 +87,11 @@ public class InjectionData
         {
             return Create(level3, type, name, removeMeshData);
         }
-        throw new Exception("Only TR1-3 levels supported");
+        else if (controlledLevel is TR4Level level4)
+        {
+            return Create(level4, type, name, removeMeshData);
+        }
+        throw new Exception("Only TR1-4 levels supported");
     }
 
     public static InjectionData Create(TR1Level controlledLevel, InjectionType type, string name, bool removeMeshData = false)
@@ -297,6 +301,75 @@ public class InjectionData
         return data;
     }
 
+    public static InjectionData Create(TR4Level controlledLevel, InjectionType type, string name, bool removeMeshData = false)
+    {
+        new TR4LevelControl().Write(controlledLevel, "temp.tr4");
+        var flatLevel = new LR.TR4LevelReader().ReadLevel("temp.tr4");
+        File.Delete("temp.tr4");
+
+        if (type == InjectionType.LaraAnims)
+        {
+            ResetLaraLevel(flatLevel);
+        }
+
+        var sounds = Array.FindAll(flatLevel.LevelDataChunk.SoundMap, s => s != -1);
+        if (removeMeshData)
+        {
+            RemoveMeshData(flatLevel);
+        }
+
+        InjectionData data = new()
+        {
+            InjectionType = type,
+            GameVersion = TRGameVersion.TR4,
+            Name = name,
+            Animations = Convert(flatLevel.LevelDataChunk.Animations),
+            AnimChanges = [.. flatLevel.LevelDataChunk.StateChanges],
+            AnimCommands = [.. flatLevel.LevelDataChunk.AnimCommands],
+            AnimDispatches = [.. flatLevel.LevelDataChunk.AnimDispatches],
+            AnimFrames = [.. flatLevel.LevelDataChunk.Frames],
+            Images = Convert(flatLevel.Texture32Chunk.Textiles),
+            Images8 = flatLevel.Texture32Chunk.Textiles.Length == 0 ? null : [.. flatLevel.Texture32Chunk.Textiles.Select(i => new TRTexImage8 { Pixels = new byte[256 * 256] })],
+            Meshes = Convert(flatLevel.LevelDataChunk.Meshes),
+            MeshPointers = [.. flatLevel.LevelDataChunk.MeshPointers],
+            MeshTrees = [.. flatLevel.LevelDataChunk.MeshTrees],
+            Models = [.. flatLevel.LevelDataChunk.Models],
+            Palette = [.. Enumerable.Repeat(0, 256).Select(i => new LR.Model.TRColour())],
+            StaticObjects = [.. flatLevel.LevelDataChunk.StaticMeshes],
+            ObjectTextures = Convert(flatLevel.LevelDataChunk.ObjectTextures),
+            SpriteSequences = [.. flatLevel.LevelDataChunk.SpriteSequences],
+            SpriteTextures = [.. flatLevel.LevelDataChunk.SpriteTextures],
+        };
+
+        for (int i = 0; i < sounds.Length; i++)
+        {
+            var soundID = (short)Array.IndexOf(flatLevel.LevelDataChunk.SoundMap, sounds[i]);
+            var details = flatLevel.LevelDataChunk.SoundDetails[sounds[i]];
+            data.SFX.Add(new()
+            {
+                ID = soundID,
+                Chance = details.Chance,
+                Characteristics = (ushort)details.Characteristics,
+                Volume = (ushort)(details.Volume << 7),
+                Pitch = details.Pitch,
+                Range = details.Range,
+                Data = [],
+            });
+
+            var rawSamples = flatLevel.Samples.SelectMany(s => s.SoundData).ToArray();
+            for (int j = 0; j < details.NumSounds; j++)
+            {
+                ushort sampleIndex = (ushort)(details.Sample + j);
+                uint nextIndex = sampleIndex == flatLevel.LevelDataChunk.SampleIndices.Length - 1
+                    ? (uint)flatLevel.Samples.Length
+                    : flatLevel.LevelDataChunk.SampleIndices[sampleIndex + 1];
+                data.SFX[i].Data.Add(GetSample(flatLevel.LevelDataChunk.SampleIndices[sampleIndex], nextIndex, rawSamples));
+            }
+        }
+
+        return data;
+    }
+
     static byte[] GetSample(uint offset, uint endOffset, byte[] wavSamples)
     {
         List<byte> data = [];
@@ -397,6 +470,28 @@ public class InjectionData
         level.Models[0].NumMeshes = 0;
     }
 
+    private static void ResetLaraLevel(LR.Model.TR4Level level)
+    {
+        level.LevelDataChunk.NumMeshData = 0;
+        level.LevelDataChunk.Meshes = [];
+        level.LevelDataChunk.NumMeshPointers = 0;
+        level.LevelDataChunk.MeshPointers = [];
+        level.LevelDataChunk.NumMeshTrees = 0;
+        level.LevelDataChunk.MeshTrees = [];
+        level.Texture32Chunk.Textiles = [];
+        level.LevelDataChunk.ObjectTextures = [];
+        level.LevelDataChunk.NumObjectTextures = 0;
+        level.LevelDataChunk.NumMeshData = 0;
+        level.LevelDataChunk.Meshes = [];
+        level.LevelDataChunk.NumMeshPointers = 0;
+        level.LevelDataChunk.MeshPointers = [];
+        level.LevelDataChunk.NumMeshTrees = 0;
+        level.LevelDataChunk.MeshTrees = [];
+        level.LevelDataChunk.Models[0].MeshTree = 0;
+        level.LevelDataChunk.Models[0].StartingMesh = 0;
+        level.LevelDataChunk.Models[0].NumMeshes = 0;
+    }
+
     private static void RemoveMeshData(LR.Model.TRLevel level)
     {
         // The game will detect that there is no mesh data associated with this injection
@@ -454,6 +549,23 @@ public class InjectionData
         }
     }
 
+    private static void RemoveMeshData(LR.Model.TR4Level level)
+    {
+        level.LevelDataChunk.NumMeshData = 0;
+        level.LevelDataChunk.Meshes = [];
+        level.LevelDataChunk.NumMeshPointers = 0;
+        level.LevelDataChunk.MeshPointers = [];
+        level.LevelDataChunk.NumMeshTrees = 0;
+        level.LevelDataChunk.MeshTrees = [];
+
+        foreach (var model in level.LevelDataChunk.Models)
+        {
+            model.MeshTree = 0;
+            model.StartingMesh = 0;
+            model.NumMeshes = 0;
+        }
+    }
+
     private static List<TRTexImage32> Convert(LR.Model.TRTexImage8[] originalImages, LR.Model.TRColour[] originalPalette)
     {
         List<TRColour> palette = [.. originalPalette.Select(p => new TRColour
@@ -480,6 +592,11 @@ public class InjectionData
         return [.. originalImages.Select(i => new TRTexImage32 { Pixels = new TRImage(i.Pixels).ToRGBA() })];
     }
 
+    private static List<TRTexImage32> Convert(LR.Model.TR4TexImage32[] originalImages)
+    {
+        return [.. originalImages.Select(i => new TRTexImage32 { Pixels = new TRImage(i.Tile).ToRGBA() })];
+    }
+
     private static List<TRFlatAnimation> Convert(LR.Model.TRAnimation[] animations)
     {
         return [.. animations.Select(a => new TRFlatAnimation
@@ -491,6 +608,29 @@ public class InjectionData
             FrameOffset = a.FrameOffset,
             FrameRate = a.FrameRate,
             FrameSize = a.FrameSize,
+            NextAnimation = a.NextAnimation,
+            NextFrame = a.NextFrame,
+            NumAnimCommands = a.NumAnimCommands,
+            NumStateChanges = a.NumStateChanges,
+            Speed = a.Speed,
+            StateChangeOffset = a.StateChangeOffset,
+            StateID = a.StateID,
+        })];
+    }
+
+    private static List<TRFlatAnimation> Convert(LR.Model.TR4Animation[] animations)
+    {
+        return [.. animations.Select(a => new TRFlatAnimation
+        {
+            Accel = a.Accel,
+            AnimCommand = a.AnimCommand,
+            FrameEnd = a.FrameEnd,
+            FrameStart = a.FrameStart,
+            FrameOffset = a.FrameOffset,
+            FrameRate = a.FrameRate,
+            FrameSize = a.FrameSize,
+            LateralAccel = a.AccelLateral,
+            LateralSpeed = a.SpeedLateral,
             NextAnimation = a.NextAnimation,
             NextFrame = a.NextFrame,
             NumAnimCommands = a.NumAnimCommands,
@@ -517,6 +657,20 @@ public class InjectionData
         })];
     }
 
+    private static List<TRFlatMesh> Convert(LR.Model.TR4Mesh[] meshes)
+    {
+        return [.. meshes.Select(m => new TRFlatMesh
+        {
+            Centre = m.Centre,
+            CollRadius = m.CollRadius,
+            Lights = m.NumNormals <= 0 ? [.. m.Lights] : null,
+            Normals = m.NumNormals > 0 ? [.. m.Normals] : null,
+            TexturedRectangles = Convert(m.TexturedRectangles),
+            TexturedTriangles = Convert(m.TexturedTriangles),
+            Vertices = [.. m.Vertices],
+        })];
+    }
+
     private static List<TRMeshFace> Convert(LR.Model.TRFace4[] faces, TRGameVersion version)
     {
         var result = faces.Select(f => new TRMeshFace
@@ -538,6 +692,32 @@ public class InjectionData
             Type = TRFaceType.Triangle,
         }).ToList();
         AdjustFaces(result, version);
+        return [.. result];
+    }
+
+    private static List<TRMeshFace> Convert(LR.Model.TR4MeshFace4[] faces)
+    {
+        var result = faces.Select(f => new TRMeshFace
+        {
+            Texture = f.Texture,
+            Vertices = [.. f.Vertices],
+            Type = TRFaceType.Rectangle,
+            Effects = f.Effects,
+        }).ToList();
+        AdjustFaces(result, TRGameVersion.TR4);
+        return [.. result];
+    }
+
+    private static List<TRMeshFace> Convert(LR.Model.TR4MeshFace3[] faces)
+    {
+        var result = faces.Select(f => new TRMeshFace
+        {
+            Texture = f.Texture,
+            Vertices = [.. f.Vertices],
+            Type = TRFaceType.Triangle,
+            Effects = f.Effects,
+        }).ToList();
+        AdjustFaces(result, TRGameVersion.TR4);
         return [.. result];
     }
 
@@ -567,6 +747,21 @@ public class InjectionData
             Attribute = t.Attribute,
             TileAndFlag = t.AtlasAndFlag,
             Vertices = t.Vertices,
+        })];
+    }
+
+    private static List<TRFlatObjectTexture> Convert(LR.Model.TR4ObjectTexture[] textures)
+    {
+        return [.. textures.Select(t => new TRFlatObjectTexture
+        {
+            Attribute = t.Attribute,
+            TileAndFlag = t.TileAndFlag,
+            Vertices = t.Vertices,
+            HeightMinusOne = t.HeightMinusOne,
+            NewFlags = t.NewFlags,
+            OriginalU = t.OriginalU,
+            OriginalV = t.OriginalV,
+            WidthMinusOne = t.WidthMinusOne,
         })];
     }
 }

@@ -16,6 +16,7 @@ public abstract class InjectionBuilder
     protected static readonly TR1LevelControl _control1 = new();
     protected static readonly TR2LevelControl _control2 = new();
     protected static readonly TR3LevelControl _control3 = new();
+    protected static readonly TR4LevelControl _control4 = new();
 
     public virtual string ID { get; } = string.Empty;
 
@@ -211,6 +212,35 @@ public abstract class InjectionBuilder
             TRColour4 c16 = level.Palette16[i];
             c16.Red = c16.Green = c16.Blue = 0;
         }
+    }
+
+    public static void ResetLevel(TR4Level level, uint texturePageCount = 0)
+    {
+        level.Images.Objects.Images32.Clear();
+        level.Images.Objects.Images16.Clear();
+        level.Images.Rooms.Images32.Clear();
+        level.Images.Rooms.Images16.Clear();
+        level.Images.Bump.Images32.Clear();
+        level.Images.Bump.Images16.Clear();
+
+        for (int i = 0; i < texturePageCount; i++)
+        {
+            level.Images.Objects.Images32.Add(new() { Pixels = new uint[256 * 256] });
+        }
+
+        level.AnimatedTextures.Clear();
+        level.ObjectTextures.Clear();
+        level.Sprites.Clear();
+        level.Models.Clear();
+        level.SoundEffects.Clear();
+        level.SoundSources.Clear();
+        level.Rooms.Clear();
+        level.StaticMeshes.Clear();
+        level.Boxes.Clear();
+        level.Entities.Clear();
+        level.AIEntities.Clear();
+        level.Cameras.Clear();
+        level.Flybys.Clear();
     }
 
     protected static void CreateModelLevel(TR1Level level, params TR1Type[] types)
