@@ -140,7 +140,7 @@ public static class InjectionIO
         int blockCount = 0;
 
         blockCount += WriteBlock(BlockType.ObjectTextures, data.ObjectTextures.Count, writer,
-            s => data.ObjectTextures.ForEach(t => s.Write(t.Serialize())));
+            s => data.ObjectTextures.ForEach(t =>t.Serialize(s, data.GameVersion)));
 
         blockCount += WriteBlock(BlockType.SpriteTextures, data.SpriteTextures.Count, writer,
             s => data.SpriteTextures.ForEach(t => s.Write(t.Serialize())));
@@ -158,7 +158,7 @@ public static class InjectionIO
         blockCount += WriteBlock(BlockType.MeshPointers, data.MeshPointers.Count, writer,
             s => s.Write(data.MeshPointers));
 
-        List<byte> meshData = [.. data.Meshes.SelectMany(m => m.Serialize())];
+        List<byte> meshData = [.. data.Meshes.SelectMany(m => m.Serialize(data.GameVersion))];
         blockCount += WriteBlock(BlockType.ObjectMeshes, meshData.Count / 2, writer,
             s => s.Write(meshData));
 
@@ -185,7 +185,7 @@ public static class InjectionIO
             s => s.Write(data.AnimFrames));
 
         blockCount += WriteBlock(BlockType.Animations, data.Animations.Count, writer,
-            s => data.Animations.ForEach(a => s.Write(a.Serialize())));
+            s => data.Animations.ForEach(a => a.Serialize(s, data.GameVersion)));
 
         return blockCount;
     }
