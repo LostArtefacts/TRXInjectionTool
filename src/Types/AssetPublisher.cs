@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using TRLevelControl;
 using TRLevelControl.Model;
 using TRXInjectionTool.Types.TR1.Lara;
@@ -9,6 +9,7 @@ using TRXInjectionTool.Types.TR2.Objects;
 using TRXInjectionTool.Types.TR3.Lara;
 using TRXInjectionTool.Types.TR3.Misc;
 using TRXInjectionTool.Types.TR4.Lara;
+using TRXInjectionTool.Types.TR4.Misc;
 
 namespace TRXInjectionTool.Types;
 
@@ -43,7 +44,10 @@ public static class AssetPublisher
             new TR3FishSpritesBuilder(),
             new TR3BatSpritesBuilder(),
         ],
-        [TRGameVersion.TR4] = [],
+        [TRGameVersion.TR4] =
+        [
+            new TR4FontBuilder(),
+        ],
     };
 
     private static readonly Dictionary<TRGameVersion, bool> _runFlags = new()
@@ -133,9 +137,14 @@ public static class AssetPublisher
             var control = new TR3LevelControl();
             control.Write(level3, ms);
         }
+        else if (level is TR4Level level4)
+        {
+            var control = new TR4LevelControl();
+            control.Write(level4, ms);
+        }
         else
         {
-            throw new ArgumentException("Only TR1-3 levels supported.");
+            throw new ArgumentException("Only TR1-4 levels supported.");
         }
 
         return ms.ToArray();

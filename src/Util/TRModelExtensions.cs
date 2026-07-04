@@ -151,6 +151,11 @@ public static class TRModelExtensions
             (int)TR3Type.FontGraphicsSmall_S_H, (int)TR3Type.Snowflake_S_H, 
             428, // Pickup aid, TODO: add to TRLevelControl
         ],
+        [TRGameVersion.TR4] =
+        [
+            500, // O_ALPHABET
+            501, // O_ALPHABET_SMALL
+        ],
     };
 
     public static void Write(this TRLevelWriter writer, int objectID, TRObjectType objectType, TRGameVersion version)
@@ -184,6 +189,7 @@ public static class TRModelExtensions
             TRGameVersion.TR1 => (int)TR1Type.SceneryBase,
             TRGameVersion.TR2 => (int)TR2Type.SceneryBase,
             TRGameVersion.TR3 => (int)TR3Type.SceneryBase,
+            TRGameVersion.TR4 => (int)TR4Type.SceneryBase,
             _ => throw new Exception(),
         };
     }

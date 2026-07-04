@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using TRDataControl;
 using TRImageControl;
 using TRImageControl.Packing;

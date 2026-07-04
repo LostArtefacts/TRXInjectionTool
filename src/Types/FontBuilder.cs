@@ -1,4 +1,4 @@
-﻿using TRImageControl;
+using TRImageControl;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
