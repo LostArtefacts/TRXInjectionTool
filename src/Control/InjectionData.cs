@@ -338,7 +338,7 @@ public class InjectionData
             StaticObjects = [.. flatLevel.LevelDataChunk.StaticMeshes],
             ObjectTextures = Convert(flatLevel.LevelDataChunk.ObjectTextures),
             SpriteSequences = [.. flatLevel.LevelDataChunk.SpriteSequences],
-            SpriteTextures = [.. flatLevel.LevelDataChunk.SpriteTextures],
+            SpriteTextures = Convert(controlledLevel.Sprites.Values.SelectMany(s => s.Textures)),
         };
 
         for (int i = 0; i < sounds.Length; i++)
@@ -762,6 +762,22 @@ public class InjectionData
             OriginalU = t.OriginalU,
             OriginalV = t.OriginalV,
             WidthMinusOne = t.WidthMinusOne,
+        })];
+    }
+
+    private static List<LR.Model.TRSpriteTexture> Convert(IEnumerable<TRSpriteTexture> textures)
+    {
+        return [.. textures.Select(texture => new LR.Model.TRSpriteTexture
+        {
+            Atlas = texture.Atlas,
+            X = (byte)texture.Bounds.X,
+            Y = (byte)texture.Bounds.Y,
+            Width = (ushort)(texture.Bounds.Width << 8),
+            Height = (ushort)(texture.Bounds.Height << 8),
+            LeftSide = texture.Alignment.Left,
+            TopSide = texture.Alignment.Top,
+            RightSide = texture.Alignment.Right,
+            BottomSide = texture.Alignment.Bottom,
         })];
     }
 }
