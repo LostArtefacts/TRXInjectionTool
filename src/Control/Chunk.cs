@@ -69,4 +69,5 @@ public enum BlockType
     AnimTexEdits    = 35,
     ObjectLinkEdits = 36,
     ItemNameEdits   = 37,
+    FlybyCameras    = 38,
 }

@@ -211,8 +211,15 @@ public static class InjectionIO
 
     private static int WriteCameraData(InjectionData data, TRLevelWriter writer)
     {
-        return WriteBlock(BlockType.CinematicFrames, data.CinematicFrames.Count, writer,
+        int blockCount = 0;
+
+        blockCount += WriteBlock(BlockType.CinematicFrames, data.CinematicFrames.Count, writer,
             s => data.CinematicFrames.ForEach(f => s.Write(f.Serialize())));
+
+        blockCount += WriteBlock(BlockType.FlybyCameras, data.FlybyCameras.Count, writer,
+            s => data.FlybyCameras.ForEach(f => s.Write(f.Serialize())));
+
+        return blockCount;
     }
 
     private static int WriteEdits(InjectionData data, TRLevelWriter writer)

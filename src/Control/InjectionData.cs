@@ -50,6 +50,7 @@ public class InjectionData
     public List<TRAnimEdit> AnimEdits { get; set; } = [];
     public List<TRAnimTextureEdit> AnimTextureEdits { get; set; } = [];
     public List<TRItemNameEdit> ItemNameEdits { get; set; } = [];
+    public List<LR.Model.TR4FlyByCamera> FlybyCameras { get; set; } = [];
 
     private readonly HashSet<uint> _meshOnlyModels = [];
 
@@ -339,6 +340,7 @@ public class InjectionData
             ObjectTextures = Convert(flatLevel.LevelDataChunk.ObjectTextures),
             SpriteSequences = [.. flatLevel.LevelDataChunk.SpriteSequences],
             SpriteTextures = Convert(controlledLevel.Sprites.Values.SelectMany(s => s.Textures)),
+            FlybyCameras = [.. flatLevel.LevelDataChunk.FlybyCameras],
         };
 
         for (int i = 0; i < sounds.Length; i++)
