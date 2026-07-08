@@ -246,6 +246,7 @@ public abstract class LaraBuilder : InjectionBuilder
 
     protected enum TR4LaraAnim
     {
+        PoleToStand = 342,
         FastPushblockPushStop = 417,
         FastPushblockPullStop = 418,
         CrawlJumpDown = 421,

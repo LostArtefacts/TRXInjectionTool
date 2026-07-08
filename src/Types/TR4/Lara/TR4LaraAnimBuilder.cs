@@ -123,8 +123,16 @@ public class TR4LaraAnimBuilder : LaraBuilder
         FixClimbOnSFX(tr4Lara);
         FixLadderClimbOnSFX(tr4Lara);
         FixHangToCrouchStartSFX(tr4Lara);
+        FixPoleReleaseState(tr4Lara);
 
         return level;
+    }
+
+    private static void FixPoleReleaseState(TRModel lara)
+    {
+        var anim = lara.Animations[(int)TR4LaraAnim.PoleToStand];
+        anim.StateID = (ushort)TR4LaraState.PoleIdle;
+        anim.Commands.Add(new TREmptyHandsCommand());
     }
 
     private static void PopulateMissingAnims(TRModel lara)
