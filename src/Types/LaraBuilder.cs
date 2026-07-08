@@ -247,6 +247,22 @@ public abstract class LaraBuilder : InjectionBuilder
     protected enum TR4LaraAnim
     {
         PoleToStand = 342,
+        HangCornerLeftOuterStart = 355,
+        HangCornerLeftOuterEnd = 356,
+        HangCornerRightOuterStart = 357,
+        HangCornerRightOuterEnd = 358,
+        HangCornerLeftInnerStart = 359,
+        HangCornerLeftInnerEnd = 360,
+        HangCornerRightInnerStart = 361,
+        HangCornerRightInnerEnd = 362,
+        LadderCornerLeftOuterStart = 363,
+        LadderCornerLeftOuterEnd = 364,
+        LadderCornerRightOuterStart = 365,
+        LadderCornerRightOuterEnd = 366,
+        LadderCornerLeftInnerStart = 367,
+        LadderCornerLeftInnerEnd = 368,
+        LadderCornerRightInnerStart = 369,
+        LadderCornerRightInnerEnd = 370,
         FastPushblockPushStop = 417,
         FastPushblockPullStop = 418,
         CrawlJumpDown = 421,
@@ -1349,6 +1365,107 @@ public abstract class LaraBuilder : InjectionBuilder
         }
 
         AddChange(lara, idleLadderAnim, climbToCrawlState, 0, 48, ladderToCrouchStartAnim, 0);
+    }
+
+    protected void ImportCornerShimmy<A, S>(TRModel lara,
+        Dictionary<TR4LaraAnim, A> animMap, Dictionary<TR4LaraState, S> stateMap,
+        object ladderIdleAnim)
+        where A : Enum
+        where S : Enum
+    {
+        var tr4Lara = _control4.Read($"Resources/TR4/{TR4LevelNames.SETH}").Models[TR4Type.Lara];
+
+        // OG levels exclude animations they don't need, e.g. no ladders in
+        // SETH means no ladder corner animations; fill the gaps from the
+        // other levels.
+        foreach (var levelName in TR4LevelNames.AsList.Except(TR4LevelNames.Cambodia))
+        {
+            if (animMap.Keys.All(a => tr4Lara.Animations[(int)a].Frames.Count != 0))
+            {
+                break;
+            }
+
+            var altLara = _control4.Read($"Resources/TR4/{levelName}").Models[TR4Type.Lara];
+            foreach (var tr4Idx in animMap.Keys)
+            {
+                if (tr4Lara.Animations[(int)tr4Idx].Frames.Count == 0
+                    && altLara.Animations[(int)tr4Idx].Frames.Count != 0)
+                {
+                    tr4Lara.Animations[(int)tr4Idx] = altLara.Animations[(int)tr4Idx];
+                }
+            }
+        }
+        Debug.Assert(animMap.Keys.All(a => tr4Lara.Animations[(int)a].Frames.Count != 0));
+
+        short RemapAnim(int tr4Idx)
+        {
+            if (Enum.IsDefined(typeof(TR4LaraAnim), tr4Idx)
+                && animMap.TryGetValue((TR4LaraAnim)tr4Idx, out var mapped))
+            {
+                return Convert.ToInt16(mapped);
+            }
+            if (tr4Idx == (int)LaraAnim.ReachToHang)
+            {
+                return (short)LaraAnim.ReachToHang;
+            }
+            Debug.Assert(tr4Idx == (int)TR2LaraAnim.LadderIdle);
+            return Convert.ToInt16(ladderIdleAnim);
+        }
+
+        ushort RemapState(int tr4State)
+        {
+            if (Enum.IsDefined(typeof(TR4LaraState), tr4State)
+                && stateMap.TryGetValue((TR4LaraState)tr4State, out var mapped))
+            {
+                return Convert.ToUInt16(mapped);
+            }
+            return (ushort)tr4State;
+        }
+
+        foreach (var (tr4Idx, newIdx) in animMap)
+        {
+            var anim = tr4Lara.Animations[(int)tr4Idx].Clone();
+            var animIdx = Convert.ToInt16(newIdx);
+            Debug.Assert(lara.Animations.Count == animIdx);
+            lara.Animations.Add(anim);
+
+            anim.Commands.RemoveAll(c => c is TRFootprintCommand);
+            anim.StateID = RemapState(anim.StateID);
+            anim.NextAnimation = (ushort)RemapAnim(anim.NextAnimation);
+
+            foreach (var change in anim.Changes)
+            {
+                change.StateID = RemapState(change.StateID);
+                foreach (var dispatch in change.Dispatches)
+                {
+                    dispatch.NextAnimation = RemapAnim(dispatch.NextAnimation);
+                }
+            }
+        }
+
+        // The engine initiates hang corner turns by setting the corner goal
+        // states while on the hang-idle animation, so import TR4's state
+        // changes for those states onto the target's animation. Ladder
+        // corner turns need no changes as the engine switches to their
+        // animations directly.
+        var grabLedge = tr4Lara.Animations[(int)LaraAnim.ReachToHang].Clone();
+        var grabLedgeDst = lara.Animations[(int)LaraAnim.ReachToHang];
+        foreach (var change in grabLedge.Changes)
+        {
+            if (!Enum.IsDefined(typeof(TR4LaraState), (int)change.StateID)
+                || !stateMap.ContainsKey((TR4LaraState)change.StateID))
+            {
+                continue;
+            }
+
+            grabLedgeDst.Changes.Add(change);
+            change.StateID = RemapState(change.StateID);
+            foreach (var dispatch in change.Dispatches)
+            {
+                dispatch.NextAnimation = RemapAnim(dispatch.NextAnimation);
+            }
+        }
+        SortChanges(grabLedgeDst);
     }
 
     protected static void ImportFastPickup(TRModel lara)

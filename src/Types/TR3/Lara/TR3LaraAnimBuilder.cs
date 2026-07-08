@@ -44,6 +44,23 @@ public class TR3LaraAnimBuilder : LaraBuilder
         SwingInFast = 330,
         LadderToCrouchStart = 331,
         LadderToCrouchEnd = 332,
+        HangCornerLeftOuterStart = 342,
+        HangCornerLeftOuterEnd = 343,
+        HangCornerRightOuterStart = 344,
+        HangCornerRightOuterEnd = 345,
+        HangCornerLeftInnerStart = 346,
+        HangCornerLeftInnerEnd = 347,
+        HangCornerRightInnerStart = 348,
+        HangCornerRightInnerEnd = 349,
+        LadderCornerLeftOuterStart = 350,
+        LadderCornerLeftOuterEnd = 351,
+        LadderCornerRightOuterStart = 352,
+        LadderCornerRightOuterEnd = 353,
+        LadderCornerLeftInnerStart = 354,
+        LadderCornerLeftInnerEnd = 355,
+        LadderCornerRightInnerStart = 356,
+        LadderCornerRightInnerEnd = 357,
+
     };
 
     enum InjState : int
@@ -58,6 +75,40 @@ public class TR3LaraAnimBuilder : LaraBuilder
         CrawlJumpDown = 96,
         CrouchTurnLeft = 97,
         CrouchTurnRight = 98,
+        ShimmyOuterLeft = 104,
+        ShimmyOuterRight = 105,
+        ShimmyInnerLeft = 106,
+        ShimmyInnerRight = 107,
+
+    };
+
+
+    private static readonly Dictionary<TR4LaraAnim, InjAnim> _cornerAnimMap = new()
+    {
+        [TR4LaraAnim.HangCornerLeftOuterStart] = InjAnim.HangCornerLeftOuterStart,
+        [TR4LaraAnim.HangCornerLeftOuterEnd] = InjAnim.HangCornerLeftOuterEnd,
+        [TR4LaraAnim.HangCornerRightOuterStart] = InjAnim.HangCornerRightOuterStart,
+        [TR4LaraAnim.HangCornerRightOuterEnd] = InjAnim.HangCornerRightOuterEnd,
+        [TR4LaraAnim.HangCornerLeftInnerStart] = InjAnim.HangCornerLeftInnerStart,
+        [TR4LaraAnim.HangCornerLeftInnerEnd] = InjAnim.HangCornerLeftInnerEnd,
+        [TR4LaraAnim.HangCornerRightInnerStart] = InjAnim.HangCornerRightInnerStart,
+        [TR4LaraAnim.HangCornerRightInnerEnd] = InjAnim.HangCornerRightInnerEnd,
+        [TR4LaraAnim.LadderCornerLeftOuterStart] = InjAnim.LadderCornerLeftOuterStart,
+        [TR4LaraAnim.LadderCornerLeftOuterEnd] = InjAnim.LadderCornerLeftOuterEnd,
+        [TR4LaraAnim.LadderCornerRightOuterStart] = InjAnim.LadderCornerRightOuterStart,
+        [TR4LaraAnim.LadderCornerRightOuterEnd] = InjAnim.LadderCornerRightOuterEnd,
+        [TR4LaraAnim.LadderCornerLeftInnerStart] = InjAnim.LadderCornerLeftInnerStart,
+        [TR4LaraAnim.LadderCornerLeftInnerEnd] = InjAnim.LadderCornerLeftInnerEnd,
+        [TR4LaraAnim.LadderCornerRightInnerStart] = InjAnim.LadderCornerRightInnerStart,
+        [TR4LaraAnim.LadderCornerRightInnerEnd] = InjAnim.LadderCornerRightInnerEnd,
+    };
+
+    private static readonly Dictionary<TR4LaraState, InjState> _cornerStateMap = new()
+    {
+        [TR4LaraState.ShimmyOuterLeft] = InjState.ShimmyOuterLeft,
+        [TR4LaraState.ShimmyOuterRight] = InjState.ShimmyOuterRight,
+        [TR4LaraState.ShimmyInnerLeft] = InjState.ShimmyInnerLeft,
+        [TR4LaraState.ShimmyInnerRight] = InjState.ShimmyInnerRight,
     };
 
     public override List<InjectionData> Build()
@@ -133,6 +184,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         FixWadeTurnSFX(tr3Lara);
         FixTreadSFX(tr3Lara);
         SplitPushableEnds(tr3Lara);
+        ImportCornerShimmy(tr3Lara, _cornerAnimMap, _cornerStateMap, TR2LaraAnim.LadderIdle);
 
         return jungle;
     }
