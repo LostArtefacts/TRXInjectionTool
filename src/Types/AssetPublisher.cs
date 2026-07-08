@@ -10,6 +10,7 @@ using TRXInjectionTool.Types.TR3.Lara;
 using TRXInjectionTool.Types.TR3.Misc;
 using TRXInjectionTool.Types.TR4.Lara;
 using TRXInjectionTool.Types.TR4.Misc;
+using TRXInjectionTool.Types.TRX.Sparks;
 
 namespace TRXInjectionTool.Types;
 
@@ -43,6 +44,7 @@ public static class AssetPublisher
             new TR3PDABuilder(),
             new TR3FishSpritesBuilder(),
             new TR3BatSpritesBuilder(),
+            new SparksBuilder(),
         ],
         [TRGameVersion.TR4] =
         [
