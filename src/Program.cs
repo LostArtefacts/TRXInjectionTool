@@ -64,26 +64,39 @@ internal class Program
             }
             Console.WriteLine();
 
-            int result = -1;
+            List<int> selections = null;
             do
             {
-                Console.Write("Selected namespace: ");
-                string option = Console.ReadLine();
-                if (!int.TryParse(option, out result))
+                Console.Write("Selected namespaces: ");
+                var option = Console.ReadLine() ?? string.Empty;
+                var tokens = option.Split([',', ' '],
+                    StringSplitOptions.RemoveEmptyEntries);
+
+                var values = new HashSet<int>();
+                foreach (var token in tokens)
                 {
-                    result = -1;
+                    if (int.TryParse(token, out int value) &&
+                        value >= 0 && value <= _namespaces.Count)
+                    {
+                        values.Add(value);
+                    }                    
+                }
+
+                if (values.Count > 0)
+                {
+                    selections = [.. values];
                 }
             }
-            while (result < 0 || result > _namespaces.Count);
+            while (selections == null);
 
             Console.WriteLine();
-            List<string> selectedNS = result == 0 ? _namespaces : _namespaces.FindAll(n => n == _namespaces[result - 1]);
-            HashSet<string> usedNames = new();
+            var selectedNS = selections.Contains(0) ? _namespaces : [.. selections.Select(i => _namespaces[i - 1])];
+            var usedNames = new HashSet<string>();
 
             foreach (string ns in selectedNS)
             {
                 Console.WriteLine(ns);
-                IEnumerable<Type> builders = _types
+                var builders = _types
                     .Where(t => t.IsSubclassOf(typeof(InjectionBuilder)) && t.Namespace == $"{_topNS}.{ns}");
                 RunBuilders(builders, usedNames, true);
             }
