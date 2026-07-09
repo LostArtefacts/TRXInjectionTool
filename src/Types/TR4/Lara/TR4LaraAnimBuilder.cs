@@ -366,6 +366,7 @@ public class TR4LaraAnimBuilder : LaraBuilder
         level.SoundEffects.Clear();
         level.Entities.Clear();
         level.Cameras.Clear();
+        level.Flybys.Clear();
 
         level.Models = new()
         {
