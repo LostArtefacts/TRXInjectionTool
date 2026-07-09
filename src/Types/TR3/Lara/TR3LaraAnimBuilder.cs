@@ -19,6 +19,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
     protected override short TreadSFX => (short)TR3SFX.LaraFloating;
     protected override short LandSFX => (short)TR3SFX.LaraLand;
     protected override short KneesShuffleSFX => (short)TR3SFX.LaraKneesShuffle;
+    protected override short PoleLoopSFX => 376;
     protected override short ClimbOnSFX => (short)TR3SFX.LaraClimb3;
     protected override short ResponsiveState => (short)InjState.Responsive;
 
@@ -117,7 +118,9 @@ public class TR3LaraAnimBuilder : LaraBuilder
 
         {
             var level = CreateLevel();
-            result.Add(InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations"));
+            var data = InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations");
+            ImportPoleLoopSFX(data);
+            result.Add(data);
         }
         {
             var level = CreateExtraLevel();
@@ -185,6 +188,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         FixTreadSFX(tr3Lara);
         SplitPushableEnds(tr3Lara);
         ImportCornerShimmy(tr3Lara, _cornerAnimMap, _cornerStateMap, TR2LaraAnim.LadderIdle);
+        SyncToTR4(tr3Lara, true);
 
         return jungle;
     }

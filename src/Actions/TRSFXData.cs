@@ -116,4 +116,18 @@ public class TRSFXData
         sfx.LoadSFX(TRGameVersion.TR3, gold);
         return sfx;
     }
+
+    public static TRSFXData Create(object id, TR4SoundEffect effect)
+    {
+        return new()
+        {
+            ID = Convert.ToInt16(id),
+            Chance = effect.Chance,
+            Characteristics = effect.GetFlags(),
+            Volume = (ushort)(effect.Volume << 7),
+            Pitch = effect.Pitch,
+            Range = effect.Range,
+            Data = [.. effect.Samples.Select(s => s.Data)],
+        };
+    }
 }

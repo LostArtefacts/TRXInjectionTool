@@ -192,6 +192,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
     protected override short TreadSFX => (short)TR1SFX.LaraTread;
     protected override short LandSFX => (short)TR1SFX.LaraLand;
     protected override short KneesShuffleSFX => 274;
+    protected override short PoleLoopSFX => 276;
     protected override short ClimbOnSFX => (short)TR1SFX.LaraClimb3;
     protected override short ResponsiveState => (short)InjState.Responsive;
 
@@ -477,6 +478,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
             var level = CreateLevel();
             var data = InjectionData.Create(level, InjectionType.LaraAnims, "lara_animations");
             ImportKneesShuffle(data);
+            ImportPoleLoopSFX(data);
             result.Add(data);
         }
         {
@@ -542,6 +544,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         FixWadeTurnSFX(tr1Lara);
         SplitPushableEnds(tr1Lara);
         ImportCornerShimmy(tr1Lara, _cornerAnimMap, _cornerStateMap, InjAnim.LadderIdle);
+        SyncToTR4(tr1Lara);
 
         return caves;
     }

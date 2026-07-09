@@ -18,6 +18,7 @@ public class TR4LaraAnimBuilder : LaraBuilder
     protected override short TreadSFX => (short)TR4SFX.LaraFloating;
     protected override short LandSFX => (short)TR4SFX.LaraLand;
     protected override short KneesShuffleSFX => (short)TR4SFX.LaraKneesShuffle;
+    protected override short PoleLoopSFX => (short)TR4SFX.LaraPoleLoop;
     protected override short ClimbOnSFX => (short)TR4SFX.LaraClimb3;
     protected override short ResponsiveState => (short)InjState.Responsive;
 
@@ -92,7 +93,7 @@ public class TR4LaraAnimBuilder : LaraBuilder
         }
         ResetLevel(level);
         var tr4Lara = level.Models[TR4Type.Lara];
-        PopulateMissingAnims(tr4Lara);
+        tr4Lara.Animations = GetCompleteTR4Lara().Clone().Animations;
 
         SyncToTR2(tr4Lara);
         AddSlideToRun(tr4Lara);
@@ -123,70 +124,8 @@ public class TR4LaraAnimBuilder : LaraBuilder
         FixClimbOnSFX(tr4Lara);
         FixLadderClimbOnSFX(tr4Lara);
         FixHangToCrouchStartSFX(tr4Lara);
-        FixPoleReleaseState(tr4Lara);
 
         return level;
-    }
-
-    private static void FixPoleReleaseState(TRModel lara)
-    {
-        var anim = lara.Animations[(int)TR4LaraAnim.PoleToStand];
-        anim.StateID = (ushort)TR4LaraState.PoleIdle;
-        anim.Commands.Add(new TREmptyHandsCommand());
-    }
-
-    private static void PopulateMissingAnims(TRModel lara)
-    {
-        // OG saved space by excluding animations that weren't needed in some levels e.g. no water = no swimming anims
-        var incompleteAnims = lara.Animations
-            .Select((a, i) => new { Index = i, Anim = a })
-            .Where(a => a.Anim.Frames.Count == 0)
-            .Select(a => a.Index)
-            .ToList();
-
-        void TryReplace(TRModel altLara, int animId)
-        {
-            var anim = altLara.Animations[animId];
-            if (anim.Frames.Count != 0)
-            {
-                lara.Animations[animId] = anim;
-                incompleteAnims.Remove(animId);
-            }
-        }
-
-        {
-            // These are not present anywhere in TR4; lift from TR3, even though unused.
-            var tr3Anims = new[] { 227, 229, 231, 297, 298, 299, 300 };
-            var altLara = _control3.Read($"Resources/TR3/{TR3LevelNames.JUNGLE}").Models[TR3Type.Lara];
-            foreach (var animId in tr3Anims)
-            {
-                TryReplace(altLara, animId);
-            }
-        }
-
-        {
-            // Unused death "magic" animation. Give it a frame.
-            var anim = lara.Animations[437];
-            anim.Frames.Add(lara.Animations[11].Frames[0].Clone());
-            anim.FrameEnd = 1;
-            incompleteAnims.Remove(437);
-        }
-
-        var animCount = lara.Animations.Count;
-        foreach (var levelName in TR4LevelNames.AsList.Except(TR4LevelNames.Cambodia))
-        {
-            var altLara = _control4.Read($"Resources/TR4/{levelName}").Models[TR4Type.Lara];
-            Debug.Assert(altLara.Animations.Count == animCount);
-            for (int i = incompleteAnims.Count - 1; i >= 0; i--)
-            {
-                TryReplace(altLara, incompleteAnims[i]);
-            }
-
-            if (incompleteAnims.Count == 0)
-            {
-                break;
-            }
-        }
     }
 
     private static void SyncToTR2(TRModel lara)
