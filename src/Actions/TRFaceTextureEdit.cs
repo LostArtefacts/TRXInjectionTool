@@ -19,7 +19,7 @@ public class TRFaceTextureEdit
     public short MeshIndex { get; set; } // If < 0, indicates specific palette entry
     public TRMeshFaceType FaceType { get; set; }
     public short FaceIndex { get; set; }
-    public List<short> TargetFaceIndices { get; set; } = new();
+    public List<short> TargetFaceIndices { get; set; } = [];
 
     public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
@@ -29,5 +29,21 @@ public class TRFaceTextureEdit
         writer.Write(FaceIndex);
         writer.Write((uint)TargetFaceIndices.Count);
         writer.Write(TargetFaceIndices);
+    }
+}
+
+public class TRFaceEffectsEdit
+{
+    public TRMeshFaceType FaceType { get; set; }
+    public short FaceIndex { get; set; }
+    public ushort Effects { get; set; }
+    public bool Reflective { get; set; }
+
+    public void Serialize(TRLevelWriter writer)
+    {
+        writer.Write((uint)FaceType);
+        writer.Write(FaceIndex);
+        writer.Write(Effects);
+        writer.Write(Convert.ToByte(Reflective));
     }
 }

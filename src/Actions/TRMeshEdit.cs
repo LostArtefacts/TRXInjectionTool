@@ -12,8 +12,9 @@ public class TRMeshEdit
     public short MeshIndex { get; set; }
     public TRVertex Centre { get; set; } = new();
     public int CollRadius { get; set; }
-    public List<TRFaceTextureEdit> FaceEdits { get; set; } = new();
-    public List<TRVertexEdit> VertexEdits { get; set; } = new();
+    public List<TRFaceTextureEdit> FaceEdits { get; set; } = [];
+    public List<TRFaceEffectsEdit> FaceEffects { get; set; } = [];
+    public List<TRVertexEdit> VertexEdits { get; set; } = [];
 
     public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
@@ -38,5 +39,8 @@ public class TRMeshEdit
 
         writer.Write((uint)VertexEdits.Count);
         VertexEdits.ForEach(v => v.Serialize(writer));
+
+        writer.Write((uint)FaceEffects.Count);
+        FaceEffects.ForEach(f => f.Serialize(writer));
     }
 }
