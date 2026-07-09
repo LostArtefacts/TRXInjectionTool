@@ -587,6 +587,7 @@ public abstract class LaraBuilder : InjectionBuilder
         }
 
         FixPoleReleaseState(lara);
+        FixInteractiveDoorHandsFree(lara);
         _completeTR4Lara = lara;
         return _completeTR4Lara;
     }
@@ -1818,6 +1819,35 @@ public abstract class LaraBuilder : InjectionBuilder
 
         anim = lara.Animations[(int)TR4LaraAnim.PoleFall];
         anim.Commands.Add(new TREmptyHandsCommand());
+    }
+
+    protected static void FixInteractiveDoorHandsFree(TRModel lara)
+    {
+        // The interactive door open animations leave Lara's hands busy on
+        // completion, so she never returns to an armless state (stuck unable to
+        // draw weapons and, for the knob doors, jittering against the door as
+        // the interaction never fully releases). The stock crowbar door
+        // (PryDoor) already carries the empty-hands command; give the rest the
+        // same treatment.
+        TR4LaraAnim[] doorAnims =
+        [
+            TR4LaraAnim.DoorOpenForward,
+            TR4LaraAnim.DoorOpenBack,
+            TR4LaraAnim.DoorKick,
+            TR4LaraAnim.FloorTrapdoorOpen,
+            TR4LaraAnim.CeilingTrapdoorOpen,
+            TR4LaraAnim.DoubledoorsPush,
+            TR4LaraAnim.UnderwaterDoorOpen,
+        ];
+
+        foreach (var animId in doorAnims)
+        {
+            var anim = lara.Animations[(int)animId];
+            if (!anim.Commands.Any(c => c is TREmptyHandsCommand))
+            {
+                anim.Commands.Add(new TREmptyHandsCommand());
+            }
+        }
     }
 
     protected void SyncToTR4(TRModel lara, bool enableFootprints = false)
