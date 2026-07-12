@@ -56,7 +56,12 @@ public class TR3PickupBuilder : InjectionBuilder
 
     public override List<InjectionData> Build()
     {
-        List<InjectionData> result = [.. FixOraDagger(), FixMenuArtefacts()];
+        List<InjectionData> result =
+        [
+            .. FixOraDagger(),
+            FixMenuArtefacts(includeEyeOfIsis: true),
+            FixMenuArtefacts(includeEyeOfIsis: false),
+        ];
 
         foreach (Target target in _targets)
         {
@@ -124,23 +129,29 @@ public class TR3PickupBuilder : InjectionBuilder
         }
     }
 
-    private static InjectionData FixMenuArtefacts()
+    private static InjectionData FixMenuArtefacts(bool includeEyeOfIsis)
     {
         var level = _control3.Read($"Resources/TR3/{TR3LevelNames.NEVADA}");
+        var eyeOfIsis = level.Models[TR3Type.EyeOfIsis_M_H];
         level.Models = new()
         {
             [TR3Type.Infada_M_H] = level.Models[TR3Type.Infada_M_H],
             [TR3Type.Element115_M_H] = level.Models[TR3Type.Element115_M_H],
-            [TR3Type.EyeOfIsis_M_H] = level.Models[TR3Type.EyeOfIsis_M_H],
             [TR3Type.OraDagger_M_H] = level.Models[TR3Type.OraDagger_M_H],
         };
+
+        if (includeEyeOfIsis)
+        {
+            level.Models[TR3Type.EyeOfIsis_M_H] = eyeOfIsis;
+        }
 
         foreach (var frame in level.Models[TR3Type.OraDagger_M_H].Animations.SelectMany(a => a.Frames))
         {
             frame.Bounds.MaxY += 75;
         }
 
-        var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.General, "menu_artefacts");
+        var name = $"menu_artefacts{(includeEyeOfIsis ? string.Empty : "_london")}";
+        var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.General, name);
         data.FrameReplacements.AddRange(TRFrameReplacement.CreateFrom(level));
         return data;
     }
