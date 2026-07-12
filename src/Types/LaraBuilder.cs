@@ -1526,6 +1526,8 @@ public abstract class LaraBuilder : InjectionBuilder
             anim.StateID = Convert.ToUInt16(climbToCrawlState);
             lara.Animations.Add(anim);
 
+            anim.Commands.RemoveAll(c => c is TREmptyHandsCommand);
+
             anim.Commands.Add(new TRSFXCommand
             {
                 SoundID = 5,
@@ -1547,6 +1549,7 @@ public abstract class LaraBuilder : InjectionBuilder
             var anim = laraExt.Animations[(int)ExtLaraAnim.LadderToCrouchEnd].Clone();
             var animIdx = Convert.ToInt16(ladderToCrouchEndAnim);
             Debug.Assert(lara.Animations.Count == animIdx);
+            Debug.Assert(anim.Commands.Any(c => c is TREmptyHandsCommand));
             anim.NextAnimation = Convert.ToUInt16(crouchIdleAnim);
             anim.StateID = Convert.ToUInt16(climbToCrawlState);
             lara.Animations.Add(anim);
