@@ -12,31 +12,6 @@ public class TR4LaraOutfitBuilder : OutfitBuilder
 
     public override string ID => "tr4-lara-outfits";
 
-    // The crowbar is worn on Lara's right hand as a skin extra mesh (so its
-    // presence survives a save/reload). Its geometry is not in the outfits
-    // resource, so graft it in from the in-game crowbar pickup object.
-    protected override void ModifyOutfits(TR2Level outfitLevel)
-    {
-        var coastal = _control4.Read($"Resources/TR4/{TR4LevelNames.COASTAL}");
-
-        // The crowbar hand meshswap is the plain hand with the crowbar appended;
-        // isolate the crowbar so it lands in the exact OG grip pose. LM_HAND_R
-        // is mesh index 10.
-        const int handMeshIdx = 10;
-        var animHand = coastal.Models[TR4Type.LaraCrowbarAnim].Meshes[handMeshIdx];
-        var baseHand = coastal.Models[TR4Type.LaraSkin].Meshes[handMeshIdx];
-        var crowbarMesh = ExtractAddedGeometry(animHand, baseHand.Vertices.Count);
-
-        // Object-texture Atlas is a global index over Rooms ++ Objects ++ Bump.
-        var pages = new List<TRTexImage32>();
-        pages.AddRange(coastal.Images.Rooms.Images32);
-        pages.AddRange(coastal.Images.Objects.Images32);
-        pages.AddRange(coastal.Images.Bump.Images32);
-
-        GraftExtraMesh(
-            outfitLevel, _outfitExtras, crowbarMesh, coastal.ObjectTextures, pages);
-    }
-
     protected override TRLevelBase CreateLevel(TR2Level outfitLevel)
     {
         var level = _control4.Read($"Resources/TR4/{TR4LevelNames.SETH}");
