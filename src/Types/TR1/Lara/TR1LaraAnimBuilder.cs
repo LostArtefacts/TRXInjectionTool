@@ -676,7 +676,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         }
     }
 
-    private static void ImproveTwists(TRModel lara)
+    private static new void ImproveTwists(TRModel lara)
     {
         var laraExt = GetLaraExtModel();
 
@@ -788,7 +788,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
             RandomizePitch = wetFeet2.RandomizePitch,
             RandomizeVolume = wetFeet2.RandomizeVolume,
             Volume = wetFeet2.Volume,
-            Samples = new(),
+            Samples = [],
         };
 
         for (int i = 0; i < wetFeet2.SampleCount; i++)
@@ -804,10 +804,10 @@ public class TR1LaraAnimBuilder : LaraBuilder
             RandomizePitch = wade2.RandomizePitch,
             RandomizeVolume = wade2.RandomizeVolume,
             Volume = wade2.Volume,
-            Samples = new()
-            {
+            Samples =
+            [
                 File.ReadAllBytes("Resources/TR1/Wade/0.wav"),
-            },
+            ],
         };
 
         level.SoundEffects[TR1SFX.LaraWetFeet] = wetFeet1;
@@ -823,10 +823,9 @@ public class TR1LaraAnimBuilder : LaraBuilder
         };
         foreach (TRAnimation anim in tr1Lara.Animations.Except(excludeFeetAnims))
         {
-            List<TRSFXCommand> feetCmds = anim.Commands
+            List<TRSFXCommand> feetCmds = [.. anim.Commands
                 .FindAll(c => c is TRSFXCommand s && s.SoundID == 0)
-                .Cast<TRSFXCommand>()
-                .ToList();
+                .Cast<TRSFXCommand>()];
             foreach (TRSFXCommand cmd in feetCmds)
             {
                 cmd.Environment = TRSFXEnvironment.Land;
@@ -1098,7 +1097,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         TRStateChange responsiveGlideChange = new()
         {
             StateID = (ushort)InjState.Responsive,
-            Dispatches = new(),
+            Dispatches = [],
         };
         int index = swimAnim.Changes.IndexOf(glideChange);
         swimAnim.Changes.Insert(index + 1, responsiveGlideChange);
@@ -1287,8 +1286,8 @@ public class TR1LaraAnimBuilder : LaraBuilder
         // Generate the injection's effect on a regular level to allow TRLE builders to utilise
         // the new animations while also being able to edit the defaults. This is a stripped back
         // level file that can be opened in WADTool.
-        List<TRObjectTexture> originalInfos = new(level.ObjectTextures);
-        Dictionary<ushort, ushort> texMap = new();
+        List<TRObjectTexture> originalInfos = [.. level.ObjectTextures];
+        Dictionary<ushort, ushort> texMap = [];
         level.Models[TR1Type.Lara].Meshes
             .SelectMany(m => m.TexturedFaces)
             .Select(f => f.Texture)
@@ -1299,7 +1298,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         var laraRegions = packer.GetMeshRegions(level.Models[TR1Type.Lara].Meshes)
             .Values.SelectMany(v => v);
         
-        level.Images8 = new() { new() { Pixels = new byte[TRConsts.TPageSize] } };
+        level.Images8 = [new() { Pixels = new byte[TRConsts.TPageSize] }];
         level.ObjectTextures.Clear();
 
         packer = new(level);

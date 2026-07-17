@@ -718,8 +718,8 @@ public abstract class LaraBuilder : InjectionBuilder
         lara.Animations[73].Changes.Add(new()
         {
             StateID = (ushort)ResponsiveState,
-            Dispatches = new()
-            {
+            Dispatches =
+            [
                 new()
                 {
                     Low = 0,
@@ -741,7 +741,7 @@ public abstract class LaraBuilder : InjectionBuilder
                     NextFrame = 5,
                     NextAnimation = animID,
                 }
-            }
+            ]
         });
 
         // Arabian-to-jump
@@ -1161,8 +1161,8 @@ public abstract class LaraBuilder : InjectionBuilder
         anim.Changes.Add(new()
         {
             StateID = Convert.ToUInt16(goalStateID),
-            Dispatches = new()
-            {
+            Dispatches =
+            [
                 new()
                 {
                     Low = low,
@@ -1170,7 +1170,7 @@ public abstract class LaraBuilder : InjectionBuilder
                     NextAnimation = Convert.ToInt16(nextAnimIdx),
                     NextFrame = nextFrame,
                 }
-            },
+            ],
         });
     }
 
