@@ -70,4 +70,5 @@ public enum BlockType
     ObjectLinkEdits = 36,
     ItemNameEdits   = 37,
     FlybyCameras    = 38,
+    PropertyEdits   = 39,
 }

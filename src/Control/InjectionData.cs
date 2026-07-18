@@ -51,6 +51,7 @@ public class InjectionData
     public List<TRAnimTextureEdit> AnimTextureEdits { get; set; } = [];
     public List<TRItemNameEdit> ItemNameEdits { get; set; } = [];
     public List<LR.Model.TR4FlyByCamera> FlybyCameras { get; set; } = [];
+    public List<TRPropertyEdit> PropertyEdits { get; set; } = [];
 
     private readonly HashSet<uint> _meshOnlyModels = [];
 
