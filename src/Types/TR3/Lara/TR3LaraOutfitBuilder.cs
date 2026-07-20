@@ -9,6 +9,7 @@ public class TR3LaraOutfitBuilder : OutfitBuilder
     private const short _barefootStepID = 374;
     private const short _barefootLandID = 375;
     private const int _skinBase = 393;
+    private const int _gameJointsBase = 433;
 
     public override string ID => "tr3-lara-outfits";
 
@@ -27,6 +28,11 @@ public class TR3LaraOutfitBuilder : OutfitBuilder
         level.Models[(TR3Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitExtras];
         level.Models[(TR3Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitGuns3];
         level.Models[(TR3Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitLegs];
+
+        for (int i = 0; i < _jointsCount; i++)
+        {
+            level.Models[(TR3Type)(_gameJointsBase + i)] = outfitLevel.Models[(TR2Type)(_jointsBase + i)];
+        }
 
         return level;
     }
