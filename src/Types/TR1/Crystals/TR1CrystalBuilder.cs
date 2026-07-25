@@ -6,6 +6,8 @@ namespace TRXInjectionTool.Types.TR1.Crystals;
 
 public class TR1CrystalBuilder : InjectionBuilder
 {
+    private const short _collectSFXId = 277;
+
     public override List<InjectionData> Build()
         => [.. CreatePlacements(), CreateModel()];
 
@@ -23,5 +25,5 @@ public class TR1CrystalBuilder : InjectionBuilder
     }
 
     private static InjectionData CreateModel()
-        => CrystalUtils.MakeCrystal(TRGameVersion.TR1);
+        => CrystalUtils.MakeCrystal(TRGameVersion.TR1, _collectSFXId);
 }
