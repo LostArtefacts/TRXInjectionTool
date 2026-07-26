@@ -10,6 +10,15 @@ namespace TRXInjectionTool.Util;
 
 public static class CrystalUtils
 {
+    // TRX slots for the crystal's inventory model. TR3 has one of its own.
+    private const int _tr1OptionID = 328;
+    private const int _tr2OptionID = 372;
+
+    // How much bigger than the reference menu model the crystal is drawn. The
+    // TR1 and TR2 crystal is the slimmer of the two, so it takes more.
+    private const double _optionScale = 1.6;
+    private const double _optionScale12 = 1.92;
+
     private static readonly Color _blue = Color.FromArgb(188, 220, 220);
     private static readonly Color _purple = Color.FromArgb(64, 64, 252);
     private static readonly Color _green = Color.FromArgb(64, 252, 64);
@@ -87,13 +96,19 @@ public static class CrystalUtils
 
         if (level is TR1Level level1)
         {
+            var reference = level1.Models[TR1Type.LargeMed_M_H];
             InjectionBuilder.ResetLevel(level1);
             level1.Models[TR1Type.SavegameCrystal_P] = model;
+            level1.Models[(TR1Type)_tr1OptionID] =
+                MakeOptionModel(model, reference, _optionScale12);
         }
         else if (level is TR2Level level2)
         {
+            var reference = level2.Models[TR2Type.LargeMed_M_H];
             InjectionBuilder.ResetLevel(level2);
             level2.Models[TR2Type.SavegameCrystal_P] = model;
+            level2.Models[(TR2Type)_tr2OptionID] =
+                MakeOptionModel(model, reference, _optionScale12);
         }
 
         var img = new TRImage(TRConsts.TPageWidth, TRConsts.TPageHeight);
@@ -172,12 +187,102 @@ public static class CrystalUtils
         var level = new TR3LevelControl().Read($"Resources/TR3/{TR3LevelNames.JUNGLE}");
         InjectionBuilder.ResetLevel(level);
         level.Models[TR3Type.SaveCrystal_P] = model;
+        level.Models[TR3Type.SaveCrystal_M_H] =
+            MakeOptionModel(model, source.Models[TR3Type.LargeMed_M_H], _optionScale);
         level.ObjectTextures.AddRange(textures);
 
         var data = InjectionData.Create(level, InjectionType.General, "crystal");
         data.Images.Add(new() { Pixels = img.ToRGBA() });
         return data;
     }
+
+    // The crystal is authored as a floor pickup: it is several times the size
+    // of any menu model and its frame offset lifts it well above the origin.
+    // Recentre it on the ring's vertical axis and scale it to the reference
+    // model's box, which keeps it spinning about its own middle.
+    private static TRModel MakeOptionModel(TRModel model, TRModel reference, double factor)
+    {
+        var refBox = GetDrawnBounds(reference);
+        var box = GetDrawnBounds(model);
+        var scale = factor
+            * Math.Min(
+                Math.Min(refBox.Width / box.Width, refBox.Height / box.Height),
+                refBox.Depth / box.Depth);
+        var target = new Point3(0, refBox.CentreY, 0);
+
+        // The vertices are relative to the frame offset, which the fitted
+        // model no longer carries.
+        var offset = model.Animations[0].Frames[0];
+        var option = model.Clone();
+        foreach (var mesh in option.Meshes)
+        {
+            mesh.CollRadius = (int)Math.Round(mesh.CollRadius * scale);
+            mesh.Centre = Fit(mesh.Centre, offset, box, scale, target);
+            mesh.Vertices.ForEach(v =>
+            {
+                var fitted = Fit(v, offset, box, scale, target);
+                v.X = fitted.X;
+                v.Y = fitted.Y;
+                v.Z = fitted.Z;
+            });
+        }
+
+        // The offset is now part of the vertices, and the model no longer
+        // moves, so every frame shares the same bounds.
+        foreach (var frame in option.Animations.SelectMany(a => a.Frames))
+        {
+            frame.OffsetX = frame.OffsetY = frame.OffsetZ = 0;
+            frame.Bounds = new()
+            {
+                MinX = (short)Math.Round(target.X - box.Width * scale / 2),
+                MaxX = (short)Math.Round(target.X + box.Width * scale / 2),
+                MinY = (short)Math.Round(target.Y - box.Height * scale / 2),
+                MaxY = (short)Math.Round(target.Y + box.Height * scale / 2),
+                MinZ = (short)Math.Round(target.Z - box.Depth * scale / 2),
+                MaxZ = (short)Math.Round(target.Z + box.Depth * scale / 2),
+            };
+        }
+
+        return option;
+    }
+
+    private record Point3(double X, double Y, double Z);
+
+    private record DrawnBounds(double MinX, double MaxX, double MinY, double MaxY, double MinZ, double MaxZ)
+    {
+        public double Width => MaxX - MinX;
+        public double Height => MaxY - MinY;
+        public double Depth => MaxZ - MinZ;
+        public double CentreX => (MinX + MaxX) / 2;
+        public double CentreY => (MinY + MaxY) / 2;
+        public double CentreZ => (MinZ + MaxZ) / 2;
+    }
+
+    // Where the model actually lands when drawn: its vertices shifted by the
+    // frame offset.
+    private static DrawnBounds GetDrawnBounds(TRModel model)
+    {
+        var frame = model.Animations[0].Frames[0];
+        var vertices = model.Meshes.SelectMany(m => m.Vertices).ToList();
+        return new(
+            vertices.Min(v => v.X) + frame.OffsetX, vertices.Max(v => v.X) + frame.OffsetX,
+            vertices.Min(v => v.Y) + frame.OffsetY, vertices.Max(v => v.Y) + frame.OffsetY,
+            vertices.Min(v => v.Z) + frame.OffsetZ, vertices.Max(v => v.Z) + frame.OffsetZ);
+    }
+
+    private static TRVertex Fit(
+        TRVertex vertex, TRAnimFrame offset, DrawnBounds box, double scale, Point3 target)
+    {
+        return new()
+        {
+            X = Fit(vertex.X + offset.OffsetX, box.CentreX, scale, target.X),
+            Y = Fit(vertex.Y + offset.OffsetY, box.CentreY, scale, target.Y),
+            Z = Fit(vertex.Z + offset.OffsetZ, box.CentreZ, scale, target.Z),
+        };
+    }
+
+    private static short Fit(double value, double centre, double scale, double target)
+        => (short)Math.Round((value - centre) * scale + target);
 
     // Object textures store four vertices; a triangle leaves the last unused.
     private static IEnumerable<TRObjectTextureVert> RealVertices(TRObjectTexture texture)
