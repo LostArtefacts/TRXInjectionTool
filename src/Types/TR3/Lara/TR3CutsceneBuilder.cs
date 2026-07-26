@@ -139,6 +139,7 @@ public class TR3CutsceneBuilder : InjectionBuilder
             if (levelName == TR3LevelNames.ANTARC_CUT)
             {
                 FixBriefcaseFrames(level.Models[TR3Type.CutsceneActor8], level.Models[TR3Type.CutsceneActor2]);
+                HideAntarcticaWillard(level.Models[TR3Type.CutsceneActor2]);
             }
 
             var actors = _actors.Where(level.Models.ContainsKey).ToArray();
@@ -315,6 +316,19 @@ public class TR3CutsceneBuilder : InjectionBuilder
                 briefModel.Animations[1].Frames[i].OffsetX += 18;
             }
             briefModel.Animations[1].Frames[719] = briefModel.Animations[1].Frames[720].Clone();
+        }
+
+        private static void HideAntarcticaWillard(TRModel willard)
+        {
+            willard.Animations[0].Commands.Add(new TRFXCommand
+            {
+                EffectID = (short)TR3FX.HideItem,
+                FrameNumber = 1,
+            });
+            willard.Animations[1].Commands.Add(new TRFXCommand
+            {
+                EffectID = (short)TR3FX.ShowItem,
+            });
         }
     }
 }
