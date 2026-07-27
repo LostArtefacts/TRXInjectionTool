@@ -261,7 +261,7 @@ public abstract class LaraBuilder : InjectionBuilder
         CogwheelPull = 321,
         CogwheelGrab = 322,
         CogwheelUngrab = 323,
-        LeverswitchPush = 324,
+        LeverSwitchPush = 324,
         HoleGrab = 325,
         StandToPoleGrab = 326,
         PoleJump = 327,
@@ -587,7 +587,7 @@ public abstract class LaraBuilder : InjectionBuilder
         }
 
         FixPoleReleaseState(lara);
-        FixInteractiveDoorHandsFree(lara);
+        FixInteractiveHandsFreeAnims(lara);
         _completeTR4Lara = lara;
         return _completeTR4Lara;
     }
@@ -1824,26 +1824,37 @@ public abstract class LaraBuilder : InjectionBuilder
         anim.Commands.Add(new TREmptyHandsCommand());
     }
 
-    protected static void FixInteractiveDoorHandsFree(TRModel lara)
+    protected static void FixInteractiveHandsFreeAnims(TRModel lara)
     {
-        // The interactive door open animations leave Lara's hands busy on
+        // Several interaction animations leave Lara's hands busy on
         // completion, so she never returns to an armless state (stuck unable to
         // draw weapons and, for the knob doors, jittering against the door as
         // the interaction never fully releases). The stock crowbar door
         // (PryDoor) already carries the empty-hands command; give the rest the
         // same treatment.
-        TR4LaraAnim[] doorAnims =
+        TR4LaraAnim[] interactAnims =
         [
-            TR4LaraAnim.DoorOpenForward,
-            TR4LaraAnim.DoorOpenBack,
-            TR4LaraAnim.DoorKick,
-            TR4LaraAnim.FloorTrapdoorOpen,
+            TR4LaraAnim.BigButtonPush,
             TR4LaraAnim.CeilingTrapdoorOpen,
+            TR4LaraAnim.CrowbarUseOnFloor,
+            TR4LaraAnim.CrowbarUseOnFloorFailUnused,
+            TR4LaraAnim.CrowbarUseOnWall,
+            TR4LaraAnim.DoorKick,
+            TR4LaraAnim.DoorOpenBack,
+            TR4LaraAnim.DoorOpenForward,
             TR4LaraAnim.DoubledoorsPush,
+            TR4LaraAnim.FloorTrapdoorOpen,
+            TR4LaraAnim.HoleGrab,
+            TR4LaraAnim.Jumpswitch,
+            TR4LaraAnim.LeverSwitchPush,
+            TR4LaraAnim.PulleyUngrab,
+            TR4LaraAnim.TurnswitchPushLeftEnd,
+            TR4LaraAnim.TurnswitchPushRightEnd,
             TR4LaraAnim.UnderwaterDoorOpen,
+            TR4LaraAnim.UnderwaterPulley,
         ];
 
-        foreach (var animId in doorAnims)
+        foreach (var animId in interactAnims)
         {
             var anim = lara.Animations[(int)animId];
             if (!anim.Commands.Any(c => c is TREmptyHandsCommand))
@@ -1943,7 +1954,7 @@ public abstract class LaraBuilder : InjectionBuilder
         [TR4LaraAnim.CogwheelPull] = 366,
         [TR4LaraAnim.CogwheelGrab] = 367,
         [TR4LaraAnim.CogwheelUngrab] = 368,
-        [TR4LaraAnim.LeverswitchPush] = 369,
+        [TR4LaraAnim.LeverSwitchPush] = 369,
         [TR4LaraAnim.HoleGrab] = 370,
         [TR4LaraAnim.StandToPoleGrab] = 371,
         [TR4LaraAnim.PoleJump] = 372,
