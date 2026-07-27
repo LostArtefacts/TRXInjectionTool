@@ -26,7 +26,7 @@ public class TR4LaraOutfitBuilder : OutfitBuilder
 
         skinId = _skinBase + _maxOutfits;
         level.Models[(TR4Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitExtras];
-        level.Models[(TR4Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitGuns3];
+        level.Models[(TR4Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitGuns4];
         level.Models[(TR4Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitLegs];
 
         for (int i = 0; i < _jointsCount; i++)

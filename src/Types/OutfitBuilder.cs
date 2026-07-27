@@ -15,6 +15,7 @@ public abstract class OutfitBuilder : InjectionBuilder
     protected const int _outfitGuns2 = 336;
     protected const int _outfitGuns3 = 337;
     protected const int _outfitLegs = 338;
+    protected const int _outfitGuns4 = 339;
     protected const int _jointsBase = 340;
     protected const int _jointsCount = 4;
 
