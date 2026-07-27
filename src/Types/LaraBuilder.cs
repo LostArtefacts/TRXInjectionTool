@@ -290,6 +290,8 @@ public abstract class LaraBuilder : InjectionBuilder
         TurnswitchPushLeftStart = 350,
         TurnswitchPushLeftContinue = 351,
         TurnswitchPushLeftEnd = 352,
+        CrouchTurnLeft = 353,
+        CrouchTurnRight = 354,
         HangCornerLeftOuterStart = 355,
         HangCornerLeftOuterEnd = 356,
         HangCornerRightOuterStart = 357,
@@ -588,6 +590,7 @@ public abstract class LaraBuilder : InjectionBuilder
 
         FixPoleReleaseState(lara);
         FixInteractiveHandsFreeAnims(lara);
+        AlignTR4CrouchTurn(lara);
         _completeTR4Lara = lara;
         return _completeTR4Lara;
     }
@@ -841,6 +844,19 @@ public abstract class LaraBuilder : InjectionBuilder
         ImportCrouchTurnAnim(lara, ExtLaraAnim.CrouchTurnRight, 
             crouchRightStateID, crouchRightAnimID, crouchIdleStateID, crouchIdleAnimID,
             standAnimID, rollStateID, rollAnimID, crawlStateID, crawlAnimID);
+    }
+
+    private static void AlignTR4CrouchTurn(TRModel lara)
+    {
+        // OG TR4's crouch turn was fairly unresponsive; the following improvements were added
+        // to TR1-3 before TR4 implementation, so forward port into TR4 Lara as standard.
+        foreach (var animID in new[] { TR4LaraAnim.CrouchTurnLeft, TR4LaraAnim.CrouchTurnRight })
+        {
+            var anim = lara.Animations[(int)animID];
+            AddChange(anim, LaraState.Stop, 0, 24, TR3LaraAnim.CrouchToStand, 0);
+            AddChange(anim, TR3LaraState.CrouchRoll, 0, 24, TR3LaraAnim.CrouchRollForwardStart, 0);
+            AddChange(anim, TR3LaraState.CrawlIdle, 0, 24, TR3LaraAnim.CrouchToCrawlStart, 0);
+        }
     }
 
     protected void ImportSprint<A, S>(TRModel lara, object slideToRunAnim,
