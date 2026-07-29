@@ -130,15 +130,23 @@ public static class CrystalUtils
         return data;
     }
 
+    // The PS1 crystal artwork, taken from TRTextureReplace. Its top row is the
+    // blue PS1 texture and its bottom row the green PC one; each row holds a
+    // wide and a narrow tile, matching the two face sizes on the model.
+    private const string _psxCrystalPath = "Resources/TR3/Misc/crystal.png";
+    private static readonly Rectangle _psxWide = new(0, 0, 32, 16);
+    private static readonly Rectangle _psxNarrow = new(32, 0, 16, 16);
+
     // TR3's crystal is green in the level data, so the saving and pickup modes
-    // cannot simply tint the light. Republish its textures alongside blue
-    // copies, and add a second mesh that uses them.
+    // cannot simply tint the light. Republish its textures alongside the blue
+    // PS1 artwork, and add a second mesh that uses them.
     public static InjectionData MakeTR3Crystal()
     {
         var source = new TR3LevelControl().Read($"Resources/TR3/{TR3LevelNames.JUNGLE}");
         var model = source.Models[TR3Type.SaveCrystal_P];
         var mesh = model.Meshes[0];
 
+        var psxCrystal = new TRImage(_psxCrystalPath);
         var img = new TRImage(TRConsts.TPageWidth, TRConsts.TPageHeight);
         var greenTextures = new Dictionary<ushort, ushort>();
         var blueTextures = new Dictionary<ushort, ushort>();
@@ -158,8 +166,9 @@ public static class CrystalUtils
 
                 var segment = new TRImage(source.Images16[texture.Atlas].Pixels).Export(bounds);
                 img.Import(segment, origin, false);
-                img.Import(segment, origin with { Y = bounds.Height }, false);
-                img.Write(new(origin.X, bounds.Height, bounds.Width, bounds.Height), (c, _, _) => HueRotate(c));
+
+                var clip = bounds.Width == _psxWide.Width ? _psxWide : _psxNarrow;
+                img.Import(psxCrystal.Export(clip), origin with { Y = bounds.Height }, false);
             }
 
             greenTextures[texIndex] = (ushort)textures.Count;
@@ -305,33 +314,5 @@ public static class CrystalUtils
             vertex.Y = (byte)(origin.Y + vertex.Y - bounds.Y);
         }
         return copy;
-    }
-
-    // The crystal sits around 119 degrees of hue; this lands it near 219.
-    private static Color HueRotate(Color color)
-    {
-        var hue = (color.GetHue() + 100) % 360;
-        return FromHSV(hue, color.GetSaturation(), color.GetBrightness(), color.A);
-    }
-
-    private static Color FromHSV(float hue, float saturation, float lightness, int alpha)
-    {
-        var c = (1 - Math.Abs(2 * lightness - 1)) * saturation;
-        var x = c * (1 - Math.Abs(hue / 60 % 2 - 1));
-        var m = lightness - c / 2;
-        var (r, g, b) = hue switch
-        {
-            < 60 => (c, x, 0f),
-            < 120 => (x, c, 0f),
-            < 180 => (0f, c, x),
-            < 240 => (0f, x, c),
-            < 300 => (x, 0f, c),
-            _ => (c, 0f, x),
-        };
-        return Color.FromArgb(
-            alpha,
-            (int)Math.Round((r + m) * 255),
-            (int)Math.Round((g + m) * 255),
-            (int)Math.Round((b + m) * 255));
     }
 }
