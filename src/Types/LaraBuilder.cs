@@ -47,6 +47,7 @@ public abstract class LaraBuilder : InjectionBuilder
         FastPushblockPush = 101,
         PlinthLowPickup = 102,
         PlinthHighPickup = 103,
+        CrowbarPickup = 131,
     }
 
     protected enum LaraAnim
@@ -1840,6 +1841,16 @@ public abstract class LaraBuilder : InjectionBuilder
         anim.Commands.Add(new TREmptyHandsCommand());
     }
 
+    protected static void AddCrowbarPickupChange(TRModel lara, bool isTR4)
+    {
+        // OG manually switches to the anim, but every other pickup transition uses a state
+        // change in TRX, so this keeps the game logic neater.
+        var goalAnim = isTR4 ? (int)TR4LaraAnim.CrowbarUseOnWall
+            : _tr4AnimSyncMap[TR4LaraAnim.CrowbarUseOnWall];
+        AddChange(lara, LaraAnim.StandStill, LaraState.CrowbarPickup, 0, 1, goalAnim, 0);
+        AddChange(lara, LaraAnim.StandIdle, LaraState.CrowbarPickup, 0, 44, goalAnim, 0);
+    }
+
     protected static void FixInteractiveHandsFreeAnims(TRModel lara)
     {
         // Several interaction animations leave Lara's hands busy on
@@ -1955,6 +1966,8 @@ public abstract class LaraBuilder : InjectionBuilder
                 }
             }
         }
+
+        AddCrowbarPickupChange(lara, false);
     }
 
     private static readonly Dictionary<TR4LaraAnim, int> _tr4AnimSyncMap = new()
