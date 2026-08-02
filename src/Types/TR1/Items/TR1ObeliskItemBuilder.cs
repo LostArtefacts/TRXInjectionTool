@@ -9,13 +9,12 @@ public class TR1ObeliskItemBuilder : ItemBuilder
 {
     public override List<InjectionData> Build()
     {
-        TR1Level obelisk = _control1.Read($"Resources/{TR1LevelNames.OBELISK}");
-        
-        return new()
-        {
+        var obelisk = _control1.Read($"Resources/{TR1LevelNames.OBELISK}");        
+        return
+        [
             CreateItemRots(obelisk),
             FixMeshPositions(obelisk),
-        };
+        ];
     }
 
     private static InjectionData CreateItemRots(TR1Level obelisk)
@@ -132,5 +131,17 @@ public class TR1ObeliskItemBuilder : ItemBuilder
 
         data.MeshEdits.Add(FixEgyptToppledChair(TR1Type.Furniture3, obelisk));
         data.StaticMeshEdits.Add(FixEgyptPillar(obelisk));
+        data.StaticMeshEdits.Add(ReduceMirrorBounds(obelisk));
+    }
+
+    private static TRStaticMeshEdit ReduceMirrorBounds(TR1Level level)
+    {
+        var mirror = level.StaticMeshes[TR1Type.SceneryBase + 36];
+        mirror.CollisionBox.MaxZ -= 30;
+        return new()
+        {
+            TypeID = 36,
+            Mesh = mirror,
+        };
     }
 }
