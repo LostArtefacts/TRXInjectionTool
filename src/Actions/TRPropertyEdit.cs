@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Drawing;
+using System.Text;
 using TRLevelControl;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
@@ -19,6 +20,7 @@ public enum TRPropertyType
     Double,
     Bool,
     XYZ,
+    RGB,
 }
 
 public abstract class TRPropertyEdit
@@ -133,5 +135,18 @@ public class TRXYZProperty : TRProperty
         writer.Write(X);
         writer.Write(Y);
         writer.Write(Z);
+    }
+}
+
+public class TRRGBProperty : TRProperty
+{
+    public override TRPropertyType Type => TRPropertyType.RGB;
+    public Color Color { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer)
+    {
+        writer.Write(Color.R);
+        writer.Write(Color.G);
+        writer.Write(Color.B);
     }
 }
