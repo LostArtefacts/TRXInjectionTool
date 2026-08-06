@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -8,14 +9,24 @@ public class TR2MusicTrackBuilder : InjectionBuilder
 {
     public override string ID => "fix_tr2_music_tracks";
 
+    private static readonly Dictionary<string, List<short>> _exclusions = new()
+    {
+        [TR2LevelNames.DORIA] = [70], // see TR2WreckFDBuilder.FixCollapsibleTileTriggers
+    };
+
     public override List<InjectionData> Build()
     {
         var result = new List<InjectionData>();
         foreach (var (levelName, binName) in _tr2NameMap)
         {
             var level = _control2.Read($"Resources/{levelName}");
-            var edits = FixMusicTriggers(level);
-            if (!edits.Any())
+            var edits = FixMusicTriggers(level).ToList();
+            if (_exclusions.TryGetValue(levelName, out var exclusions))
+            {
+                edits.RemoveAll(e => exclusions.Contains(e.RoomIndex));
+            }
+
+            if (edits.Count == 0)
             {
                 continue;
             }
