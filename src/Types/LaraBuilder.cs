@@ -456,6 +456,7 @@ public abstract class LaraBuilder : InjectionBuilder
         PlinthLowPickup = 33,
         PlinthHighPickup = 34,
         QuickTurn = 35,
+        MonkeyRoll = 36,
     }
 
     protected enum LaraExtraState
@@ -1999,6 +2000,23 @@ public abstract class LaraBuilder : InjectionBuilder
 
         AddChange(lara, LaraAnim.StandStill, LaraState.QuickTurn, 0, 1, animIdx, 0);
         AddChange(lara, LaraAnim.StandIdle, LaraState.QuickTurn, 0, 69, animIdx, 0);
+    }
+
+    protected static void RestoreMonkeyRoll<A, S>(TRModel lara,
+        A monkeyRollAnim, A monkeyIdleAnim, A swingInAnim, S monkeyRollState)
+        where A : Enum
+        where S : Enum
+    {
+        var laraExt = GetLaraExtModel();
+        var anim = laraExt.Animations[(int)ExtLaraAnim.MonkeyRoll].Clone();
+        lara.Animations[Convert.ToInt32(monkeyRollAnim)] = anim;
+        anim.NextAnimation = Convert.ToUInt16(monkeyIdleAnim);
+        anim.StateID = Convert.ToUInt16(monkeyRollState);
+
+        AddChange(lara, monkeyIdleAnim, monkeyRollState, 0, 48, monkeyRollAnim, 0);
+        AddChange(lara, swingInAnim, monkeyRollState, 54, 60, monkeyRollAnim, 0);
+        AddChange(lara, swingInAnim, monkeyRollState, 78, 84, monkeyRollAnim, 0);
+        AddChange(lara, swingInAnim, monkeyRollState, 102, 155, monkeyRollAnim, 0);
     }
 
     private static readonly Dictionary<TR4LaraAnim, int> _tr4AnimSyncMap = new()

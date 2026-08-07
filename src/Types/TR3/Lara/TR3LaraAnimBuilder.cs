@@ -190,6 +190,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         ImportCornerShimmy(tr3Lara, _cornerAnimMap, _cornerStateMap, TR2LaraAnim.LadderIdle);
         SyncToTR4(tr3Lara, true);
         AddQuickTurn(tr3Lara, true);
+        RestoreMonkeyRoll(tr3Lara, TR3LaraAnim.MonkeyTurnAround, TR3LaraAnim.MonkeyIdle, TR3LaraAnim.SwingInSlow, TR3LaraState.MonkeyRoll);
 
         return jungle;
     }

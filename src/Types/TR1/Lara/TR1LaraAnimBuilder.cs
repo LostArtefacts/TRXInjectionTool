@@ -546,6 +546,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImportCornerShimmy(tr1Lara, _cornerAnimMap, _cornerStateMap, InjAnim.LadderIdle);
         SyncToTR4(tr1Lara);
         AddQuickTurn(tr1Lara, false);
+        RestoreMonkeyRoll(tr1Lara, InjAnim.MonkeyTurnAround, InjAnim.MonkeyIdle, InjAnim.SwingInSlow, InjState.MonkeyRoll);
 
         return caves;
     }
