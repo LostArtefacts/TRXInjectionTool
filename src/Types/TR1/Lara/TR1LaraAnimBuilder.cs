@@ -545,6 +545,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         SplitPushableEnds(tr1Lara);
         ImportCornerShimmy(tr1Lara, _cornerAnimMap, _cornerStateMap, InjAnim.LadderIdle);
         SyncToTR4(tr1Lara);
+        AddQuickTurn(tr1Lara, false);
 
         return caves;
     }

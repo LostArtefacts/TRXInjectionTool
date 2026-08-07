@@ -48,6 +48,7 @@ public abstract class LaraBuilder : InjectionBuilder
         PlinthLowPickup = 102,
         PlinthHighPickup = 103,
         CrowbarPickup = 131,
+        QuickTurn = 132,
     }
 
     protected enum LaraAnim
@@ -454,6 +455,7 @@ public abstract class LaraBuilder : InjectionBuilder
         FastPushblockPushStop = 32,
         PlinthLowPickup = 33,
         PlinthHighPickup = 34,
+        QuickTurn = 35,
     }
 
     protected enum LaraExtraState
@@ -1977,6 +1979,26 @@ public abstract class LaraBuilder : InjectionBuilder
         }
 
         AddCrowbarPickupChange(lara, false);
+    }
+
+    protected void AddQuickTurn(TRModel lara, bool enableFootprints)
+    {
+        var laraExt = GetLaraExtModel();
+        var anim = laraExt.Animations[(int)ExtLaraAnim.QuickTurn].Clone();
+        var animIdx = lara.Animations.Count;
+        lara.Animations.Add(anim);
+        anim.StateID = (ushort)LaraState.QuickTurn;
+        anim.NextAnimation = (ushort)LaraAnim.StandIdle;
+
+        anim.Commands.OfType<TRSFXCommand>().Where(s => s.SoundID == 15)
+            .ToList().ForEach(s => s.SoundID = WetFeetSFX);
+        if (!enableFootprints)
+        {
+            anim.Commands.RemoveAll(c => c is TRFXCommand);
+        }
+
+        AddChange(lara, LaraAnim.StandStill, LaraState.QuickTurn, 0, 1, animIdx, 0);
+        AddChange(lara, LaraAnim.StandIdle, LaraState.QuickTurn, 0, 69, animIdx, 0);
     }
 
     private static readonly Dictionary<TR4LaraAnim, int> _tr4AnimSyncMap = new()

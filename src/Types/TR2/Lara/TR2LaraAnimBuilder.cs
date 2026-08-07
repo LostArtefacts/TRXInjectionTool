@@ -427,6 +427,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         SplitPushableEnds(tr2Lara);
         ImportCornerShimmy(tr2Lara, _cornerAnimMap, _cornerStateMap, TR2LaraAnim.LadderIdle);
         SyncToTR4(tr2Lara);
+        AddQuickTurn(tr2Lara, false);
 
         return wall;
     }

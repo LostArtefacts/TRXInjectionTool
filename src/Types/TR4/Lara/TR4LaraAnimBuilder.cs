@@ -125,6 +125,7 @@ public class TR4LaraAnimBuilder : LaraBuilder
         FixLadderClimbOnSFX(tr4Lara);
         FixHangToCrouchStartSFX(tr4Lara);
         AddCrowbarPickupChange(tr4Lara, true);
+        AddQuickTurn(tr4Lara, true);
 
         return level;
     }
