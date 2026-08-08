@@ -2019,6 +2019,24 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(lara, swingInAnim, monkeyRollState, 102, 155, monkeyRollAnim, 0);
     }
 
+    protected static void ImproveSwingInSlowShimmy<A>(TRModel lara, A swingInAnim)
+        where A : Enum
+    {
+        // OG slow swing-in on a ledge (not monkeybars) requires Lara to wait for 155 frames
+        // before accepting shimmy inputs.
+        var map = new Dictionary<LaraState, LaraAnim>
+        {
+            [LaraState.ShimmyLeft] = LaraAnim.ShimmyLeft,
+            [LaraState.ShimmyRight] = LaraAnim.ShimmyRight,
+        };
+        foreach (var (goalState, targetAnim) in map)
+        {
+            AddChange(lara, swingInAnim, goalState, 54, 60, targetAnim, 0);
+            AddChange(lara, swingInAnim, goalState, 78, 84, targetAnim, 0);
+            AddChange(lara, swingInAnim, goalState, 102, 155, targetAnim, 0);
+        }
+    }
+
     private static readonly Dictionary<TR4LaraAnim, int> _tr4AnimSyncMap = new()
     {
         [TR4LaraAnim.DoorOpenForward] = 358,

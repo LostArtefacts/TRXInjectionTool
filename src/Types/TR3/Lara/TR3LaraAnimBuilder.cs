@@ -191,6 +191,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         SyncToTR4(tr3Lara, true);
         AddQuickTurn(tr3Lara, true);
         RestoreMonkeyRoll(tr3Lara, TR3LaraAnim.MonkeyTurnAround, TR3LaraAnim.MonkeyIdle, TR3LaraAnim.SwingInSlow, TR3LaraState.MonkeyRoll);
+        ImproveSwingInSlowShimmy(tr3Lara, TR3LaraAnim.SwingInSlow);
 
         return jungle;
     }

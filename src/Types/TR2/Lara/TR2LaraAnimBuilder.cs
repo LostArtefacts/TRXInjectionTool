@@ -429,6 +429,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         SyncToTR4(tr2Lara);
         AddQuickTurn(tr2Lara, false);
         RestoreMonkeyRoll(tr2Lara, InjAnim.MonkeyTurnAround, InjAnim.MonkeyIdle, InjAnim.SwingInSlow, InjState.MonkeyRoll);
+        ImproveSwingInSlowShimmy(tr2Lara, InjAnim.SwingInSlow);
 
         return wall;
     }

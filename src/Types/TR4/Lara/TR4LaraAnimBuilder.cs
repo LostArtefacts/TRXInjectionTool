@@ -127,6 +127,7 @@ public class TR4LaraAnimBuilder : LaraBuilder
         AddCrowbarPickupChange(tr4Lara, true);
         AddQuickTurn(tr4Lara, true);
         RestoreMonkeyRoll(tr4Lara, TR3LaraAnim.MonkeyTurnAround, TR3LaraAnim.MonkeyIdle, TR3LaraAnim.SwingInSlow, TR3LaraState.MonkeyRoll);
+        ImproveSwingInSlowShimmy(tr4Lara, TR3LaraAnim.SwingInSlow);
 
         return level;
     }
