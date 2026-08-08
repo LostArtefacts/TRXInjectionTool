@@ -430,6 +430,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         AddQuickTurn(tr2Lara, false);
         RestoreMonkeyRoll(tr2Lara, InjAnim.MonkeyTurnAround, InjAnim.MonkeyIdle, InjAnim.SwingInSlow, InjState.MonkeyRoll);
         ImproveSwingInSlowShimmy(tr2Lara, InjAnim.SwingInSlow);
+        FixCrawlPickup(tr2Lara, InjAnim.CrawlPickup);
 
         return wall;
     }

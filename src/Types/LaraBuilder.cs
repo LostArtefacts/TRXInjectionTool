@@ -2037,6 +2037,12 @@ public abstract class LaraBuilder : InjectionBuilder
         }
     }
 
+    protected static void FixCrawlPickup<A>(TRModel lara, A pickupAnim)
+    {
+        lara.Animations[Convert.ToInt32(pickupAnim)].Commands
+            .RemoveAll(c => c is TREmptyHandsCommand);
+    }
+
     private static readonly Dictionary<TR4LaraAnim, int> _tr4AnimSyncMap = new()
     {
         [TR4LaraAnim.DoorOpenForward] = 358,
