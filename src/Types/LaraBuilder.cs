@@ -52,6 +52,7 @@ public abstract class LaraBuilder : InjectionBuilder
         QuickTurn = 132,
         FastShimmyLeft = 133,
         FastShimmyRight = 134,
+        FastPullUp = 135,
     }
 
     protected enum LaraAnim
@@ -462,6 +463,7 @@ public abstract class LaraBuilder : InjectionBuilder
         MonkeyRoll = 36,
         FastShimmyLeft = 37,
         FastShimmyRight = 38,
+        FastPullUp = 39,
     }
 
     protected enum LaraExtraState
@@ -2075,6 +2077,25 @@ public abstract class LaraBuilder : InjectionBuilder
 
         Import(ExtLaraAnim.FastShimmyLeft, LaraState.ShimmyLeft, LaraState.FastShimmyLeft);
         Import(ExtLaraAnim.FastShimmyRight, LaraState.ShimmyRight, LaraState.FastShimmyRight);
+    }
+
+    protected static void ImportFastPullUp<A>(TRModel lara, A swingInAnim, A monkeyIdleAnim,
+        A monkeyShimmyLeftEndAnim, A monkeyShimmyRightEndAnim)
+    {
+        var laraExt = GetLaraExtModel();
+        var anim = laraExt.Animations[(int)ExtLaraAnim.FastPullUp].Clone();
+        var animIdx = (ushort)lara.Animations.Count;
+        anim.NextAnimation = (ushort)LaraAnim.ClimbOnEnd;
+        lara.Animations.Add(anim);
+
+        AddChange(lara, LaraAnim.ReachToHang, LaraState.FastPullUp, 12, 22, animIdx, 0);
+        AddChange(lara, swingInAnim, LaraState.FastPullUp, 54, 60, animIdx, 0);
+        AddChange(lara, swingInAnim, LaraState.FastPullUp, 78, 84, animIdx, 0);
+        AddChange(lara, swingInAnim, LaraState.FastPullUp, 102, 155, animIdx, 0);
+        AddChange(lara, monkeyIdleAnim, LaraState.FastPullUp, 0, 48, animIdx, 0);
+        AddChange(lara, monkeyShimmyLeftEndAnim, LaraState.FastPullUp, 0, 16, animIdx, 0);
+        AddChange(lara, monkeyShimmyRightEndAnim, LaraState.FastPullUp, 0, 16, animIdx, 0);
+
     }
 
     private static readonly Dictionary<TR4LaraAnim, int> _tr4AnimSyncMap = new()

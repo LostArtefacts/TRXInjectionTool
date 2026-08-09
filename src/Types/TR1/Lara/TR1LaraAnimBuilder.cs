@@ -550,6 +550,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         ImproveSwingInSlowShimmy(tr1Lara, InjAnim.SwingInSlow);
         FixCrawlPickup(tr1Lara, InjAnim.CrawlPickup);
         ImportFastShimmy(tr1Lara, InjAnim.SwingInSlow, InjAnim.MonkeyIdle, TR1SFX.LaraGrabHand);
+        ImportFastPullUp(tr1Lara, InjAnim.SwingInSlow, InjAnim.MonkeyIdle, InjAnim.MonkeyShimmyLeftEnd, InjAnim.MonkeyShimmyRightEnd);
 
         return caves;
     }

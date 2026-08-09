@@ -194,6 +194,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         ImproveSwingInSlowShimmy(tr3Lara, TR3LaraAnim.SwingInSlow);
         FixCrawlPickup(tr3Lara, TR3LaraAnim.CrawlPickup);
         ImportFastShimmy(tr3Lara, TR3LaraAnim.SwingInSlow, TR3LaraAnim.MonkeyIdle, TR3SFX.LaraGrabhand);
+        ImportFastPullUp(tr3Lara, TR3LaraAnim.SwingInSlow, TR3LaraAnim.MonkeyIdle, TR3LaraAnim.MonkeyShimmyLeftEnd, TR3LaraAnim.MonkeyShimmyRightEnd);
 
         return jungle;
     }

@@ -432,6 +432,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         ImproveSwingInSlowShimmy(tr2Lara, InjAnim.SwingInSlow);
         FixCrawlPickup(tr2Lara, InjAnim.CrawlPickup);
         ImportFastShimmy(tr2Lara, InjAnim.SwingInSlow, InjAnim.MonkeyIdle, TR2SFX.LaraShimmy);
+        ImportFastPullUp(tr2Lara, InjAnim.SwingInSlow, InjAnim.MonkeyIdle, InjAnim.MonkeyShimmyLeftEnd, InjAnim.MonkeyShimmyRightEnd);
 
         return wall;
     }

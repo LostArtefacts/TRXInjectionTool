@@ -130,6 +130,7 @@ public class TR4LaraAnimBuilder : LaraBuilder
         ImproveSwingInSlowShimmy(tr4Lara, TR3LaraAnim.SwingInSlow);
         FixCrawlPickup(tr4Lara, TR3LaraAnim.CrawlPickup);
         ImportFastShimmy(tr4Lara, TR3LaraAnim.SwingInSlow, TR3LaraAnim.MonkeyIdle, TR4SFX.LaraGrabhand);
+        ImportFastPullUp(tr4Lara, TR3LaraAnim.SwingInSlow, TR3LaraAnim.MonkeyIdle, TR3LaraAnim.MonkeyShimmyLeftEnd, TR3LaraAnim.MonkeyShimmyRightEnd);
 
         return level;
     }
