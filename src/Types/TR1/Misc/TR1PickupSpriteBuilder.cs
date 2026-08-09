@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -35,6 +36,23 @@ public  class TR1PickupSpriteBuilder : InjectionBuilder
                 Alignment = a.Value,
             };
         }));
-        return new() { data };
+        return [ data, FixPierreScion() ];
+    }
+
+    private static InjectionData FixPierreScion()
+    {
+        var data = InjectionData.Create(TRGameVersion.TR1, InjectionType.General, "scion_alignment");
+        CreateDefaultTests(data, TR1LevelNames.TIHOCAN);
+
+        var level = _control1.Read($"Resources/{TR1LevelNames.TIHOCAN}");
+        var scion = level.Sprites[TR1Type.ScionPiece2_S_P].Clone().Textures[0];
+        scion.Alignment.Top -= scion.Alignment.Bottom;
+        scion.Alignment.Bottom = 0;
+        data.SpriteEdits.Add(new()
+        {
+            ID = (int)TR1Type.ScionPiece2_S_P,
+            Alignment = scion.Alignment,
+        });
+        return data;
     }
 }
