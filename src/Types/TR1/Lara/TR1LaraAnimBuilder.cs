@@ -549,6 +549,7 @@ public class TR1LaraAnimBuilder : LaraBuilder
         RestoreMonkeyRoll(tr1Lara, InjAnim.MonkeyTurnAround, InjAnim.MonkeyIdle, InjAnim.SwingInSlow, InjState.MonkeyRoll);
         ImproveSwingInSlowShimmy(tr1Lara, InjAnim.SwingInSlow);
         FixCrawlPickup(tr1Lara, InjAnim.CrawlPickup);
+        ImportFastShimmy(tr1Lara, InjAnim.SwingInSlow, InjAnim.MonkeyIdle, TR1SFX.LaraGrabHand);
 
         return caves;
     }

@@ -193,6 +193,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         RestoreMonkeyRoll(tr3Lara, TR3LaraAnim.MonkeyTurnAround, TR3LaraAnim.MonkeyIdle, TR3LaraAnim.SwingInSlow, TR3LaraState.MonkeyRoll);
         ImproveSwingInSlowShimmy(tr3Lara, TR3LaraAnim.SwingInSlow);
         FixCrawlPickup(tr3Lara, TR3LaraAnim.CrawlPickup);
+        ImportFastShimmy(tr3Lara, TR3LaraAnim.SwingInSlow, TR3LaraAnim.MonkeyIdle, TR3SFX.LaraGrabhand);
 
         return jungle;
     }

@@ -431,6 +431,7 @@ public class TR2LaraAnimBuilder : LaraBuilder
         RestoreMonkeyRoll(tr2Lara, InjAnim.MonkeyTurnAround, InjAnim.MonkeyIdle, InjAnim.SwingInSlow, InjState.MonkeyRoll);
         ImproveSwingInSlowShimmy(tr2Lara, InjAnim.SwingInSlow);
         FixCrawlPickup(tr2Lara, InjAnim.CrawlPickup);
+        ImportFastShimmy(tr2Lara, InjAnim.SwingInSlow, InjAnim.MonkeyIdle, TR2SFX.LaraShimmy);
 
         return wall;
     }

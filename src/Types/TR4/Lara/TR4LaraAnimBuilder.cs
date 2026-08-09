@@ -129,6 +129,7 @@ public class TR4LaraAnimBuilder : LaraBuilder
         RestoreMonkeyRoll(tr4Lara, TR3LaraAnim.MonkeyTurnAround, TR3LaraAnim.MonkeyIdle, TR3LaraAnim.SwingInSlow, TR3LaraState.MonkeyRoll);
         ImproveSwingInSlowShimmy(tr4Lara, TR3LaraAnim.SwingInSlow);
         FixCrawlPickup(tr4Lara, TR3LaraAnim.CrawlPickup);
+        ImportFastShimmy(tr4Lara, TR3LaraAnim.SwingInSlow, TR3LaraAnim.MonkeyIdle, TR4SFX.LaraGrabhand);
 
         return level;
     }

@@ -31,6 +31,7 @@ public abstract class LaraBuilder : InjectionBuilder
         Pose = 4,
         Death = 8,
         Freefall = 9,
+        Hang = 10,
         Reach = 11,
         Land = 14,
         Glide = 18,
@@ -49,6 +50,8 @@ public abstract class LaraBuilder : InjectionBuilder
         PlinthHighPickup = 103,
         CrowbarPickup = 131,
         QuickTurn = 132,
+        FastShimmyLeft = 133,
+        FastShimmyRight = 134,
     }
 
     protected enum LaraAnim
@@ -457,6 +460,8 @@ public abstract class LaraBuilder : InjectionBuilder
         PlinthHighPickup = 34,
         QuickTurn = 35,
         MonkeyRoll = 36,
+        FastShimmyLeft = 37,
+        FastShimmyRight = 38,
     }
 
     protected enum LaraExtraState
@@ -2041,6 +2046,35 @@ public abstract class LaraBuilder : InjectionBuilder
     {
         lara.Animations[Convert.ToInt32(pickupAnim)].Commands
             .RemoveAll(c => c is TREmptyHandsCommand);
+    }
+
+    protected static void ImportFastShimmy<A, E>(TRModel lara, A swingInAnim, A monkeyIdleAnim, E sfxId)
+        where A : Enum
+        where E : Enum
+    {
+        var laraExt = GetLaraExtModel();
+
+        void Import(ExtLaraAnim sourceAnim, LaraState targetState, LaraState fastState)
+        {
+            var anim = laraExt.Animations[(int)sourceAnim].Clone();
+            var animIdx = (ushort)lara.Animations.Count;
+            anim.NextAnimation = animIdx;
+            anim.StateID = (ushort)targetState;
+            lara.Animations.Add(anim);
+
+            anim.Commands.OfType<TRSFXCommand>().ToList()
+                .ForEach(f => f.SoundID = Convert.ToInt16(sfxId));
+
+            AddChange(lara, LaraAnim.ReachToHang, fastState, 21, 22, animIdx, 0);
+            AddChange(anim, LaraState.Hang, 29, 30, LaraAnim.ReachToHang, 21);
+            AddChange(lara, swingInAnim, fastState, 54, 60, animIdx, 0);
+            AddChange(lara, swingInAnim, fastState, 78, 84, animIdx, 0);
+            AddChange(lara, swingInAnim, fastState, 102, 155, animIdx, 0);
+            AddChange(lara, monkeyIdleAnim, fastState, 0, 48, animIdx, 0);
+        }
+
+        Import(ExtLaraAnim.FastShimmyLeft, LaraState.ShimmyLeft, LaraState.FastShimmyLeft);
+        Import(ExtLaraAnim.FastShimmyRight, LaraState.ShimmyRight, LaraState.FastShimmyRight);
     }
 
     private static readonly Dictionary<TR4LaraAnim, int> _tr4AnimSyncMap = new()
