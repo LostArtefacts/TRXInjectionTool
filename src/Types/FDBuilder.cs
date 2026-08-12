@@ -244,6 +244,25 @@ public abstract class FDBuilder : InjectionBuilder
         where R : TRRoom
         => AmendRoomFlags(roomIndices, flag, rooms, false);
 
+    // The engine gives both halves of a pair the group, so only the rooms
+    // themselves need naming here.
+    public static IEnumerable<TRFloorDataEdit> SetFlipGroup<R>(List<short> roomIndices, byte group, List<R> rooms)
+        where R : TRRoom
+    {
+        return roomIndices
+            .Distinct()
+            .Select(r => new TRFloorDataEdit
+            {
+                RoomIndex = r,
+                Fixes = [new FDRoomProperties
+                {
+                    Flags = rooms[r].Flags,
+                    Reverb = rooms[r] is TR3Room room3 ? room3.ReverbMode : TRPSXReverbMode.Outside,
+                    FlipGroup = group,
+                }]
+            });
+    }
+
     private static IEnumerable<TRFloorDataEdit> AmendRoomFlags<R>(List<short> roomIndices, TRRoomFlag flag, List<R> rooms, bool add)
         where R : TRRoom
     {

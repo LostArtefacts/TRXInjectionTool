@@ -188,14 +188,21 @@ public class FDRoomProperties : FDFix
         TRRoomFlag.SwampOrNoLensflare,
     ];
 
+    // A room properties edit carries every property at once, so a patch that
+    // means only to change a flag leaves the group null rather than name one
+    // it does not care about and take the level's own away.
+    private const byte _flipGroupUnchanged = 255;
+
     public override FDFixType FixType => FDFixType.RoomProperties;
     public TRRoomFlag Flags { get; set; }
     public TRPSXReverbMode Reverb { get; set; }
+    public byte? FlipGroup { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
     {
         writer.Write(GetCleanedFlags());
         writer.Write((byte)Reverb);
+        writer.Write(FlipGroup ?? _flipGroupUnchanged);
     }
 
     private ushort GetCleanedFlags()
