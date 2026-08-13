@@ -24,9 +24,6 @@ public class TR1LaraOutfitBuilder : OutfitBuilder
             level.Models[(TR1Type)skinId++] = outfitLevel.Models[(TR2Type)(_modelBase + i)];
         }
 
-        level.Models[(TR1Type)skinId++] = NatlaSkin.Build(
-            outfitLevel, outfitLevel.Models[(TR2Type)_modelBase]);
-
         skinId = _skinBase + _maxOutfits;
         level.Models[(TR1Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitExtras];
         level.Models[(TR1Type)skinId++] = outfitLevel.Models[(TR2Type)_outfitGuns1];
