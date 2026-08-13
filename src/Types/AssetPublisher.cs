@@ -29,7 +29,6 @@ public static class AssetPublisher
         [
             new TR1FontBuilder(),
             new TR1PDABuilder(),
-            new TR1LaraBraidBuilder(),
         ],
         [TRGameVersion.TR2] =
         [
