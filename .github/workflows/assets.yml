@@ -27,5 +27,6 @@ jobs:
         put tr1-assets.zip
         put tr2-assets.zip
         put tr3-assets.zip
+        put tr4-assets.zip
         bye
         EOF
