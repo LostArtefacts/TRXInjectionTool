@@ -17,6 +17,7 @@ public abstract class TRRoomTextureEdit
         AddStatic3D,
         EditStatic3D,
         SetVertexFlags,
+        SetDoubleSidedFace,
     }
 
     public abstract TRRoomTextureFixType FixType { get; }
@@ -220,5 +221,18 @@ public class TRRoomTextureRotate : TRRoomTextureEdit
     {
         writer.Write(TargetIndex);
         writer.Write(Rotations);
+    }
+}
+
+public class TRRoomTextureDoubleSided : TRRoomTextureEdit
+{
+    public override TRRoomTextureFixType FixType => TRRoomTextureFixType.SetDoubleSidedFace;
+    public short TargetIndex { get; set; }
+    public bool DoubleSided { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer)
+    {
+        writer.Write(TargetIndex);
+        writer.Write(DoubleSided);
     }
 }

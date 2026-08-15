@@ -30,6 +30,17 @@ public abstract class TextureBuilder : InjectionBuilder
         };
     }
 
+    protected static TRRoomTextureDoubleSided DoubleSided(short roomIndex, TRMeshFaceType type, short targetIndex, bool doubleSided)
+    {
+        return new()
+        {
+            RoomIndex = roomIndex,
+            FaceType = type,
+            TargetIndex = targetIndex,
+            DoubleSided = doubleSided,
+        };
+    }
+
     protected static TRRoomTextureReface Reface(TRLevelBase level, short roomIndex, TRMeshFaceType targetType,
         TRMeshFaceType sourceType, ushort texture, short targetIndex)
     {
@@ -197,6 +208,13 @@ public abstract class TextureBuilder : InjectionBuilder
     }
 
     protected static short ShiftLighting(TRRoomMesh<TR2Type, TR2RoomVertex> mesh,
+        int sourceQuad, int sourceVert, int targetQuad, int targetVert)
+    {
+        return (short)(mesh.Vertices[mesh.Rectangles[targetQuad].Vertices[targetVert]].Lighting
+                - mesh.Vertices[mesh.Rectangles[sourceQuad].Vertices[sourceVert]].Lighting);
+    }
+
+    protected static short ShiftLighting(TRRoomMesh<TR3Type, TR3RoomVertex> mesh,
         int sourceQuad, int sourceVert, int targetQuad, int targetVert)
     {
         return (short)(mesh.Vertices[mesh.Rectangles[targetQuad].Vertices[targetVert]].Lighting
