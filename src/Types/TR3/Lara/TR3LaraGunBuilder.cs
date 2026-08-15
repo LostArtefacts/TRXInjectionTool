@@ -48,7 +48,7 @@ public class TR3LaraGunBuilder : InjectionBuilder
         foreach (var isGym in new[] { false, true })
         {
             var gunLevel = GetFixedSourceLevel($"{(isGym ? "gym" : string.Empty)}guns.tr2");
-            var level = CreateLevel(gunLevel, isGym);
+            var level = CreateLevel(gunLevel);
 
             var data = InjectionData.Create(level, InjectionType.General, $"lara{(isGym ? "_gym" : string.Empty)}_guns");
             result.Add(data);
@@ -90,7 +90,7 @@ public class TR3LaraGunBuilder : InjectionBuilder
         return level;
     }
 
-    private static TR3Level CreateLevel(TR2Level gunLevel, bool gym)
+    private static TR3Level CreateLevel(TR2Level gunLevel)
     {
         var level = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
         ResetLevel(level);
@@ -102,6 +102,17 @@ public class TR3LaraGunBuilder : InjectionBuilder
 
         level.ObjectTextures = gunLevel.ObjectTextures;
         UpdateAnimCommands(level);
+
+        if (level.Models.TryGetValue(TR3Type.GunflareMP5_H, out var gunFlareModel))
+        {
+            foreach (var texId in gunFlareModel.Meshes
+                .SelectMany(m => m.TexturedFaces)
+                .Select(f => f.Texture)
+                .Distinct())
+            {
+                level.ObjectTextures[texId].BlendingMode = TRBlendingMode.AlphaBlending;
+            }
+        }
 
         return level;
     }
