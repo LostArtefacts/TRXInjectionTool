@@ -102,6 +102,31 @@ public abstract class InjectionBuilder
                 room = level.Rooms[0];
             }
         }
+        else if (data.GameVersion == TRGameVersion.TR4)
+        {
+            var level = _control4.Read($"Resources/{levelName}");
+            roomCount = level.Rooms.Count;
+
+            if (level.Entities.Count > 0)
+            {
+                var item = level.Entities.Find(e => e.TypeID == TR4Type.Lara) ?? level.Entities[0];
+                data.ApplicabilityTests.Add(new ItemMetaTest
+                {
+                    Index = level.Entities.IndexOf(item),
+                    TypeID = (int)item.TypeID,
+                    X = item.X,
+                    Y = item.Y,
+                    Z = item.Z,
+                    Room = item.Room,
+                    Angle = item.Angle,
+                });
+            }
+
+            if (level.Rooms.Count > 0)
+            {
+                room = level.Rooms[0];
+            }
+        }
 
         if (roomCount != -1)
         {
