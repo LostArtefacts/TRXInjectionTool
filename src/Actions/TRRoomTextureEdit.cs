@@ -1,9 +1,10 @@
 ﻿using TRLevelControl;
 using TRLevelControl.Model;
+using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Actions;
 
-public abstract class TRRoomTextureEdit
+public abstract class TRRoomTextureEdit : IRoomMeta
 {
     public enum TRRoomTextureFixType
     {
@@ -23,7 +24,8 @@ public abstract class TRRoomTextureEdit
     public abstract TRRoomTextureFixType FixType { get; }
     public short RoomIndex { get; set; }
     public TRMeshFaceType FaceType { get; set; }
-    public virtual ExtraMeshMeta Meta { get; } = ExtraMeshMeta.None;
+    public virtual ExtraRoomMeta RoomMetaType { get; } = ExtraRoomMeta.None;
+    public virtual short RoomMetaUnitSize { get; } = 1;
 
     public void Serialize(TRLevelWriter writer)
     {
@@ -36,7 +38,7 @@ public abstract class TRRoomTextureEdit
     protected abstract void SerializeImpl(TRLevelWriter writer);
 }
 
-public enum ExtraMeshMeta
+public enum ExtraRoomMeta
 {
     None,
     Vertex,
@@ -44,6 +46,7 @@ public enum ExtraMeshMeta
     Triangle,
     Sprite,
     Static3D,
+    Sectors,
 }
 
 public class TRRoomTextureReface : TRRoomTextureEdit
@@ -131,7 +134,7 @@ public class TRRoomVertexRemap
 public class TRRoomTextureCreate : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddFace;
-    public override ExtraMeshMeta Meta => Vertices.Count == 4 ? ExtraMeshMeta.Quad : ExtraMeshMeta.Triangle;
+    public override ExtraRoomMeta RoomMetaType => Vertices.Count == 4 ? ExtraRoomMeta.Quad : ExtraRoomMeta.Triangle;
 
     public short SourceRoom { get; set; }
     public short SourceIndex { get; set; }
@@ -148,7 +151,7 @@ public class TRRoomTextureCreate : TRRoomTextureEdit
 public class TRRoomVertexCreate : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddVertex;
-    public override ExtraMeshMeta Meta => ExtraMeshMeta.Vertex;
+    public override ExtraRoomMeta RoomMetaType => ExtraRoomMeta.Vertex;
     public TR1RoomVertex Vertex { get; set; }
 
     protected override void SerializeImpl(TRLevelWriter writer)
@@ -163,7 +166,7 @@ public class TRRoomVertexCreate : TRRoomTextureEdit
 public class TRRoomSpriteCreate : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddSprite;
-    public override ExtraMeshMeta Meta => ExtraMeshMeta.Sprite;
+    public override ExtraRoomMeta RoomMetaType => ExtraRoomMeta.Sprite;
     public int ID { get; set; }
     public ushort Vertex { get; set; }
     public ushort Frame { get; set; }
@@ -179,7 +182,7 @@ public class TRRoomSpriteCreate : TRRoomTextureEdit
 public class TRRoomStatic3DCreate : TRRoomTextureEdit
 {
     public override TRRoomTextureFixType FixType => TRRoomTextureFixType.AddStatic3D;
-    public override ExtraMeshMeta Meta => ExtraMeshMeta.Static3D;
+    public override ExtraRoomMeta RoomMetaType => ExtraRoomMeta.Static3D;
     public int ID { get; set; }
     public TR1RoomStaticMesh StaticMesh { get; set; }
 

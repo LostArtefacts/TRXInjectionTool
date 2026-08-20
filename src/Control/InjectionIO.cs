@@ -12,7 +12,7 @@ public static class InjectionIO
     private static readonly InjectionVersion _version = new()
     {
         Magic = IOUtils.MakeTag('T', 'R', 'X', 'J'),
-        Iteration = 10,
+        Iteration = 11,
     };
 
     public static void Export(InjectionData data, string file)
@@ -252,7 +252,7 @@ public static class InjectionIO
 
         {
             // Summary data
-            List<RoomMeshMeta> meta = RoomMeshMeta.Create(data);
+            var meta = RoomMeta.Create(data);
             blockCount += WriteBlock(BlockType.RoomEditSummary, meta.Count, writer,
                 s => meta.ForEach(m => m.Serialize(s)));
 

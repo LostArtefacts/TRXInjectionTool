@@ -42,6 +42,7 @@ public enum FDFixType
     Triangulation,
     MineCart,
     Material,
+    SectorExtension,
 }
 
 public enum MineCartType
@@ -52,9 +53,12 @@ public enum MineCartType
     Stop,
 }
 
-public abstract class FDFix
+public abstract class FDFix : IRoomMeta
 {
     public abstract FDFixType FixType { get; }
+    public virtual ExtraRoomMeta RoomMetaType { get; } = ExtraRoomMeta.None;
+    public virtual short RoomMetaUnitSize { get; } = 1;
+    public short RoomIndex { get; set; }
 
     public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
@@ -221,6 +225,22 @@ public class FDRoomProperties : FDFix
         }
 
         return (ushort)flags;
+    }
+}
+
+public class FDRoomExtension : FDFix
+{
+    public override FDFixType FixType => FDFixType.SectorExtension;
+    public override ExtraRoomMeta RoomMetaType => ExtraRoomMeta.Sectors;
+    public ushort AdditionalXSectors { get; set; }
+    public ushort AdditionalZSectors { get; set; }
+    public short SizeChange { get; set; }
+    public override short RoomMetaUnitSize => SizeChange;
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write(AdditionalXSectors);
+        writer.Write(AdditionalZSectors);
     }
 }
 
