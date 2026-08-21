@@ -6,7 +6,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR2.Misc;
 
-public class TR2MiscSpritesBuilder : TextureBuilder
+public class TR2MiscSpritesBuilder : TextureBuilder, IPublisher
 {
     public override string ID => "tr2_misc_sprites";
 
@@ -18,22 +18,7 @@ public class TR2MiscSpritesBuilder : TextureBuilder
 
     public override List<InjectionData> Build()
     {
-        var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
-        var sourceSequence = _control2.Read($"Resources/{TR2LevelNames.ASSAULT}")
-            .Sprites[TR2Type.Blood_S_H];
-        ResetLevel(level, 1);
-
-        var spriteMap = ImportTR3MiscSprites(level, [.. _spriteRemap.Keys]);
-        foreach (var (tr3Type, tr1Type) in _spriteRemap)
-        {
-            level.Sprites[tr1Type] = spriteMap[tr3Type];
-        }
-        var spriteTextureBase = level.Sprites.Values.Sum(s => s.Textures.Count);
-
-        level.Sprites[(TR2Type)337] = BuildPinkBlood(
-            new TRImage("Resources/TR2/PinkBlood/blood.png"), sourceSequence,
-            new TR2TexturePacker(level), spriteTextureBase);
-
+        var level = CreateLevel();
         return [InjectionData.Create(level, InjectionType.General, "misc_sprites")];
     }
 
@@ -75,4 +60,31 @@ public class TR2MiscSpritesBuilder : TextureBuilder
         packer.Pack(true);
         return sequence;
     }
+
+    private static TR2Level CreateLevel()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.GW}");
+        var sourceSequence = _control2.Read($"Resources/{TR2LevelNames.ASSAULT}")
+            .Sprites[TR2Type.Blood_S_H];
+        ResetLevel(level, 1);
+
+        var spriteMap = ImportTR3MiscSprites(level, [.. _spriteRemap.Keys]);
+        foreach (var (tr3Type, tr1Type) in _spriteRemap)
+        {
+            level.Sprites[tr1Type] = spriteMap[tr3Type];
+        }
+        var spriteTextureBase = level.Sprites.Values.Sum(s => s.Textures.Count);
+
+        level.Sprites[(TR2Type)337] = BuildPinkBlood(
+            new TRImage("Resources/TR2/PinkBlood/blood.png"), sourceSequence,
+            new TR2TexturePacker(level), spriteTextureBase);
+
+        return level;
+    }
+
+    public string GetPublishedName()
+        => "misc_sprites.tr2";
+
+    public TRLevelBase Publish()
+        => CreateLevel();
 }

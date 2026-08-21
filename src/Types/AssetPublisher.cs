@@ -29,6 +29,7 @@ public static class AssetPublisher
         [
             new TR1FontBuilder(),
             new TR1PDABuilder(),
+            new TR1MiscSpritesBuilder(),
         ],
         [TRGameVersion.TR2] =
         [
@@ -36,6 +37,7 @@ public static class AssetPublisher
             new TR2PDABuilder(),
             new TR2OGSecretBuilder(),
             new TR2GMSecretBuilder(),
+            new TR2MiscSpritesBuilder(),
         ],
         [TRGameVersion.TR3] =
         [
@@ -44,6 +46,7 @@ public static class AssetPublisher
             new TR3FishSpritesBuilder(),
             new TR3BatSpritesBuilder(),
             new SparksBuilder(),
+            new TR3MiscSpritesBuilder(),
         ],
         [TRGameVersion.TR4] =
         [

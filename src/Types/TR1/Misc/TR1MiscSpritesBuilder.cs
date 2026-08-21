@@ -6,7 +6,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR1.Misc;
 
-public class TR1MiscSpritesBuilder : TextureBuilder
+public class TR1MiscSpritesBuilder : TextureBuilder, IPublisher
 {
     public override string ID => "tr1_misc_sprites";
 
@@ -18,22 +18,7 @@ public class TR1MiscSpritesBuilder : TextureBuilder
 
     public override List<InjectionData> Build()
     {
-        var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
-        ResetLevel(level, 1);
-
-        var spriteMap = ImportTR3MiscSprites(level, [.. _spriteRemap.Keys]);
-        foreach (var (tr3Type, tr1Type) in _spriteRemap)
-        {
-            level.Sprites[tr1Type] = spriteMap[tr3Type];
-        }
-        var spriteTextureBase = level.Sprites.Values.Sum(s => s.Textures.Count);
-
-        level.Sprites[(TR1Type)159] = BuildPinkBlood(
-            new TRImage("Resources/TR1/PinkBlood/blood.png"),
-            _control1.Read($"Resources/{TR1LevelNames.CAVES}")
-                .Sprites[TR1Type.Blood1_S_H],
-            new TR1TexturePacker(level), spriteTextureBase);
-
+        var level = CreateLevel();
         return [InjectionData.Create(level, InjectionType.General, "misc_sprites")];
     }
 
@@ -75,4 +60,31 @@ public class TR1MiscSpritesBuilder : TextureBuilder
         packer.Pack(true);
         return sequence;
     }
+
+    private static TR1Level CreateLevel()
+    {
+        var level = _control1.Read($"Resources/{TR1LevelNames.CAVES}");
+        ResetLevel(level, 1);
+
+        var spriteMap = ImportTR3MiscSprites(level, [.. _spriteRemap.Keys]);
+        foreach (var (tr3Type, tr1Type) in _spriteRemap)
+        {
+            level.Sprites[tr1Type] = spriteMap[tr3Type];
+        }
+        var spriteTextureBase = level.Sprites.Values.Sum(s => s.Textures.Count);
+
+        level.Sprites[(TR1Type)159] = BuildPinkBlood(
+            new TRImage("Resources/TR1/PinkBlood/blood.png"),
+            _control1.Read($"Resources/{TR1LevelNames.CAVES}")
+                .Sprites[TR1Type.Blood1_S_H],
+            new TR1TexturePacker(level), spriteTextureBase);
+
+        return level;
+    }
+
+    public string GetPublishedName()
+        => "misc_sprites.phd";
+
+    public TRLevelBase Publish()
+        => CreateLevel();
 }

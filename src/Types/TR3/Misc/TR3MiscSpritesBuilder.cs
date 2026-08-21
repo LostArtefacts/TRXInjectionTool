@@ -4,7 +4,7 @@ using TRXInjectionTool.Control;
 
 namespace TRXInjectionTool.Types.TR3.Misc;
 
-public class TR3MiscSpritesBuilder : TextureBuilder
+public class TR3MiscSpritesBuilder : TextureBuilder, IPublisher
 {
     public override string ID => "tr3_misc_sprites";
 
@@ -16,6 +16,12 @@ public class TR3MiscSpritesBuilder : TextureBuilder
 
     public override List<InjectionData> Build()
     {
+        var level = CreateLevel();
+        return [InjectionData.Create(level, InjectionType.General, "misc_sprites")];
+    }
+
+    private static TR3Level CreateLevel()
+    {
         var level = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
         ResetLevel(level, 1);
 
@@ -25,6 +31,12 @@ public class TR3MiscSpritesBuilder : TextureBuilder
             level.Sprites[type] = spriteMap[type];
         }
 
-        return [InjectionData.Create(level, InjectionType.General, "misc_sprites")];
+        return level;
     }
+
+    public string GetPublishedName()
+        => "misc_sprites.tr2";
+
+    public TRLevelBase Publish()
+        => CreateLevel();
 }
