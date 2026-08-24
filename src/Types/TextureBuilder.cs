@@ -773,6 +773,14 @@ public abstract class TextureBuilder : InjectionBuilder
                 [(uint)TR2Type.PassportOpen_M_H] = -1,
             };
         }
+        else if (level is TR3Level)
+        {
+            typeMap = new()
+            {
+                [(uint)TR3Type.PassportClosed_H] = -2,
+                [(uint)TR3Type.PassportOpening_H] = -1,
+            };
+        }
         else
         {
             throw new Exception();
@@ -783,14 +791,14 @@ public abstract class TextureBuilder : InjectionBuilder
             data.MeshEdits.Add(new()
             {
                 ModelID = type,
-                VertexEdits = new[] { 1, 2, 5, 6 }.Select(i =>
+                VertexEdits = [.. new[] { 1, 2, 5, 6 }.Select(i =>
                 {
                     return new TRVertexEdit
                     {
                         Index = (short)i,
                         Change = new() { X = shift },
                     };
-                }).ToList(),
+                })],
             });
         }
     }

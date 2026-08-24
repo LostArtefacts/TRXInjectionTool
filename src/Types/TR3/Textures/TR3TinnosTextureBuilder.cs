@@ -10,6 +10,7 @@ public class TR3TinnosTextureBuilder : TextureBuilder
     public override List<InjectionData> Build()
     {
         var data = CreateBaseData();
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.TINNOS}"), data);
         return [data];
     }
 

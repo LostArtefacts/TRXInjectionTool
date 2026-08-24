@@ -21,6 +21,7 @@ public class TR3GymTextureBuilder : TextureBuilder
 
         FixRoom20(level, data);
         FixKitchenUnits(data);
+        FixPassport(level, data);
 
         return [data];
     }

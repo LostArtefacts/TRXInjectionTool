@@ -16,6 +16,7 @@ public class TR3Area51TextureBuilder : TextureBuilder
         FixSlidingDoor(data);
         FixPushButton(data, TR3LevelNames.AREA51);
         TR3HSCTextureBuilder.FixGrating(level, 2023, data);
+        FixPassport(level, data);
 
         return [data];
     }

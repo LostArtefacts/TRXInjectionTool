@@ -12,6 +12,7 @@ public class TR3NevadaTextureBuilder : TextureBuilder
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "nevada_textures");
         CreateDefaultTests(data, $"TR3/{TR3LevelNames.NEVADA}");
         data.RoomEdits.AddRange(FixWaterfallVertices());
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.NEVADA}"), data);
         return [data];
     }
 

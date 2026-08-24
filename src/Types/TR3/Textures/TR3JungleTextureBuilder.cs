@@ -19,6 +19,7 @@ public class TR3JungleTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.RoomEdits.AddRange(FixPit87(level));
         data.RoomEdits.AddRange(FixLadder122(level));
+        FixPassport(level, data);
 
         return [data];
     }

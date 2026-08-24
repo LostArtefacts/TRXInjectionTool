@@ -10,6 +10,7 @@ public class TR3AntarcticaTextureBuilder : TextureBuilder
     {
         var data = CreateBaseData();
         FixPushButton(data, TR3LevelNames.ANTARC);
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.ANTARC}"), data);
         return [data];
     }
 

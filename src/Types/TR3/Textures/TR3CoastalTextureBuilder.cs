@@ -10,6 +10,7 @@ public class TR3CoastalTextureBuilder : TextureBuilder
     {
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "coastal_textures");
         FixPushButton(data, TR3LevelNames.COASTAL);
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.COASTAL}"), data);
         return [data];
     }
 }

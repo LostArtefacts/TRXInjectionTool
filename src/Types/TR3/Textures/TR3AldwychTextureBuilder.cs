@@ -13,6 +13,7 @@ public class TR3AldwychTextureBuilder : TextureBuilder
         FixStaircaseMesh(data, 37);
         FixBarrierMesh(data);
         FixPushButton(data, TR3LevelNames.ALDWYCH);
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.ALDWYCH}"), data);
         return [data];
     }
 

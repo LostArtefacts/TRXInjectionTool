@@ -10,6 +10,7 @@ public class TR3ThamesTextureBuilder : TextureBuilder
     {
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "thames_textures");
         FixPushButton(data, TR3LevelNames.THAMES);
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.THAMES}"), data);
         return [data];
     }
 }

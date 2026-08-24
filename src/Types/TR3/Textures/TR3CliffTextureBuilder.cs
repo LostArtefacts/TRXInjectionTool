@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Model;
+﻿using TRLevelControl.Helpers;
+using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 
@@ -11,6 +12,7 @@ public class TR3CliffTextureBuilder : TextureBuilder
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "cliff_textures");
 
         data.RoomEdits.AddRange(CreateRotations());
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.CLIFF}"), data);
 
         return [data];
     }

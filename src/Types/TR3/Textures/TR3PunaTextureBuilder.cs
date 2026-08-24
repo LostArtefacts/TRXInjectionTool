@@ -10,6 +10,7 @@ public class TR3PunaTextureBuilder : TextureBuilder
     {
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "puna_textures");
         FixPushButton(data, TR3LevelNames.PUNA);
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.PUNA}"), data);
         return [data];
     }
 }

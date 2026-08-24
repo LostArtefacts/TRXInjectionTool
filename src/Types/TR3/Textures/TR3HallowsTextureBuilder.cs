@@ -11,6 +11,7 @@ public class TR3HallowsTextureBuilder : TextureBuilder
         var data = CreateBaseData();
         CreateDefaultTests(data, $"TR3/{TR3LevelNames.HALLOWS}");
         FixPushButton(data, TR3LevelNames.HALLOWS);
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.HALLOWS}"), data);
         return [data];
     }
 

@@ -10,6 +10,7 @@ public class TR3MadubuTextureBuilder : TextureBuilder
     {
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "madubu_textures");
         FixPushButton(data, TR3LevelNames.MADUBU);
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.MADUBU}"), data);
         return [data];
     }
 }

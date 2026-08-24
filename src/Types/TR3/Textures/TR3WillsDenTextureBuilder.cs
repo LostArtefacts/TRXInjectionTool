@@ -14,6 +14,7 @@ public class TR3WillsDenTextureBuilder : TextureBuilder
         var level = _control3.Read($"Resources/TR3/{TR3LevelNames.LAIR}");
         data.RoomEdits.AddRange(CreateRotations());
         data.RoomEdits.AddRange(CreateRefacings(level));
+        FixPassport(level, data);
 
         return [data];
     }

@@ -19,6 +19,7 @@ public class TR3MadhouseTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.FloorEdits.AddRange(FixMaterials(level));
         FixSpikes(data, level);
+        FixPassport(level, data);
 
         return [data];
     }

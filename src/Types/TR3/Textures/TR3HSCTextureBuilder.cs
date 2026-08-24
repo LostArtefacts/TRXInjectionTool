@@ -20,6 +20,7 @@ public class TR3HSCTextureBuilder : TextureBuilder
         FixGrating(level, 1859, data);
 
         FixPushButton(data, TR3LevelNames.HSC);
+        FixPassport(level, data);
 
         return [data];
     }

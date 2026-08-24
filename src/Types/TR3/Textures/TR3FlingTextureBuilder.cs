@@ -13,6 +13,7 @@ public class TR3FlingTextureBuilder : TextureBuilder
 
         var level = _control3.Read($"Resources/TR3/{TR3LevelNames.FLING}");
         data.RoomEdits.AddRange(CreateShifts(level));
+        FixPassport(level, data);
 
         return [data];
     }

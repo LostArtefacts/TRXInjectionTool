@@ -14,6 +14,7 @@ public class TR3LudsTextureBuilder : TextureBuilder
         TR3AldwychTextureBuilder.FixStaircaseMesh(data, 49);
         FixPushButton(data, TR3LevelNames.LUDS);
         data.RoomEdits.AddRange(FixRoom77());
+        FixPassport(_control3.Read($"Resources/TR3/{TR3LevelNames.LUDS}"), data);
         return [data];
     }
 

@@ -19,6 +19,7 @@ public class TR3MinesTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(CreateFillers(level));
         data.RoomEdits.AddRange(CreateRefacings(level));
         data.RoomEdits.AddRange(CreateRotations());
+        FixPassport(level, data);
         return [data];
     }
 
