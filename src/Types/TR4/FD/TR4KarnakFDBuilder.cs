@@ -25,7 +25,7 @@ public class TR4KarnakFDBuilder : FDBuilder
 
         var baseSector = room3.GetSector(9, 1, TRUnit.Sector);
         var wallSector = room3.GetSector(9, 0,  TRUnit.Sector);
-        var xDiff = room0.NumXSectors - room3.NumXSectors;
+        var xDiff = room0.NumXSectors - room3.NumXSectors + 1;
 
         data.FloorEdits.Add(new()
         {
@@ -38,13 +38,13 @@ public class TR4KarnakFDBuilder : FDBuilder
             }],            
         });
 
-        // Extend room 3 in +X to sit fully atop room 0
-        for (var x = room3.NumXSectors - 1; x < room0.NumXSectors; x++)
+        // Extend room 3 in +X to sit fully atop room 0, and one sector deep over room 1
+        for (var x = room3.NumXSectors - 1; x <= room0.NumXSectors; x++)
         {
             for (var z = 0; z < room3.NumZSectors; z++)
             {
                 var isInteriorZ = z > 0 && z < room3.NumZSectors - 1;
-                var isBoundaryX = x == room0.NumXSectors - 1;
+                var isBoundaryX = x == room0.NumXSectors;
                 var sector = x == room3.NumXSectors - 1
                     ? (isInteriorZ ? baseSector : null)
                     : (isBoundaryX || !isInteriorZ ? wallSector : baseSector);
@@ -52,15 +52,18 @@ public class TR4KarnakFDBuilder : FDBuilder
                 if (sector == null)
                     continue;
 
+                var sec = TRRoomSectorExt.CloneFrom(sector);
+                if (x == room0.NumXSectors - 1 && sec.RoomBelow == 0)
+                {
+                    sec.RoomBelow = 1;
+                }
+
                 data.FloorEdits.Add(new()
                 {
                     RoomIndex = 3,
                     X = (ushort)x,
                     Z = (ushort)z,
-                    Fixes = [new FDSectorOverwrite
-                    {
-                        Sector = TRRoomSectorExt.CloneFrom(sector),
-                    }],
+                    Fixes = [new FDSectorOverwrite { Sector = sec }],
                 });
             }
         }
@@ -74,6 +77,21 @@ public class TR4KarnakFDBuilder : FDBuilder
                 {
                     RoomIndex = 0,
                     X = (ushort)x,
+                    Z = (ushort)z,
+                    Fixes = [new FDPortalOverwrite { Sky = 3 }],
+                });
+            }
+        }
+
+        // Same for room 1 to 3, which allows the interp camera to transition
+        {
+            var room1 = level.Rooms[1];
+            for (var z = 1; z < room1.NumZSectors - 1; z++)
+            {
+                data.FloorEdits.Add(new()
+                {
+                    RoomIndex = 1,
+                    X = 1,
                     Z = (ushort)z,
                     Fixes = [new FDPortalOverwrite { Sky = 3 }],
                 });
