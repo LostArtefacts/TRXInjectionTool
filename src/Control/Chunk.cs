@@ -27,6 +27,7 @@ public enum ChunkType
     SFXData       = 5,
     DataEdits     = 6,
     CameraData    = 7,
+    Symbols       = 8,
 }
 
 public enum BlockType
@@ -71,4 +72,5 @@ public enum BlockType
     ItemNameEdits   = 37,
     FlybyCameras    = 38,
     PropertyEdits   = 39,
+    Symbols         = 40,
 }
