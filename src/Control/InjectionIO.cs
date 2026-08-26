@@ -233,8 +233,15 @@ public static class InjectionIO
 
     private static int WriteSFXData(InjectionData data, TRLevelWriter writer)
     {
-        return WriteBlock(BlockType.SampleInfos, data.SFX.Count, writer,
+        int blockCount = 0;
+
+        blockCount += WriteBlock(BlockType.SampleInfos, data.SFX.Count, writer,
             s => data.SFX.ForEach(f => f.Serialize(s, data.GameVersion)));
+
+        blockCount += WriteBlock(BlockType.NamedSampleInfos, data.NamedSFX.Count, writer,
+            s => data.NamedSFX.ForEach(f => f.Serialize(s, data.GameVersion)));
+
+        return blockCount;
     }
 
     private static int WriteCameraData(InjectionData data, TRLevelWriter writer)

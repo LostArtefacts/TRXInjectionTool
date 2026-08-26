@@ -32,6 +32,7 @@ public class InjectionData
     public List<LR.Model.TRStaticMesh> StaticObjects { get; set; } = [];
     public List<LR.Model.TRColour> Palette { get; set; } = [];
     public List<TRSFXData> SFX { get; set; } = [];
+    public List<TRSFXData> NamedSFX { get; set; } = [];
     public List<LR.Model.TRCinematicFrame> CinematicFrames { get; set; } = [];
     public List<TRMeshEdit> MeshEdits { get; set; } = [];
     public List<TRStaticMeshEdit> StaticMeshEdits { get; set; } = [];
