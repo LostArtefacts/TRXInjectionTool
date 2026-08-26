@@ -43,6 +43,7 @@ public enum FDFixType
     MineCart,
     Material,
     SectorExtension,
+    NamedTrigParam,
 }
 
 public enum MineCartType
@@ -118,6 +119,24 @@ public class FDTrigParamFix : FDFix
         writer.Write((byte)ActionType);
         writer.Write(OldParam);
         writer.Write(NewParam);
+    }
+}
+
+// The same fix, except that the new parameter is a symbol index rather than a
+// number. A music trigger is what this is for: the track a mod adds is bound
+// where the mod says, and the file follows it.
+public class FDNamedTrigParamFix : FDFix
+{
+    public override FDFixType FixType => FDFixType.NamedTrigParam;
+    public FDTrigAction ActionType { get; set; }
+    public short OldParam { get; set; }
+    public short Symbol { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer, TRGameVersion version)
+    {
+        writer.Write((byte)ActionType);
+        writer.Write(OldParam);
+        writer.Write(Symbol);
     }
 }
 
