@@ -73,4 +73,7 @@ public enum BlockType
     FlybyCameras    = 38,
     PropertyEdits   = 39,
     Symbols         = 40,
+    // The same rows as SampleInfos, except that each states a symbol index in
+    // place of the slot this game's files use.
+    NamedSampleInfos = 41,
 }
