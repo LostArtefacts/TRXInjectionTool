@@ -1,7 +1,9 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System.Text;
 using TRImageControl;
 using TRLevelControl;
 using TRLevelReader.Model;
+using TRXInjectionTool.Model;
 using TRXInjectionTool.Util;
 using LC = TRLevelControl.Model;
 
@@ -9,11 +11,8 @@ namespace TRXInjectionTool.Control;
 
 public static class InjectionIO
 {
-    private static readonly InjectionVersion _version = new()
-    {
-        Magic = IOUtils.MakeTag('T', 'R', 'X', 'J'),
-        Iteration = 11,
-    };
+    private static readonly uint _magic = IOUtils.MakeTag('T', 'R', 'X', 'J');
+    private const uint _iteration = 12;
 
     public static void Export(InjectionData data, string file)
     {
@@ -41,8 +40,8 @@ public static class InjectionIO
         using MemoryStream finalStream = new();
         using TRLevelWriter finalWriter = new(finalStream);
 
-        finalWriter.Write(_version.Magic);
-        finalWriter.Write(_version.Iteration);
+        finalWriter.Write(_magic);
+        finalWriter.Write(_iteration);
         finalWriter.Write((uint)data.InjectionType);
 
         finalWriter.Write(exportedData.Length);
@@ -56,8 +55,11 @@ public static class InjectionIO
     {
         WriteApplicabilityTests(data, writer);
 
+        // The symbol table comes first, so every chunk that states a symbol
+        // index is read after the table that resolves it.
         List<Chunk> chunks =
         [
+            CreateChunk(ChunkType.Symbols, data, WriteSymbols),
             CreateChunk(ChunkType.TextureData, data, WriteTextureData),
             CreateChunk(ChunkType.TextureInfo, data, WriteTextureInfo),
             CreateChunk(ChunkType.MeshData, data, WriteMeshData),
@@ -72,6 +74,32 @@ public static class InjectionIO
 
         writer.Write(chunks.Count);
         chunks.ForEach(b => b.Serialize(writer));
+    }
+
+    private static int WriteSymbols(InjectionData data, TRLevelWriter writer)
+    {
+        if (data.Symbols.Count == 0)
+        {
+            return 0;
+        }
+
+        using MemoryStream ms = new();
+        using TRLevelWriter symbolWriter = new(ms);
+        foreach (TRSymbol symbol in data.Symbols)
+        {
+            byte[] name = Encoding.ASCII.GetBytes(symbol.Name);
+            symbolWriter.Write((int)symbol.Context);
+            symbolWriter.Write(name.Length);
+            symbolWriter.Write(name);
+            symbolWriter.Write(0); // flags
+        }
+
+        byte[] symbolData = ms.ToArray();
+        writer.Write((int)BlockType.Symbols);
+        writer.Write(data.Symbols.Count);
+        writer.Write(symbolData.Length);
+        writer.Write(symbolData);
+        return 1;
     }
 
     private static void WriteApplicabilityTests(InjectionData data, TRLevelWriter writer)
