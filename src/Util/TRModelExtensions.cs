@@ -155,6 +155,7 @@ public static class TRModelExtensions
         [
             500, // O_ALPHABET
             501, // O_ALPHABET_SMALL
+            534, // O_SHADOW
         ],
     };
 
