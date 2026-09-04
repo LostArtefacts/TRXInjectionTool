@@ -14,7 +14,8 @@ public class TR3SkyboxBuilder : InjectionBuilder
     [
         new("gym_sky", TR3LevelNames.ASSAULT),     // Lara's Home
         new("india_sky", TR3LevelNames.JUNGLE),    // Jungle, Temple, Temple cutscene, Ganges
-        new("coastal_sky", TR3LevelNames.COASTAL), // Coastal Village
+        new("coastal_sky", TR3LevelNames.COASTAL,  // Coastal Village
+            FixCoastal),
         new("crash_sky", TR3LevelNames.CRASH),     // Coastal cutscene, Crash Site
         new("rapids_sky", TR3LevelNames.MADUBU),   // Madubu
         new("london_sky", TR3LevelNames.THAMES),   // Thames cutscene, City
@@ -22,7 +23,7 @@ public class TR3SkyboxBuilder : InjectionBuilder
         new("area51_sky", TR3LevelNames.AREA51),   // HSC, Area51
         new("antarc_sky", TR3LevelNames.ANTARC),   // Antarctica, Antarctica cutscene
         new("cavern_sky", TR3LevelNames.WILLIE),   // Meteorite Cavern
-        new("scotland_sky", "SCOTLAND.TR2"),       // Fling, Will's Den
+        new("scotland_sky", TR3LevelNames.FLING),  // Fling, Will's Den
     ];
 
     public override string ID => "tr3_skyboxes";
@@ -32,10 +33,26 @@ public class TR3SkyboxBuilder : InjectionBuilder
         return [.. _setups.Select(s => s.GenerateInjection())];
     }
 
-    private class SkyboxSetup(string binName, string levelName)
+    private static void FixCoastal(TR3Level level)
+    {
+        var mesh = level.Models[TR3Type.Skybox_H].Meshes[0];
+        var verts = new ushort[] { 24, 25, 40, 41 };
+        var face = mesh.TexturedRectangles.Find(f => f.Vertices.All(verts.Contains));
+        var texInfo = level.ObjectTextures[face.Texture];
+        var tile = new TRImage(level.Images16[texInfo.Atlas].Pixels);
+        var segment = tile.Export(texInfo.Bounds);
+        segment.Write((c, x, y)
+            => y == 63 && x < 2 ? segment.GetPixel(2, 63) : c);
+        tile.Import(segment, texInfo.Position);
+        level.Images16[texInfo.Atlas].Pixels = tile.ToRGB555();
+    }
+
+    private class SkyboxSetup(string binName, string levelName,
+        Action<TR3Level> customFixFunc = null)
     {
         public string BinName { get; set; } = binName;
         public string LevelName { get; set; } = levelName;
+        public Action<TR3Level> CustomFixFunc { get; set; } = customFixFunc;
 
         public InjectionData GenerateInjection()
         {
@@ -43,6 +60,7 @@ public class TR3SkyboxBuilder : InjectionBuilder
             var palette = level.Palette16.Select(c => c.ToColor()).ToList();
             CreateModelLevel(level, TR3Type.Skybox_H);
             FixSkybox(level, palette);
+            CustomFixFunc?.Invoke(level);
             return InjectionData.Create(level, InjectionType.General, BinName);
         }
 
