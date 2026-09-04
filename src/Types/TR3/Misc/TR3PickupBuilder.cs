@@ -216,7 +216,7 @@ public class TR3PickupBuilder : InjectionBuilder
         return InjectionData.Create(level, InjectionType.General, binName);
     }
 
-    private static void FixCDPlayer(TR3Level level)
+    public static void FixCDPlayer(TR3Level level)
     {
         var mesh = level.Models[TR3Type.CDPlayer_M_H].Meshes[0];
         var verts = new ushort[] { 14, 19, 18, 15 };

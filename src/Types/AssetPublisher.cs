@@ -51,6 +51,7 @@ public static class AssetPublisher
         [TRGameVersion.TR4] =
         [
             new TR4FontBuilder(),
+            new TR4InventoryBuilder(),
         ],
     };
 
