@@ -19,6 +19,7 @@ public class TR3AnimatingBoundsBuilder : InjectionBuilder
         [TR3LevelNames.NEVADA] = [TR3Type.Vulture],
         [TR3LevelNames.HSC] = [TR3Type.Animating4],
         [TR3LevelNames.AREA51] = [TR3Type.AlarmLight],
+        [TR3LevelNames.RXTECH] = [TR3Type.DamagingAnimating3],
         [TR3LevelNames.HALLOWS] = [TR3Type.Animating1, TR3Type.AlarmLight],
         [TR3LevelNames.CLIFF] = [TR3Type.AlarmLight],
         [TR3LevelNames.FISHES] = [TR3Type.Animating4, TR3Type.AlarmLight],
