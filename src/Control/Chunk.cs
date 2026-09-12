@@ -74,4 +74,5 @@ public enum BlockType
     PropertyEdits    = 39,
     Symbols          = 40,
     NamedSampleInfos = 41,
+    AnimTextureAdds  = 42,
 }
