@@ -1,4 +1,6 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRImageControl;
+using TRImageControl.Packing;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
 
@@ -14,6 +16,7 @@ public class TR2CutsceneBuilder : InjectionBuilder
         [
             CreateCut2Data(),
             CreateCut3Data(),
+            CreateCut3GunFlashData(),
             CreateCut4Data(),
         ];
     }
@@ -78,6 +81,49 @@ public class TR2CutsceneBuilder : InjectionBuilder
         FixMonkDeath(monk);
 
         return InjectionData.Create(cut, InjectionType.General, "cut3_setup", true);
+    }
+
+    // The scene carries neither the gun flash object nor the glow drawn over
+    // it, so a flash on one of its actors has no mesh, no sprite and no
+    // texture. All three come from the Diving Area itself, which is the level
+    // the scene breaks away from.
+    private static InjectionData CreateCut3GunFlashData()
+    {
+        var level = _control2.Read($"Resources/{TR2LevelNames.DA}");
+        var flash = level.Models[TR2Type.Gunflare_H];
+        var glow = level.Sprites[TR2Type.Glow_S_H];
+
+        var packer = new TR2TexturePacker(level);
+        var meshRegions = packer.GetMeshRegions(flash.Meshes)
+            .Values.SelectMany(v => v).ToList();
+        var spriteRegions = packer.GetSpriteRegions(glow)
+            .Values.SelectMany(v => v).ToList();
+        var originalInfos = level.ObjectTextures.ToList();
+        var basePalette = level.Palette.Select(c => c.ToTR1Color()).ToList();
+
+        ResetLevel(level, 1);
+
+        packer = new(level);
+        packer.AddRectangles(meshRegions);
+        packer.AddRectangles(spriteRegions);
+        packer.Pack(true);
+
+        level.Models[TR2Type.Gunflare_H] = flash;
+        level.Sprites[TR2Type.Glow_S_H] = glow;
+        level.ObjectTextures.AddRange(meshRegions
+            .SelectMany(r => r.Segments.Select(s => s.Texture as TRObjectTexture)));
+        flash.Meshes
+            .SelectMany(m => m.TexturedFaces)
+            .Distinct()
+            .ToList()
+            .ForEach(f =>
+            {
+                f.Texture = (ushort)level.ObjectTextures.IndexOf(originalInfos[f.Texture]);
+            });
+
+        GenerateImages8(level, basePalette);
+
+        return InjectionData.Create(level, InjectionType.General, "cut3_gunflash");
     }
 
     private static void FixMonkDeath(TRModel model)
