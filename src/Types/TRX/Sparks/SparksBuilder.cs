@@ -2,6 +2,7 @@
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Control;
+using TRXInjectionTool.Model;
 
 namespace TRXInjectionTool.Types.TRX.Sparks;
 
@@ -9,22 +10,54 @@ public class SparksBuilder : InjectionBuilder, IPublisher
 {
     public override string ID => "sparks_gfx";
 
+    // The name the sparks answer to where a game keeps no sprites of this
+    // kind: TR1 and TR2 have no slot to give them, and one past what their
+    // files use is read as a static sprite rather than an object.
+    private const string _symbol = "sparks_gfx";
+
     private static readonly Dictionary<TRGameVersion, int> _gameMap = new()
     {
         [TRGameVersion.TR3] = (int)TR3Type.MiscSprites_S_H,
         [TRGameVersion.TR4] = (int)TR4Type.DefaultSprites,
     };
 
+    private static readonly TRGameVersion[] _namedGames =
+    [
+        TRGameVersion.TR1,
+        TRGameVersion.TR2,
+    ];
+
     public override List<InjectionData> Build()
     {
         var level = CreateLevel();
-        return [.. _gameMap.Select(kvp =>
+        var slotted = _gameMap.Select(kvp =>
         {
             var data = InjectionData.Create(level, InjectionType.General, ID);
             data.SpriteSequences[0].SpriteID = kvp.Value;
             data.GameVersion = kvp.Key;
             return data;
-        })];
+        });
+
+        var named = _namedGames.Select(version =>
+        {
+            var data = InjectionData.Create(level, InjectionType.General, ID);
+            data.GameVersion = version;
+            data.Symbols.Add(new()
+            {
+                Context = SymbolContext.Objects,
+                Name = _symbol,
+            });
+            data.SymbolSpriteSequences.Add(new()
+            {
+                SymbolIndex = data.Symbols.Count - 1,
+                SpriteCount = (short)-data.SpriteTextures.Count,
+                StartIndex = 0,
+            });
+            data.SpriteSequences.Clear();
+            return data;
+        });
+
+        return [.. slotted, .. named];
     }
 
     private static TR3Level CreateLevel()

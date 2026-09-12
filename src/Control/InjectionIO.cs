@@ -173,8 +173,19 @@ public static class InjectionIO
         blockCount += WriteBlock(BlockType.SpriteTextures, data.SpriteTextures.Count, writer,
             s => data.SpriteTextures.ForEach(t => s.Write(t.Serialize())));
 
-        blockCount += WriteBlock(BlockType.SpriteSequences, data.SpriteSequences.Count, writer,
-            s => data.SpriteSequences.ForEach(t => t.Serialize(s, data.GameVersion)));
+        blockCount += WriteBlock(BlockType.SpriteSequences,
+            data.SpriteSequences.Count + data.SymbolSpriteSequences.Count, writer,
+            s =>
+            {
+                data.SpriteSequences.ForEach(t => t.Serialize(s, data.GameVersion));
+                data.SymbolSpriteSequences.ForEach(t =>
+                {
+                    s.Write((int)TRObjectType.Symbol);
+                    s.Write(t.SymbolIndex);
+                    s.Write(t.SpriteCount);
+                    s.Write(t.StartIndex);
+                });
+            });
 
         return blockCount;
     }

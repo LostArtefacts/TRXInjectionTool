@@ -15,6 +15,7 @@ public class InjectionData
     public TRGameVersion GameVersion { get; set; }
     public List<ApplicabilityTest> ApplicabilityTests { get; set; } = [];
     public List<TRSymbol> Symbols { get; set; } = [];
+    public List<TRSymbolSpriteSequence> SymbolSpriteSequences { get; set; } = [];
     public List<TRTexImage32> Images { get; set; } = [];
     public List<TRTexImage8> Images8 { get; set; }
     public List<TRFlatObjectTexture> ObjectTextures { get; set; } = [];
