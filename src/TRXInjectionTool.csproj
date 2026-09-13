@@ -18,21 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="RectanglePacker">
-      <HintPath>IO\RectanglePacker.dll</HintPath>
-    </Reference>
-    <Reference Include="TRDataControl">
-      <HintPath>IO\TRDataControl.dll</HintPath>
-    </Reference>
-    <Reference Include="TRImageControl">
-      <HintPath>IO\TRImageControl.dll</HintPath>
-    </Reference>
-    <Reference Include="TRLevelControl">
-      <HintPath>IO\TRLevelControl.dll</HintPath>
-    </Reference>
-    <Reference Include="TRLevelReader">
-      <HintPath>IO\TRLevelReader.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\TombIO\TRLevelControl\TRLevelControl.csproj" />
+    <ProjectReference Include="..\TombIO\TRImageControl\TRImageControl.csproj" />
+    <ProjectReference Include="..\TombIO\TRDataControl\TRDataControl.csproj" />
+    <ProjectReference Include="..\TombIO\TRLevelReader\TRLevelReader.csproj" />
   </ItemGroup>
 
   <ItemGroup>
