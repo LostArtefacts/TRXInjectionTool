@@ -6,4 +6,5 @@ public enum ApplicabilityType
     RoomCount = 1,
     RoomMeta = 2,
     TextureSample = 3,
+    GameVersion = 4,
 }

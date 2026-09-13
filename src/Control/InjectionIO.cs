@@ -3,6 +3,7 @@ using System.Text;
 using TRImageControl;
 using TRLevelControl;
 using TRLevelReader.Model;
+using TRXInjectionTool.Applicability;
 using TRXInjectionTool.Model;
 using TRXInjectionTool.Util;
 using LC = TRLevelControl.Model;
@@ -104,12 +105,17 @@ public static class InjectionIO
 
     private static void WriteApplicabilityTests(InjectionData data, TRLevelWriter writer)
     {
+        // Every file states the game its data is written for, so an engine
+        // running another game leaves it unread.
+        List<ApplicabilityTest> tests =
+            [new GameVersionTest(), .. data.ApplicabilityTests];
+
         using MemoryStream ms = new();
         using TRLevelWriter testWriter = new(ms);
-        data.ApplicabilityTests.ForEach(t => t.Serialize(testWriter, data.GameVersion));
+        tests.ForEach(t => t.Serialize(testWriter, data.GameVersion));
 
         byte[] testData = ms.ToArray();
-        writer.Write(data.ApplicabilityTests.Count);
+        writer.Write(tests.Count);
         writer.Write(testData.Length);
         writer.Write(testData);
     }
