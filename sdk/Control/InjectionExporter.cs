@@ -228,6 +228,7 @@ public class InjectionExporter : IInjectionExporter
         => WriteBlock(writer, 40, data.Symbols.Select(s => new W.Symbol
         {
             Context = (int)s.Context,
+            Slot = s.Slot,
             Name = s.Name,
             Flags = 0,
         }).ToList());

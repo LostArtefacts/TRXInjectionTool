@@ -19,6 +19,8 @@ public sealed class Symbol
 {
     [Doc("SymbolContext")]
     public int Context;
+    [Doc("the local slot this name stands for; records meaning the name write this slot with a symbol marker")]
+    public int Slot;
     [Doc("ASCII, max 255 bytes")]
     public string Name;
     [Doc("reserved, 0")]

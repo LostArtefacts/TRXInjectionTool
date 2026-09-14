@@ -162,6 +162,7 @@ must not require any particular chunk to exist.
 | Field | Type | Notes |
 |---|---|---|
 | context | `s32` | SymbolContext |
+| slot | `s32` | the local slot this name stands for; records meaning the name write this slot with a symbol marker |
 | name | `s32 length, u8[length] text` | ASCII, max 255 bytes |
 | flags | `s32` | reserved, 0 |
 
