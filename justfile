@@ -9,3 +9,6 @@ publish: restore
 
 test *args:
     out/TRXInjectionTool {{args}}
+
+docs: build
+    out/TRXInjectionTool --write-format-docs docs/FORMAT.md

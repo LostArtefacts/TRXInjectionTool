@@ -137,6 +137,9 @@ internal class Program
                 case "--list":
                     PrintList();
                     return 0;
+                case "--write-format-docs":
+                    Format.FormatDocs.Write(args.Last());
+                    return 0;
                 case "-n":
                 case "--no-publish":
                     publishAssets = false;
