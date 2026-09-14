@@ -1,17 +1,21 @@
 # Builder plugins
 
-Injection builders can live outside this repository. The tool is split into:
+Injection builders are plugins. The repository splits into:
 
 - **`sdk/` (TRXInjection.Sdk)** — the builder API: `InjectionBuilder`,
-  `InjectionData`, `InjectionIO`, the edit actions and applicability tests.
-  Builder plugins reference this project (with `Private=false`, so the host's
-  copy is used at runtime).
-- **`src/` (TRXInjectionTool)** — the host CLI. Builders compiled into the
-  host under `TRXInjectionTool.Types.*` behave as before.
+  `InjectionData`, `InjectionIO`, the edit actions, applicability tests, the
+  shared abstract builder bases (`TextureBuilder`, `LaraBuilder`, ...) and
+  `AssetPublisher`.
+- **`src/` (TRXInjectionTool)** — the host CLI. It contains no builders; it
+  discovers them in DLLs under a `Plugins/` directory beside the executable.
+- **`builders/`** — the first-party builder packs (`TRXBuilders.TR1` ...
+  `TRXBuilders.TRX`), ordinary plugins that `just build` deploys into
+  `out/Plugins/`.
 
 ## Writing a plugin
 
-Create a class library targeting `net8.0`, reference the SDK, and subclass
+Create a class library targeting `net8.0`, reference the SDK (with
+`Private=false`, so the host's copy is used at runtime), and subclass
 `InjectionBuilder`:
 
 ```csharp
@@ -22,21 +26,38 @@ public class MyBuilder : InjectionBuilder
 }
 ```
 
-See `samples/ExamplePlugin` for a complete minimal plugin.
+See `samples/ExamplePlugin` for a complete minimal plugin and the
+`builders/` packs for real ones.
 
 ## Loading
 
-Drop the plugin DLL (plus any private dependencies) into a `Plugins/`
-directory beside the executable (e.g. `out/Plugins/`). Each DLL loads in its
-own `AssemblyLoadContext`; assemblies the host already provides (the SDK,
-TombIO libraries and their dependencies) resolve to the host's copies, so do
-not ship those with the plugin. Plugin builders appear in `--list` and in the
-interactive menu grouped under the plugin assembly's name.
+Drop the plugin DLL into `Plugins/` beside the executable. All plugins load
+into one shared `AssemblyLoadContext`, so plugins may reference each other
+(the TR1 pack reuses the TR2 pack's pickup builder, for example); assemblies
+the host already provides (the SDK, TombIO libraries and their dependencies)
+resolve to the host's copies and must not be shipped with a plugin. Plugin
+builders appear in `--list` and in the interactive menu grouped by their
+`TRXInjectionTool.Types.*` namespace, or under the assembly name for other
+namespaces.
+
+## Resources and output
+
+There is exactly one `Resources/` and one `Output/` directory, shared by the
+host and every plugin, both resolved relative to the directory the tool is
+launched from. Plugins are free to reference nested paths within them
+(e.g. `Resources/MyPack/...`) for plugin-specific data; injections land in
+the usual `Output/<game>/...` tree via `InjectionBuilder.MakeOutputPath`.
+
+## Published assets
+
+Zip entry order in the published asset archives is byte-significant, so
+publishers are not discovered implicitly: a pack registers them with
+explicit order keys through an `IBuilderPackManifest` implementation, which
+the host runs for every loaded assembly. See `builders/*/Manifest.cs` — the
+TRX pack's `SparksBuilder` slotting into the TR3 archive shows a manifest
+registering across games.
 
 ## Current limitations
 
-- Resource paths (`Resources/...`) resolve against the working directory, so
-  a plugin needing level data or textures must be run where those resources
-  exist. Per-plugin resource roots are a planned follow-up.
 - The `.bin` output format is the TRX injection format (`TRXJ`); the SDK does
   not yet expose an exporter seam for other engines.

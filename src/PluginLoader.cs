@@ -5,8 +5,10 @@ namespace TRXInjectionTool;
 
 public static class PluginLoader
 {
-    // Builder plugins are DLLs dropped into Plugins/ beside the executable,
-    // each with its private dependencies alongside it.
+    // Builder plugins are DLLs dropped into Plugins/ beside the executable.
+    // All plugins share one load context so they can reference each other;
+    // assemblies the host provides (the SDK, TombIO libraries and their
+    // dependencies) resolve to the host's copies.
     public static List<Assembly> LoadPlugins()
     {
         var pluginDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
@@ -15,10 +17,12 @@ public static class PluginLoader
             return [];
         }
 
+        var dlls = Directory.GetFiles(pluginDir, "*.dll", SearchOption.AllDirectories);
+        var context = new PluginLoadContext(dlls);
+
         var assemblies = new List<Assembly>();
-        foreach (var dll in Directory.GetFiles(pluginDir, "*.dll", SearchOption.AllDirectories))
+        foreach (var dll in dlls)
         {
-            var context = new PluginLoadContext(dll);
             try
             {
                 var assembly = context.LoadFromAssemblyName(
@@ -41,26 +45,31 @@ public static class PluginLoader
 
     private class PluginLoadContext : AssemblyLoadContext
     {
-        private readonly AssemblyDependencyResolver _resolver;
+        private readonly List<AssemblyDependencyResolver> _resolvers;
 
-        public PluginLoadContext(string pluginPath)
-            : base(Path.GetFileNameWithoutExtension(pluginPath))
+        public PluginLoadContext(IEnumerable<string> pluginPaths)
+            : base("Plugins")
         {
-            _resolver = new(pluginPath);
+            _resolvers = [.. pluginPaths.Select(p => new AssemblyDependencyResolver(p))];
         }
 
         protected override Assembly Load(AssemblyName name)
         {
-            // The SDK, TombIO and their dependencies must resolve to the
-            // host's copies so builder types share identity with the host;
-            // only genuinely private plugin dependencies load here.
             if (Default.Assemblies.Any(a => a.GetName().Name == name.Name))
             {
                 return null;
             }
 
-            var path = _resolver.ResolveAssemblyToPath(name);
-            return path == null ? null : LoadFromAssemblyPath(path);
+            foreach (var resolver in _resolvers)
+            {
+                var path = resolver.ResolveAssemblyToPath(name);
+                if (path != null)
+                {
+                    return LoadFromAssemblyPath(path);
+                }
+            }
+
+            return null;
         }
     }
 }

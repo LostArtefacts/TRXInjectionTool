@@ -1,16 +1,6 @@
 using System.IO.Compression;
 using TRLevelControl;
 using TRLevelControl.Model;
-using TRXInjectionTool.Types.TR1.Lara;
-using TRXInjectionTool.Types.TR1.Misc;
-using TRXInjectionTool.Types.TR2.Lara;
-using TRXInjectionTool.Types.TR2.Misc;
-using TRXInjectionTool.Types.TR2.Objects;
-using TRXInjectionTool.Types.TR3.Lara;
-using TRXInjectionTool.Types.TR3.Misc;
-using TRXInjectionTool.Types.TR4.Lara;
-using TRXInjectionTool.Types.TR4.Misc;
-using TRXInjectionTool.Types.TRX.Sparks;
 
 namespace TRXInjectionTool.Types;
 
@@ -23,45 +13,27 @@ public static class AssetPublisher
     private static readonly DateTimeOffset _wadZipPlaceholderDate
         = new(new DateTime(2025, 8, 11, 14, 0, 0), new TimeSpan());
 
-    private static readonly Dictionary<TRGameVersion, List<IPublisher>> _publishers = new()
-    {
-        [TRGameVersion.TR1] =
-        [
-            new TR1FontBuilder(),
-            new TR1PDABuilder(),
-            new TR1MiscSpritesBuilder(),
-        ],
-        [TRGameVersion.TR2] =
-        [
-            new TR2FontBuilder(),
-            new TR2PDABuilder(),
-            new TR2OGSecretBuilder(),
-            new TR2GMSecretBuilder(),
-            new TR2MiscSpritesBuilder(),
-        ],
-        [TRGameVersion.TR3] =
-        [
-            new TR3FontBuilder(),
-            new TR3PDABuilder(),
-            new TR3FishSpritesBuilder(),
-            new TR3BatSpritesBuilder(),
-            new SparksBuilder(),
-            new TR3MiscSpritesBuilder(),
-        ],
-        [TRGameVersion.TR4] =
-        [
-            new TR4FontBuilder(),
-            new TR4InventoryBuilder(),
-        ],
-    };
+    // Zip entry order affects the published bytes, so publishers register
+    // with an explicit order key rather than relying on discovery order.
+    private static readonly Dictionary<TRGameVersion, SortedList<int, IPublisher>> _publishers = new();
+    private static readonly Dictionary<TRGameVersion, LaraBuilder> _laraBuilders = new();
+    private static readonly Dictionary<TRGameVersion, bool> _runFlags = new();
 
-    private static readonly Dictionary<TRGameVersion, bool> _runFlags = new()
+    public static void Register(TRGameVersion version, int order, IPublisher publisher)
     {
-        [TRGameVersion.TR1] = false,
-        [TRGameVersion.TR2] = false,
-        [TRGameVersion.TR3] = false,
-        [TRGameVersion.TR4] = false,
-    };
+        if (!_publishers.TryGetValue(version, out var publishers))
+        {
+            _publishers[version] = publishers = new();
+        }
+        publishers.Add(order, publisher);
+        _runFlags.TryAdd(version, false);
+    }
+
+    public static void RegisterLara(TRGameVersion version, LaraBuilder builder)
+    {
+        _laraBuilders[version] = builder;
+        _runFlags.TryAdd(version, false);
+    }
 
     public static void OnBuilderRun(InjectionBuilder builder)
     {
@@ -73,7 +45,7 @@ public static class AssetPublisher
 
         foreach (var (version, publishers) in _publishers)
         {
-            if (publishers.Any(p => p.GetType() == builder.GetType()))
+            if (publishers.Values.Any(p => p.GetType() == builder.GetType()))
             {
                 _runFlags[version] = true;
                 break;
@@ -83,10 +55,10 @@ public static class AssetPublisher
 
     public static void Publish()
     {
-        Publish(TRGameVersion.TR1, new TR1LaraAnimBuilder());
-        Publish(TRGameVersion.TR2, new TR2LaraAnimBuilder());
-        Publish(TRGameVersion.TR3, new TR3LaraAnimBuilder());
-        Publish(TRGameVersion.TR4, new TR4LaraAnimBuilder());
+        foreach (var (version, laraBuilder) in _laraBuilders.OrderBy(kv => kv.Key))
+        {
+            Publish(version, laraBuilder);
+        }
     }
 
     private static void Publish(TRGameVersion version, LaraBuilder laraBuilder)
@@ -103,14 +75,14 @@ public static class AssetPublisher
         laraStream.CopyTo(outStream);
 
         var archive = new ZipArchive(outStream, ZipArchiveMode.Update);
-        _publishers[version].ForEach(p =>
+        foreach (var p in _publishers[version].Values)
         {
             var level = p.Publish();
             var rawOutput = SerializeLevel(level);
             var entry = archive.CreateEntry(p.GetPublishedName(), CompressionLevel.Optimal);
             using var zipStream = entry.Open();
             zipStream.Write(rawOutput, 0, rawOutput.Length);
-        });
+        }
 
         foreach (ZipArchiveEntry entry in archive.Entries)
         {
@@ -160,4 +132,11 @@ public interface IPublisher
 {
     TRLevelBase Publish();
     string GetPublishedName();
+}
+
+// A builder pack implements this to register its publishers; the host runs
+// every manifest it discovers after loading builder assemblies.
+public interface IBuilderPackManifest
+{
+    void Register();
 }

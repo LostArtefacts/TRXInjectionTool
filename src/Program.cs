@@ -19,6 +19,13 @@ internal class Program
             .. Assembly.GetExecutingAssembly().GetTypes(),
             .. PluginLoader.LoadPlugins().SelectMany(a => a.GetTypes()),
         ];
+
+        foreach (var manifestType in _types.Where(t =>
+            typeof(IBuilderPackManifest).IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface))
+        {
+            ((IBuilderPackManifest)Activator.CreateInstance(manifestType)).Register();
+        }
+
         _namespaces = _types
             .Where(IsBuilderType)
             .Select(GetBuilderGroup)
