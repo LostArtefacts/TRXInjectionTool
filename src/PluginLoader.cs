@@ -38,10 +38,10 @@ public static class PluginLoader
                     Warn($"skipping plugin {Path.GetFileName(dll)}: missing [assembly: TRXPlugin] stamp");
                     continue;
                 }
-                if (stamp.BinIteration != SdkInfo.BinIteration)
+                if (stamp.FormatMajor != SdkInfo.FormatMajor)
                 {
-                    Warn($"skipping plugin {Path.GetFileName(dll)}: built for bin iteration " +
-                        $"{stamp.BinIteration}, host writes {SdkInfo.BinIteration}");
+                    Warn($"skipping plugin {Path.GetFileName(dll)}: built for format major " +
+                        $"{stamp.FormatMajor}, host writes {SdkInfo.FormatMajor}");
                     continue;
                 }
 

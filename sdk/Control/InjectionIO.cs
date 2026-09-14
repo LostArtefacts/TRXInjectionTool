@@ -13,7 +13,13 @@ namespace TRXInjectionTool.Control;
 public static class InjectionIO
 {
     private static readonly uint _magic = IOUtils.MakeTag('T', 'R', 'X', 'J');
-    private const uint _iteration = SdkInfo.BinIteration;
+    private const uint _iteration = 12; // legacy TRXJ iteration
+
+    // Kept while the TRXJ-to-TRXI transition is validated; the TRXI exporter
+    // is the default and this legacy writer disappears with the cutover.
+    public static bool UseLegacyFormat { get; set; }
+
+    private static readonly InjectionExporter _exporter = new();
 
     public static void Export(InjectionData data, string file)
     {
@@ -22,6 +28,11 @@ public static class InjectionIO
     }
 
     public static byte[] Serialize(InjectionData data)
+    {
+        return UseLegacyFormat ? SerializeLegacy(data) : _exporter.Serialize(data);
+    }
+
+    private static byte[] SerializeLegacy(InjectionData data)
     {
         using MemoryStream stream = new();
         using TRLevelWriter writer = new(stream);

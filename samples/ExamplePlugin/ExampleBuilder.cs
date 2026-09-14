@@ -2,7 +2,7 @@ using TRLevelControl.Model;
 using TRXInjectionTool;
 using TRXInjectionTool.Control;
 
-[assembly: TRXPlugin(SdkInfo.BinIteration)]
+[assembly: TRXPlugin(SdkInfo.FormatMajor)]
 
 namespace ExamplePlugin;
 

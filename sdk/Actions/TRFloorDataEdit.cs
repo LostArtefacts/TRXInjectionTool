@@ -92,6 +92,8 @@ public class FDTrigItem : FDFix
         writer.Write(name);
     }
 
+    public string EffectiveName => Name ?? GenerateName();
+
     private string GenerateName()
         => $"t:{(int)Item.TypeID}_r:{Item.Room}_x:{Item.X}_y:{Item.Y}_z:{Item.Z}";
 }
@@ -145,7 +147,7 @@ public class FDTrigCreateFix : FDFix
     public override FDFixType FixType => FDFixType.TrigCreate;
     public List<FDEntry> Entries { get; set; }
 
-    private List<ushort> Flatten(TRGameVersion version)
+    public List<ushort> Flatten(TRGameVersion version)
     {
         TRFDBuilder builder = new(version);
         return builder.Flatten(Entries);
@@ -227,6 +229,8 @@ public class FDRoomProperties : FDFix
         writer.Write((byte)Reverb);
         writer.Write(FlipGroup ?? _flipGroupUnchanged);
     }
+
+    public ushort CleanedFlags => GetCleanedFlags();
 
     private ushort GetCleanedFlags()
     {

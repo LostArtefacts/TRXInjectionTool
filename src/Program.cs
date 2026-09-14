@@ -140,6 +140,16 @@ internal class Program
                 case "--write-format-docs":
                     Format.FormatDocs.Write(args.Last());
                     return 0;
+                case "--verify-injections":
+                    foreach (var bin in Directory.GetFiles(args.Last(), "*.bin", SearchOption.AllDirectories))
+                    {
+                        Format.InjectionVerifier.Verify(bin);
+                    }
+                    Console.WriteLine("All files verified.");
+                    return 0;
+                case "--legacy-trxj":
+                    Control.InjectionIO.UseLegacyFormat = true;
+                    break;
                 case "-n":
                 case "--no-publish":
                     publishAssets = false;

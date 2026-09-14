@@ -2,7 +2,7 @@ using TRXInjectionTool;
 using TRLevelControl.Model;
 using TRXInjectionTool.Types.TRX.Sparks;
 
-[assembly: TRXPlugin(SdkInfo.BinIteration)]
+[assembly: TRXPlugin(SdkInfo.FormatMajor)]
 
 namespace TRXInjectionTool.Types.TRX;
 

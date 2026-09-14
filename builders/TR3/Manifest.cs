@@ -3,7 +3,7 @@ using TRLevelControl.Model;
 using TRXInjectionTool.Types.TR3.Lara;
 using TRXInjectionTool.Types.TR3.Misc;
 
-[assembly: TRXPlugin(SdkInfo.BinIteration)]
+[assembly: TRXPlugin(SdkInfo.FormatMajor)]
 
 namespace TRXInjectionTool.Types.TR3;
 

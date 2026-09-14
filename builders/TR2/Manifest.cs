@@ -4,7 +4,7 @@ using TRXInjectionTool.Types.TR2.Lara;
 using TRXInjectionTool.Types.TR2.Misc;
 using TRXInjectionTool.Types.TR2.Objects;
 
-[assembly: TRXPlugin(SdkInfo.BinIteration)]
+[assembly: TRXPlugin(SdkInfo.FormatMajor)]
 
 namespace TRXInjectionTool.Types.TR2;
 

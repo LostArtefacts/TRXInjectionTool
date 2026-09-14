@@ -19,7 +19,7 @@ Create a class library targeting `net8.0`, reference the SDK (with
 `InjectionBuilder`:
 
 ```csharp
-[assembly: TRXPlugin(SdkInfo.BinIteration)]
+[assembly: TRXPlugin(SdkInfo.FormatMajor)]
 
 public class MyBuilder : InjectionBuilder
 {
@@ -28,11 +28,12 @@ public class MyBuilder : InjectionBuilder
 }
 ```
 
-The assembly-level `TRXPlugin` stamp is mandatory. `SdkInfo.BinIteration` is
-a constant, so the injection format revision the plugin was compiled against
-is baked into its DLL; the host refuses plugins whose baked iteration
-differs from the format it writes, failing at load time with a clear
-message instead of at run time with a stale-layout `.bin`.
+The assembly-level `TRXPlugin` stamp is mandatory. `SdkInfo.FormatMajor` is
+a constant, so the TRXI container generation the plugin was compiled against
+is baked into its DLL; the host refuses plugins whose baked major differs
+from the format it writes, failing at load time with a clear message instead
+of at run time with a stale-layout `.bin`. Per-chunk format versions evolve
+without invalidating plugins.
 
 See `samples/ExamplePlugin` for a complete minimal plugin and the
 `builders/` packs for real ones.
@@ -67,5 +68,6 @@ registering across games.
 
 ## Current limitations
 
-- The `.bin` output format is the TRX injection format (`TRXJ`); the SDK does
-  not yet expose an exporter seam for other engines.
+- The `.bin` output format is TRXI (see `docs/FORMAT.md`), written through
+  the `IInjectionExporter` seam; the legacy TRXJ writer remains available via
+  `--legacy-trxj` until the TRX-side cutover completes.

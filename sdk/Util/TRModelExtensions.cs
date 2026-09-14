@@ -174,7 +174,7 @@ public static class TRModelExtensions
         writer.Write(objectID);
     }
 
-    private static TRObjectType GetSpriteType(int id, TRGameVersion version)
+    public static TRObjectType GetSpriteType(int id, TRGameVersion version)
     {
         if (_gameSpriteTypes.TryGetValue(version, out HashSet<int> overrides) && overrides.Contains(id))
         {
