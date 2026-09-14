@@ -454,7 +454,7 @@ public sealed class FdPortalOverwrite : FdFix
 [Case(11)]
 public sealed class FdClimbInsert : FdFix
 {
-    [Doc("bit0 +Z, bit1 +X, bit2 -Z, bit3 -X")]
+    [Doc("bit0 +Z, bit1 +X, bit2 -Z, bit3 -X, bit4 monkey swing")]
     public int Direction;
 }
 

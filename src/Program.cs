@@ -147,9 +147,6 @@ internal class Program
                     }
                     Console.WriteLine("All files verified.");
                     return 0;
-                case "--legacy-trxj":
-                    Control.InjectionIO.UseLegacyFormat = true;
-                    break;
                 case "-n":
                 case "--no-publish":
                     publishAssets = false;

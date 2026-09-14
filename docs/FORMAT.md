@@ -906,7 +906,7 @@ then the payload of the matching case.
 
 | Field | Type | Notes |
 |---|---|---|
-| direction | `s32` | bit0 +Z, bit1 +X, bit2 -Z, bit3 -X |
+| direction | `s32` | bit0 +Z, bit1 +X, bit2 -Z, bit3 -X, bit4 monkey swing |
 
 #### Case 12: FdTrigDelete
 
