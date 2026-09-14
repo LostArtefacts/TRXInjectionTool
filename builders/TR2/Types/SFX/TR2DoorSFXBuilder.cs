@@ -60,7 +60,7 @@ public class TR2DoorSFXBuilder : InjectionBuilder
         level.Models[TR2Type.Door1] = model;
         (model.Animations[3].Commands[0] as TRSFXCommand).FrameNumber = 0;
 
-        var data = InjectionData.Create(level, InjectionType.General, $"door{TR2Type.Door1}_sfx", true);
+        var data = InjectionData.Create(level, InjectionType.General, $"door{(int)TR2Type.Door1}_sfx", true);
         data.Animations.Clear();
         data.AnimFrames.Clear();
         data.AnimChanges.Clear();
