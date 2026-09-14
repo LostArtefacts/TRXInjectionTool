@@ -90,6 +90,7 @@ public static class InjectionIO
         {
             byte[] name = Encoding.ASCII.GetBytes(symbol.Name);
             symbolWriter.Write((int)symbol.Context);
+            symbolWriter.Write(symbol.Slot);
             symbolWriter.Write(name.Length);
             symbolWriter.Write(name);
             symbolWriter.Write(0); // flags
@@ -180,18 +181,21 @@ public static class InjectionIO
             s => data.SpriteTextures.ForEach(t => s.Write(t.Serialize())));
 
         blockCount += WriteBlock(BlockType.SpriteSequences,
-            data.SpriteSequences.Count + data.SymbolSpriteSequences.Count, writer,
-            s =>
+            data.SpriteSequences.Count, writer,
+            s => data.SpriteSequences.ForEach(t =>
             {
-                data.SpriteSequences.ForEach(t => t.Serialize(s, data.GameVersion));
-                data.SymbolSpriteSequences.ForEach(t =>
+                if (data.IsSymbol(SymbolContext.Objects, t.SpriteID))
                 {
                     s.Write((int)TRObjectType.Symbol);
-                    s.Write(t.SymbolIndex);
-                    s.Write(t.SpriteCount);
-                    s.Write(t.StartIndex);
-                });
-            });
+                    s.Write(t.SpriteID);
+                    s.Write(t.NegativeLength);
+                    s.Write((ushort)0);
+                }
+                else
+                {
+                    t.Serialize(s, data.GameVersion);
+                }
+            }));
 
         return blockCount;
     }
@@ -240,7 +244,10 @@ public static class InjectionIO
         int blockCount = 0;
 
         blockCount += WriteBlock(BlockType.Objects, data.Models.Count, writer,
-            s => data.Models.ForEach(m => m.Serialize(s, data.GameVersion, data.IsMeshOnlyModel(m.ID))));
+            s => data.Models.ForEach(m => m.Serialize(
+                s, data.GameVersion, data.IsMeshOnlyModel(m.ID),
+                data.IsSymbol(SymbolContext.Objects, (int)m.ID)
+                    ? TRObjectType.Symbol : TRObjectType.Game)));
 
         blockCount += WriteBlock(BlockType.StaticObjects, data.StaticObjects.Count, writer,
             s => data.StaticObjects.ForEach(m => s.Write(m.Serialize())));
@@ -252,11 +259,14 @@ public static class InjectionIO
     {
         int blockCount = 0;
 
-        blockCount += WriteBlock(BlockType.SampleInfos, data.SFX.Count, writer,
-            s => data.SFX.ForEach(f => f.Serialize(s, data.GameVersion)));
+        var plainSFX = data.SFX.FindAll(f => !data.IsSymbol(SymbolContext.Samples, f.ID));
+        var namedSFX = data.SFX.FindAll(f => data.IsSymbol(SymbolContext.Samples, f.ID));
 
-        blockCount += WriteBlock(BlockType.NamedSampleInfos, data.NamedSFX.Count, writer,
-            s => data.NamedSFX.ForEach(f => f.Serialize(s, data.GameVersion)));
+        blockCount += WriteBlock(BlockType.SampleInfos, plainSFX.Count, writer,
+            s => plainSFX.ForEach(f => f.Serialize(s, data.GameVersion)));
+
+        blockCount += WriteBlock(BlockType.NamedSampleInfos, namedSFX.Count, writer,
+            s => namedSFX.ForEach(f => f.Serialize(s, data.GameVersion)));
 
         return blockCount;
     }

@@ -114,9 +114,10 @@ public static class TRModelExtensions
         vertex.Lighting = (short)((a1 << 15) | (r5n << 10) | (g5n << 5) | b5n);
     }
 
-    public static void Serialize(this LM.TRModel model, TRLevelWriter writer, TRGameVersion version, bool isMeshOnly)
+    public static void Serialize(this LM.TRModel model, TRLevelWriter writer, TRGameVersion version, bool isMeshOnly,
+        TRObjectType objectType = TRObjectType.Game)
     {
-        writer.Write((int)model.ID, TRObjectType.Game, version);
+        writer.Write((int)model.ID, objectType, version);
         writer.Write(model.NumMeshes);
         writer.Write(model.StartingMesh);
         writer.Write(model.MeshTree);
@@ -162,7 +163,7 @@ public static class TRModelExtensions
 
     public static void Write(this TRLevelWriter writer, int objectID, TRObjectType objectType, TRGameVersion version)
     {
-        if (objectType != TRObjectType.Game)
+        if (objectType is TRObjectType.Static2D or TRObjectType.Static3D)
         {
             int sceneryBase = version.GetSceneryBase();
             Debug.Assert(objectID >= sceneryBase);

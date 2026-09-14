@@ -45,15 +45,9 @@ public class SparksBuilder : InjectionBuilder, IPublisher
             data.Symbols.Add(new()
             {
                 Context = SymbolContext.Objects,
+                Slot = data.SpriteSequences[0].SpriteID,
                 Name = _symbol,
             });
-            data.SymbolSpriteSequences.Add(new()
-            {
-                SymbolIndex = data.Symbols.Count - 1,
-                SpriteCount = (short)-data.SpriteTextures.Count,
-                StartIndex = 0,
-            });
-            data.SpriteSequences.Clear();
             return data;
         });
 

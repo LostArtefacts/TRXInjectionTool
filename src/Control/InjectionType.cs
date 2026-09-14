@@ -19,7 +19,7 @@ public enum TRObjectType
     Game,
     Static2D,
     Static3D,
-    // The number written is an index into the file's symbol table rather than a
-    // slot, so what it names does not depend on the numbers another mod took.
+    // The number written is a local slot the file's symbol table maps to a
+    // name, so what it means does not depend on the numbers another mod took.
     Symbol,
 }

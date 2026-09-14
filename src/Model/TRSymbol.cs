@@ -1,11 +1,13 @@
 namespace TRXInjectionTool.Model;
 
-// One name the file brings, and the catalog it belongs to. A chunk states this
-// symbol's index in place of a slot, so the file says what it means rather than
-// what number it happened to be given.
+// One name the file brings, the catalog it belongs to, and the local slot it
+// stands for. A record that means the name writes the same slot with a symbol
+// marker, so the file says what it means rather than what number it happened
+// to be given.
 public class TRSymbol
 {
     public SymbolContext Context { get; set; }
+    public int Slot { get; set; }
     public string Name { get; set; }
 }
 
