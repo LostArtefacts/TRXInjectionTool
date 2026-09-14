@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# Reformat trview-managed location JSON to the committed style: two-space
+# indentation with each location object on a single line. trview writes one
+# value per line, which bloats diffs; this mirrors the serializer the tool
+# itself uses (JsonUtils.Serialize), so either producer settles on the same
+# bytes. Runs standalone - no build of the tool required.
+import json
+import re
+import sys
+
+
+def reformat(text: str) -> str:
+    data = json.loads(text)
+    verbose = json.dumps(data, indent=2)
+    collapsed = re.sub(
+        r"\{\s+([^{}]+?)\s+\}",
+        lambda m: "{ " + re.sub(r"\s+", " ", m.group(1)) + " }",
+        verbose,
+    )
+    return collapsed + "\n"
+
+
+def main() -> int:
+    for path in sys.argv[1:]:
+        with open(path, encoding="utf-8") as handle:
+            text = handle.read()
+        formatted = reformat(text)
+        if formatted != text:
+            with open(path, "w", encoding="utf-8") as handle:
+                handle.write(formatted)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

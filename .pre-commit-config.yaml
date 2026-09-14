@@ -1,0 +1,8 @@
+repos:
+- repo: local
+  hooks:
+  - id: format-locations
+    name: Location JSON keeps one object per line
+    entry: tools/format_locations
+    language: python
+    files: crystals\.json$
