@@ -40,9 +40,6 @@ public static class CrystalUtils
             })];
         }
 
-        // The location list is managed through trview, so ensure it is reformatted
-        // to avoid line bloat. This assumes the given path matches repo structure.
-        JsonUtils.Serialize(locations, $"../../{path}");
         return crystals;
     }
 
