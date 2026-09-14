@@ -47,7 +47,7 @@ public sealed class TextureSampleTest
 }
 
 [FormatRecord]
-[Applicability(4, "GAME_VERSION", Doc = "Every file carries one; the writer prepends it unconditionally.")]
+[Applicability(4, "GAME_VERSION", Doc = "Written unless the file declares itself game-neutral; a file with no game test applies to every game its content fits.")]
 public sealed class GameVersionTest
 {
     [Doc("1 = TR1 ... 5 = TR5")]

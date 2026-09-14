@@ -63,10 +63,11 @@ public class InjectionExporter : IInjectionExporter
     private static void WriteTests(InjectionData data, BinaryWriter writer)
     {
         List<(int Type, int Version, object Dto)> tests =
-        [
-            (4, 1, new W.GameVersionTest { Game = (int)data.GameVersion + 1 }),
-            .. data.ApplicabilityTests.Select(t => MapTest(t, data.GameVersion)),
-        ];
+            [.. data.ApplicabilityTests.Select(t => MapTest(t, data.GameVersion))];
+        if (!data.AppliesToAllGames)
+        {
+            tests.Insert(0, (4, 1, new W.GameVersionTest { Game = (int)data.GameVersion + 1 }));
+        }
 
         writer.Write((uint)tests.Count);
         foreach (var (type, version, dto) in tests)
@@ -527,17 +528,29 @@ public class InjectionExporter : IInjectionExporter
             OffsetZ = t.OffsetZ,
         }).ToList());
 
-        if (data.AnimFrames.Count > 0)
+        var canonical = CanonicalFrames.Decode(data);
+        blockCount += WriteBlock(writer, 11, canonical.Frames.Select(f => new W.AnimFrame
         {
-            using var ms = new MemoryStream();
-            using var sub = new BinaryWriter(ms);
-            data.AnimFrames.ForEach(sub.Write);
-            blockCount += WriteRawBlock(writer, 11, data.AnimFrames.Count, ms.ToArray());
-        }
+            MinX = f.MinX,
+            MaxX = f.MaxX,
+            MinY = f.MinY,
+            MaxY = f.MaxY,
+            MinZ = f.MinZ,
+            MaxZ = f.MaxZ,
+            OffsetX = f.OffsetX,
+            OffsetY = f.OffsetY,
+            OffsetZ = f.OffsetZ,
+            Rotations = [.. f.Rotations.Select(r => new W.FrameRotation
+            {
+                X = r.X,
+                Y = r.Y,
+                Z = r.Z,
+            })],
+        }).ToList());
 
-        blockCount += WriteBlock(writer, 12, data.Animations.Select(a => new W.Animation
+        blockCount += WriteBlock(writer, 12, data.Animations.Select((a, i) => new W.Animation
         {
-            FrameOffset = a.FrameOffset,
+            FrameOffset = (uint)canonical.AnimFirstOrdinal[i],
             FrameRate = a.FrameRate,
             FrameSize = a.FrameSize,
             StateID = a.StateID,
@@ -558,6 +571,45 @@ public class InjectionExporter : IInjectionExporter
         return blockCount;
     }
 
+    // A model with an animation resolves its frames through it, so a stale
+    // frame offset falls back to the animation's first frame; only a model
+    // borrowing frames with no animation needs the offset to land exactly.
+    private static uint ModelFrameOrdinal(
+        CanonicalFrames.Result canonical, InjectionData data,
+        TRLevelReader.Model.TRModel model)
+    {
+        if (canonical.OrdinalByOffset.TryGetValue(model.FrameOffset, out var ordinal))
+        {
+            return (uint)ordinal;
+        }
+        if (model.Animation != ushort.MaxValue && model.Animation < data.Animations.Count)
+        {
+            return FrameOrdinal(canonical, data.Animations[model.Animation].FrameOffset);
+        }
+        if (canonical.Frames.Count == 0)
+        {
+            // A file with no frames of its own: the record borrows frames at
+            // the join of the level's arena, which ordinal zero denotes.
+            return 0;
+        }
+        throw new InvalidDataException(
+            $"model {model.ID}: frame offset {model.FrameOffset} sits on no frame boundary");
+    }
+
+    private static uint FrameOrdinal(CanonicalFrames.Result canonical, uint byteOffset)
+    {
+        if (byteOffset == uint.MaxValue)
+        {
+            return uint.MaxValue;
+        }
+        if (!canonical.OrdinalByOffset.TryGetValue(byteOffset, out var ordinal))
+        {
+            throw new InvalidDataException(
+                $"frame offset {byteOffset} sits on no frame boundary");
+        }
+        return (uint)ordinal;
+    }
+
     private static FormatFixed32 Fixed(TRLevelReader.Model.FixedFloat32 f)
         => f == null ? new() : new() { Whole = f.Whole, Fraction = f.Fraction };
 
@@ -565,6 +617,7 @@ public class InjectionExporter : IInjectionExporter
 
     private static int WriteObjectData(InjectionData data, BinaryWriter writer)
     {
+        var canonical = CanonicalFrames.Decode(data);
         int blockCount = WriteBlock(writer, 13, data.Models.Select(m => new W.Model
         {
             ID = Ref((int)m.ID,
@@ -574,7 +627,8 @@ public class InjectionExporter : IInjectionExporter
             NumMeshes = m.NumMeshes,
             StartingMesh = m.StartingMesh,
             MeshTree = m.MeshTree,
-            FrameOffset = data.IsMeshOnlyModel(m.ID) ? uint.MaxValue : m.FrameOffset,
+            FrameOffset = data.IsMeshOnlyModel(m.ID)
+                ? uint.MaxValue : ModelFrameOrdinal(canonical, data, m),
             Animation = m.Animation,
         }).ToList());
 

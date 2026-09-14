@@ -13,6 +13,13 @@ public class InjectionData
     public string Name { get; set; }
     public InjectionType InjectionType { get; set; }
     public TRGameVersion GameVersion { get; set; }
+    // A game-neutral file gets no game-version gate; its content must hold
+    // for every game, which the canonical format makes possible.
+    public bool AppliesToAllGames { get; set; }
+    // One entry per animation: how many mesh rotations its frames carry.
+    // Taken from the source level's models, which know their mesh counts
+    // even when the file ships no model records of its own.
+    public List<int> AnimMeshCounts { get; set; } = [];
     public List<ApplicabilityTest> ApplicabilityTests { get; set; } = [];
     public List<TRSymbol> Symbols { get; set; } = [];
 
@@ -101,6 +108,23 @@ public class InjectionData
         throw new Exception("Only TR1-4 levels supported");
     }
 
+
+    private static List<int> CollectAnimMeshCounts<T, M>(
+        TRDictionary<T, M> models)
+        where T : Enum
+        where M : TRModel
+    {
+        var counts = new List<int>();
+        foreach (var model in models.Values)
+        {
+            for (int i = 0; i < model.Animations.Count; i++)
+            {
+                counts.Add(model.Meshes.Count);
+            }
+        }
+        return counts;
+    }
+
     public static InjectionData Create(TR1Level controlledLevel, InjectionType type, string name, bool removeMeshData = false)
     {
         // We convert to old-style flat level to simplify export later.
@@ -149,6 +173,7 @@ public class InjectionData
             SpriteTextures = [.. flatLevel.SpriteTextures],
             CinematicFrames = [.. flatLevel.CinematicFrames],
         };
+        data.AnimMeshCounts = CollectAnimMeshCounts(controlledLevel.Models);
 
         for (int i = 0; i < sounds.Length; i++)
         {
@@ -222,6 +247,7 @@ public class InjectionData
             SpriteTextures = [.. flatLevel.SpriteTextures],
             CinematicFrames = [.. flatLevel.CinematicFrames],
         };
+        data.AnimMeshCounts = CollectAnimMeshCounts(controlledLevel.Models);
 
         for (int i = 0; i < sounds.Length; i++)
         {
@@ -288,6 +314,7 @@ public class InjectionData
             SpriteTextures = [.. flatLevel.SpriteTextures],
             CinematicFrames = [.. flatLevel.CinematicFrames],
         };
+        data.AnimMeshCounts = CollectAnimMeshCounts(controlledLevel.Models);
 
         for (int i = 0; i < sounds.Length; i++)
         {
@@ -348,6 +375,7 @@ public class InjectionData
             SpriteTextures = Convert(controlledLevel.Sprites.Values.SelectMany(s => s.Textures)),
             FlybyCameras = [.. flatLevel.LevelDataChunk.FlybyCameras],
         };
+        data.AnimMeshCounts = CollectAnimMeshCounts(controlledLevel.Models);
 
         for (int i = 0; i < sounds.Length; i++)
         {

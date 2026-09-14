@@ -171,17 +171,37 @@ public sealed class AnimBone
 }
 
 [FormatRecord]
-[Block(Container.AnimationData, 11, "ANIM_FRAMES")]
-public sealed class AnimFrames
+public sealed class FrameRotation
 {
-    [ImpliedLength("packed frame data; interpreted via model frame offsets")]
-    public ushort[] Words;
+    [Doc("16-bit angle units")]
+    public short X;
+    public short Y;
+    public short Z;
+}
+
+[FormatRecord(Doc = "One canonical layout for every game; the engine packs frames into its native form at load.")]
+[Block(Container.AnimationData, 11, "ANIM_FRAMES")]
+public sealed class AnimFrame
+{
+    public short MinX;
+    public short MaxX;
+    public short MinY;
+    public short MaxY;
+    public short MinZ;
+    public short MaxZ;
+    public short OffsetX;
+    public short OffsetY;
+    public short OffsetZ;
+    [LengthPrefix(typeof(ushort))]
+    [Doc("one rotation per mesh")]
+    public FrameRotation[] Rotations;
 }
 
 [FormatRecord(Doc = "TR4 superset; converters drop fields the target game lacks.")]
 [Block(Container.AnimationData, 12, "ANIMS")]
 public sealed class Animation
 {
+    [Doc("ordinal of the animation's first frame in this file's ANIM_FRAMES")]
     public uint FrameOffset;
     public byte FrameRate;
     public byte FrameSize;
@@ -210,7 +230,7 @@ public sealed class Model
     public ushort NumMeshes;
     public ushort StartingMesh;
     public uint MeshTree;
-    [Doc("0xFFFFFFFF = mesh-only model")]
+    [Doc("frame ordinal in this file's ANIM_FRAMES; 0xFFFFFFFF = mesh-only model")]
     public uint FrameOffset;
     public ushort Animation;
 }

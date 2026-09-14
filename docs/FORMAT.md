@@ -122,7 +122,7 @@ an unknown condition cannot be assumed to hold.
 
 ### Test 4: GAME_VERSION (version 1)
 
-Every file carries one; the writer prepends it unconditionally.
+Written unless the file declares itself game-neutral; a file with no game test applies to every game its content fits.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -287,7 +287,7 @@ One face encoding for all games; records are packed, no trailing alignment. elem
 | 8 | ANIM_RANGES | AnimRange |  |
 | 9 | ANIM_COMMANDS | AnimCommand |  |
 | 10 | ANIM_BONES | AnimBone |  |
-| 11 | ANIM_FRAMES | AnimFrames |  |
+| 11 | ANIM_FRAMES | AnimFrame |  |
 | 12 | ANIMS | Animation |  |
 
 #### AnimChange
@@ -322,11 +322,30 @@ One face encoding for all games; records are packed, no trailing alignment. elem
 | offsetY | `s32` |  |
 | offsetZ | `s32` |  |
 
-#### AnimFrames
+#### AnimFrame
+
+One canonical layout for every game; the engine packs frames into its native form at load.
 
 | Field | Type | Notes |
 |---|---|---|
-| words | `u16[] — packed frame data; interpreted via model frame offsets` |  |
+| minX | `s16` |  |
+| maxX | `s16` |  |
+| minY | `s16` |  |
+| maxY | `s16` |  |
+| minZ | `s16` |  |
+| maxZ | `s16` |  |
+| offsetX | `s16` |  |
+| offsetY | `s16` |  |
+| offsetZ | `s16` |  |
+| rotations | `u16 count, FrameRotation[count]` | one rotation per mesh |
+
+#### FrameRotation
+
+| Field | Type | Notes |
+|---|---|---|
+| x | `s16` | 16-bit angle units |
+| y | `s16` |  |
+| z | `s16` |  |
 
 #### Animation
 
@@ -334,7 +353,7 @@ TR4 superset; converters drop fields the target game lacks.
 
 | Field | Type | Notes |
 |---|---|---|
-| frameOffset | `u32` |  |
+| frameOffset | `u32` | ordinal of the animation's first frame in this file's ANIM_FRAMES |
 | frameRate | `u8` |  |
 | frameSize | `u8` |  |
 | stateID | `u16` |  |
@@ -366,7 +385,7 @@ TR4 superset; converters drop fields the target game lacks.
 | numMeshes | `u16` |  |
 | startingMesh | `u16` |  |
 | meshTree | `u32` |  |
-| frameOffset | `u32` | 0xFFFFFFFF = mesh-only model |
+| frameOffset | `u32` | frame ordinal in this file's ANIM_FRAMES; 0xFFFFFFFF = mesh-only model |
 | animation | `u16` |  |
 
 #### StaticObject
