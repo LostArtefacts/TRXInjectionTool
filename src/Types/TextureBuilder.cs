@@ -44,7 +44,10 @@ public abstract class TextureBuilder : InjectionBuilder
     protected static TRRoomTextureReface Reface(TRLevelBase level, short roomIndex, TRMeshFaceType targetType,
         TRMeshFaceType sourceType, ushort texture, short targetIndex)
     {
-        TextureSource source = GetSource(level, sourceType, texture);
+        TextureSource source = GetSource(level, sourceType, texture)
+            ?? throw new InvalidDataException(
+                $"No {sourceType} face with texture {texture} exists in any room - " +
+                "the reference level file likely comes from another game revision.");
         return new()
         {
             RoomIndex = roomIndex,
