@@ -21,6 +21,25 @@
     <ProjectReference Include="..\sdk\TRXInjection.Sdk.csproj" />
   </ItemGroup>
 
+  <!-- The builder packs are plugins, but building the host stages them into
+       its own Plugins folder so running from the IDE or dotnet run finds
+       them without extra steps. -->
+  <ItemGroup>
+    <ProjectReference Include="..\builders\TR1\TRXBuilders.TR1.csproj;..\builders\TR2\TRXBuilders.TR2.csproj;..\builders\TR3\TRXBuilders.TR3.csproj;..\builders\TR4\TRXBuilders.TR4.csproj;..\builders\TRX\TRXBuilders.TRX.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>BuilderPack</OutputItemType>
+      <Private>false</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="StageBuilderPacks" AfterTargets="Build">
+    <Copy SourceFiles="@(BuilderPack)" DestinationFolder="$(OutDir)Plugins" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="PublishBuilderPacks" AfterTargets="Publish">
+    <Copy SourceFiles="@(BuilderPack)" DestinationFolder="$(PublishDir)Plugins" SkipUnchangedFiles="true" />
+  </Target>
+
   <ItemGroup>
     <None Include="Resources\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
