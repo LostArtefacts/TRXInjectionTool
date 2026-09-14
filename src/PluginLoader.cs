@@ -27,20 +27,40 @@ public static class PluginLoader
             {
                 var assembly = context.LoadFromAssemblyName(
                     new AssemblyName(Path.GetFileNameWithoutExtension(dll)));
-                if (assembly.GetTypes().Any(t => t.IsSubclassOf(typeof(InjectionBuilder)) && !t.IsAbstract))
+                if (!assembly.GetTypes().Any(t => t.IsSubclassOf(typeof(InjectionBuilder)) && !t.IsAbstract))
                 {
-                    assemblies.Add(assembly);
+                    continue;
                 }
+
+                var stamp = assembly.GetCustomAttribute<TRXPluginAttribute>();
+                if (stamp == null)
+                {
+                    Warn($"skipping plugin {Path.GetFileName(dll)}: missing [assembly: TRXPlugin] stamp");
+                    continue;
+                }
+                if (stamp.BinIteration != SdkInfo.BinIteration)
+                {
+                    Warn($"skipping plugin {Path.GetFileName(dll)}: built for bin iteration " +
+                        $"{stamp.BinIteration}, host writes {SdkInfo.BinIteration}");
+                    continue;
+                }
+
+                assemblies.Add(assembly);
             }
             catch (Exception e) when (e is BadImageFormatException or ReflectionTypeLoadException)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"WARNING: skipping plugin {Path.GetFileName(dll)}: {e.Message}");
-                Console.ResetColor();
+                Warn($"skipping plugin {Path.GetFileName(dll)}: {e.Message}");
             }
         }
 
         return assemblies;
+    }
+
+    private static void Warn(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"WARNING: {message}");
+        Console.ResetColor();
     }
 
     private class PluginLoadContext : AssemblyLoadContext

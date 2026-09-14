@@ -2,6 +2,8 @@ using TRLevelControl.Model;
 using TRXInjectionTool;
 using TRXInjectionTool.Control;
 
+[assembly: TRXPlugin(SdkInfo.BinIteration)]
+
 namespace ExamplePlugin;
 
 // Minimal proof that builders can live outside the host assembly: produces a

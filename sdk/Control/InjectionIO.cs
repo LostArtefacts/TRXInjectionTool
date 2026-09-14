@@ -13,7 +13,7 @@ namespace TRXInjectionTool.Control;
 public static class InjectionIO
 {
     private static readonly uint _magic = IOUtils.MakeTag('T', 'R', 'X', 'J');
-    private const uint _iteration = 12;
+    private const uint _iteration = SdkInfo.BinIteration;
 
     public static void Export(InjectionData data, string file)
     {

@@ -19,12 +19,20 @@ Create a class library targeting `net8.0`, reference the SDK (with
 `InjectionBuilder`:
 
 ```csharp
+[assembly: TRXPlugin(SdkInfo.BinIteration)]
+
 public class MyBuilder : InjectionBuilder
 {
     public override string ID => "my_builder";
     public override List<InjectionData> Build() => ...;
 }
 ```
+
+The assembly-level `TRXPlugin` stamp is mandatory. `SdkInfo.BinIteration` is
+a constant, so the injection format revision the plugin was compiled against
+is baked into its DLL; the host refuses plugins whose baked iteration
+differs from the format it writes, failing at load time with a clear
+message instead of at run time with a stale-layout `.bin`.
 
 See `samples/ExamplePlugin` for a complete minimal plugin and the
 `builders/` packs for real ones.
