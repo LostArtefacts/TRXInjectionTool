@@ -25,7 +25,7 @@
        its own Plugins folder so running from the IDE or dotnet run finds
        them without extra steps. -->
   <ItemGroup>
-    <ProjectReference Include="..\builders\TR1\TRXBuilders.TR1.csproj;..\builders\TR2\TRXBuilders.TR2.csproj;..\builders\TR3\TRXBuilders.TR3.csproj;..\builders\TR4\TRXBuilders.TR4.csproj;..\builders\TRX\TRXBuilders.TRX.csproj">
+    <ProjectReference Include="..\builders\TR1\TRXBuilders.TR1.csproj;..\builders\TR2\TRXBuilders.TR2.csproj;..\builders\TR3\TRXBuilders.TR3.csproj;..\builders\TR4\TRXBuilders.TR4.csproj;..\builders\TRX\TRXBuilders.TRX.csproj;..\builders\Contrib\TRXBuilders.Contrib.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>BuilderPack</OutputItemType>
       <Private>false</Private>
