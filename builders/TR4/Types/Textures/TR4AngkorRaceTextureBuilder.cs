@@ -16,6 +16,8 @@ public class TR4AngkorRaceTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(FixRoom31(level));
         data.RoomEdits.AddRange(FixRoom99_103(level));
         data.RoomEdits.Add(FixRoom4(level));
+        data.RoomEdits.AddRange(FixSwitch57(level));
+        data.StaticMeshEdits.AddRange(FixStaticBoxes(level));
 
         return [data];
     }
@@ -165,5 +167,46 @@ public class TR4AngkorRaceTextureBuilder : TextureBuilder
     {
         var tex = level.Rooms[4].Mesh.Triangles[50].Texture;
         return Reface(level, 4, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, tex, 52);
+    }    
+
+    private static IEnumerable<TRRoomTextureEdit> FixSwitch57(TR4Level level)
+    {
+        const short roomIdx = 99;
+        var room = level.Rooms[roomIdx];
+        var vtxPos = new List<ushort>();
+
+        TRRoomVertexCreate MakeVertex(int faceIdx, int vertIdx)
+        {
+            var vtx = room.Mesh.Vertices[room.Mesh.Rectangles[faceIdx].Vertices[vertIdx]];
+            vtxPos.Add((ushort)room.Mesh.Vertices.Count);
+            var vertex = CreateVertex(roomIdx, room, vtx, shift: 0);
+            vertex.Vertex.Vertex.X -= TRConsts.Step4;
+            return vertex;
+        }
+
+        yield return MakeVertex(21, 0);
+        yield return MakeVertex(21, 3);
+        yield return CreateFace(roomIdx, roomIdx, 21, TRMeshFaceType.TexturedQuad,
+        [
+            room.Mesh.Rectangles[21].Vertices[0],
+            vtxPos[0],
+            vtxPos[1],
+            room.Mesh.Rectangles[21].Vertices[3],
+            
+        ]);
+    }
+
+    private static IEnumerable<TRStaticMeshEdit> FixStaticBoxes(TR4Level level)
+    {
+        for (int i = 1; i <= 4; i++)
+        {
+            var mesh = level.StaticMeshes[(TR4Type)((int)TR4Type.SceneryBase + i)];
+            mesh.VisibilityBox.MaxY = 0;
+            yield return new()
+            {
+                TypeID = i,
+                Mesh = mesh,
+            };
+        }
     }
 }
