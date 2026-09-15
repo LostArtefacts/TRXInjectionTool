@@ -20,6 +20,11 @@ public abstract class InjectionBuilder
 
     public virtual string ID { get; } = string.Empty;
 
+    // Files the builder reads that the repository does not carry, such as the
+    // assets of another game. The builder is skipped when any is absent, so a
+    // run that covers everything still works without them.
+    public virtual IEnumerable<string> RequiredResources => [];
+
     public abstract List<InjectionData> Build();
 
     protected static void CreateDefaultTests(InjectionData data, string levelName)

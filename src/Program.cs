@@ -181,6 +181,26 @@ internal class Program
         return 0;
     }
 
+    // A link that leads nowhere satisfies File.Exists, which reads the link
+    // and not what it points at. Large inputs are often linked in rather than
+    // copied, so the target is followed to its end before it is believed.
+    private static bool ResourceExists(string path)
+    {
+        if (!File.Exists(path))
+        {
+            return false;
+        }
+
+        try
+        {
+            return File.ResolveLinkTarget(path, returnFinalTarget: true)?.Exists != false;
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+    }
+
     private static bool IsBuilderType(Type t)
     {
         return t.IsSubclassOf(typeof(InjectionBuilder)) && !t.IsAbstract;
@@ -202,6 +222,16 @@ internal class Program
         {
             Console.WriteLine($"\t{type.Name}");
             InjectionBuilder builder = (InjectionBuilder)Activator.CreateInstance(type);
+
+            var missing = builder.RequiredResources.Where(r => !ResourceExists(r)).ToList();
+            if (missing.Count > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"\t\tSKIPPED: missing {string.Join(", ", missing)}");
+                Console.ResetColor();
+                continue;
+            }
+
             List<InjectionData> dataGroup = builder.Build();
 
             foreach (InjectionData data in dataGroup)
