@@ -589,8 +589,16 @@ public abstract class InjectionBuilder
         };
     }
 
+    // A file that names no game sits above them all; the rest are filed under
+    // the one they carry a test for.
     public static string MakeOutputPath(InjectionData data)
     {
+        if (data.AppliesToAllGames)
+        {
+            Directory.CreateDirectory("Output");
+            return $"Output/{data.Name}.bin";
+        }
+
         return MakeOutputPath(data.GameVersion, $"{data.Name}.bin");
     }
 
