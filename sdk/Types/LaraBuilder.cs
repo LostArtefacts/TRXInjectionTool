@@ -77,6 +77,7 @@ public abstract class LaraBuilder : InjectionBuilder
         SlideForward = 70,
         JumpBack = 75,
         JumpForward = 77,
+        Land = 82,
         UnderwaterSwimForward = 86,
         UnderwaterSwimGlide = 87,
         JumpForwardToReach = 94,
@@ -1360,6 +1361,13 @@ public abstract class LaraBuilder : InjectionBuilder
             AddChange(anim, LaraState.Reach, 5, 6, runToGrabRightAnim, 0); // Right is correct
             SortChanges(anim);
         }
+
+        {
+            // Ensure Lara stops during early/late grabs when her goal state changes as such.
+            // TR3+ did not include this, whereas regular LA_REACH does handle it.
+            AddChange(lara, jumpStartToGrabEarly, LaraState.Stop, 0, 10, LaraAnim.Land, 0);
+            AddChange(lara, jumpStartToGrabLate, LaraState.Stop, 0, 10, LaraAnim.Land, 0);
+        }
     }
 
     private static void SortChanges(TRAnimation anim)
@@ -1882,6 +1890,8 @@ public abstract class LaraBuilder : InjectionBuilder
             TR4LaraAnim.DoorOpenBack,
             TR4LaraAnim.DoorOpenForward,
             TR4LaraAnim.DoubledoorsPush,
+            TR4LaraAnim.FastPushblockPullStop,
+            TR4LaraAnim.FastPushblockPushStop,
             TR4LaraAnim.FillWaterskin,
             TR4LaraAnim.FloorTrapdoorOpen,
             TR4LaraAnim.HarpPlay,
