@@ -8,7 +8,7 @@ public struct FormatVertex
     public short X, Y, Z;
 }
 
-[FormatRecord(Doc = "Canonical (TR1/TR2-style) UV encoding, byte order as in classic level files; the TR3 on-disk quirk is normalised by the writer. Each coordinate reads as a u16 little-endian fixed-point value.")]
+[FormatRecord(Doc = "Canonical UV encoding, byte order as in classic level files. Each coordinate reads as a u16 little-endian fixed-point value.")]
 public struct FormatUV
 {
     public byte UCoord, UPixel, VCoord, VPixel;

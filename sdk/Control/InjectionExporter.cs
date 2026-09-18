@@ -286,7 +286,7 @@ public class InjectionExporter : IInjectionExporter
     private static int WriteTextureInfo(InjectionData data, BinaryWriter writer)
     {
         int blockCount = WriteBlock(writer, 2,
-            data.ObjectTextures.Select(t => MapObjectTexture(t, data.GameVersion)).ToList());
+            data.ObjectTextures.Select(t => MapObjectTexture(t)).ToList());
 
         blockCount += WriteBlock(writer, 3, data.SpriteTextures.Select(t => new W.SpriteTexture
         {
@@ -315,7 +315,7 @@ public class InjectionExporter : IInjectionExporter
         return blockCount;
     }
 
-    private static W.ObjectTexture MapObjectTexture(Model.TRFlatObjectTexture t, TRGameVersion version)
+    private static W.ObjectTexture MapObjectTexture(Model.TRFlatObjectTexture t)
     {
         // Build canonical u16 coordinate pairs; TRLevelReader reads the first
         // on-disk byte into Whole, so the u16 value is Whole | Fraction << 8.
@@ -327,10 +327,6 @@ public class InjectionExporter : IInjectionExporter
         {
             u[i] = (ushort)(t.Vertices[i].XCoordinate.Whole | (t.Vertices[i].XCoordinate.Fraction << 8));
             v[i] = (ushort)(t.Vertices[i].YCoordinate.Whole | (t.Vertices[i].YCoordinate.Fraction << 8));
-        }
-        if (version == TRGameVersion.TR3)
-        {
-            DecodeTR3UVs(u, v);
         }
         for (int i = 0; i < 4; i++)
         {
@@ -385,40 +381,6 @@ public class InjectionExporter : IInjectionExporter
         originalV = (uint)(activeV.Min() << 16);
         widthMinusOne = (uint)Math.Max(0, activeU.Max() - activeU.Min() - 1);
         heightMinusOne = (uint)Math.Max(0, activeV.Max() - activeV.Min() - 1);
-    }
-
-    private static void DecodeTR3UVs(ushort[] u, ushort[] v)
-    {
-        short[] uv = new short[u.Length * 2];
-        for (int i = 0; i < u.Length; i++)
-        {
-            uv[i * 2] = (short)u[i];
-            uv[i * 2 + 1] = (short)v[i];
-        }
-
-        byte flags = 0;
-        for (int i = 0; i < uv.Length; i++)
-        {
-            if ((uv[i] & 0x80) != 0)
-            {
-                uv[i] |= 0x00FF;
-                flags |= (byte)(1 << i);
-            }
-            else
-            {
-                uv[i] &= unchecked((short)0xFF00);
-            }
-        }
-        for (int i = 0; i < uv.Length; i++)
-        {
-            uv[i] += (flags & 1) != 0 ? (short)-256 : (short)256;
-            flags >>= 1;
-        }
-        for (int i = 0; i < u.Length; i++)
-        {
-            u[i] = (ushort)uv[i * 2];
-            v[i] = (ushort)uv[i * 2 + 1];
-        }
     }
 
     // --- Mesh data ---

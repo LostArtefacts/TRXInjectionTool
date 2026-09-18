@@ -1153,7 +1153,7 @@ How a sample's audio data is carried.
 
 #### uv
 
-Canonical (TR1/TR2-style) UV encoding, byte order as in classic level files; the TR3 on-disk quirk is normalised by the writer. Each coordinate reads as a u16 little-endian fixed-point value.
+Canonical UV encoding, byte order as in classic level files. Each coordinate reads as a u16 little-endian fixed-point value.
 
 | Field | Type | Notes |
 |---|---|---|
