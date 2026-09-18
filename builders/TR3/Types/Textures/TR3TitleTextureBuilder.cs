@@ -9,7 +9,7 @@ public class TR3TitleTextureBuilder : TextureBuilder
     {
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.TextureFix, "title_textures");
 
-        var level = _control3.Read($"Resources/TR3/title.tr2");
+        var level = _control3.Read($"Resources/TR3/TITLE.TR2");
         FixPassport(level, data);
 
         return [data];
