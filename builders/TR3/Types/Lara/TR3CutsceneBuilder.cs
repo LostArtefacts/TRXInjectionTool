@@ -17,6 +17,7 @@ public class TR3CutsceneBuilder : InjectionBuilder
         new(TR3LevelNames.COASTAL_CUT, 16384, [TR3Type.CutsceneActor1]),
         new(TR3LevelNames.CRASH_CUT, 16384, []),
         new(TR3LevelNames.THAMES_CUT, -16384, [TR3Type.CutsceneActor7], postAction: AmendThamesCut),
+        new(TR3LevelNames.ALDWYCH_CUT, 16384, []),
         new(TR3LevelNames.LUDS_CUT, 16384, [TR3Type.CutsceneActor5], postAction: AmendLudsCut),
         new(TR3LevelNames.NEVADA_CUT, 16384, []),
         new(TR3LevelNames.HSC_CUT, 16384, [], postAction: AmendHSCCut),
