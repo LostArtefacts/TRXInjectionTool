@@ -28,6 +28,9 @@ public abstract class FDBuilder : InjectionBuilder
     public static FDTriggerEntry GetTrigger(TR3Level level, short room, ushort x, ushort z)
         => GetTrigger(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
 
+    public static FDTriggerEntry GetTrigger(TR4Level level, short room, ushort x, ushort z)
+        => GetTrigger(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
+
     protected static FDTriggerEntry GetTrigger(TRRoomSector sector, FDControl floorData)
     {
         return sector.FDIndex == 0
@@ -72,9 +75,13 @@ public abstract class FDBuilder : InjectionBuilder
         {
             fd = MakeTrigFix(level3, room, x, z);
         }
+        else if (level is TR4Level level4)
+        {
+            fd = MakeTrigFix(level4, room, x, z);
+        }
         else
         {
-            throw new ArgumentException("TR1-3 only supported");
+            throw new ArgumentException("TR1-4 only supported");
         }
         fd.Entries.Add(trigger);
 
@@ -94,6 +101,9 @@ public abstract class FDBuilder : InjectionBuilder
         => MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
 
     protected static FDTrigCreateFix MakeTrigFix(TR3Level level, short room, ushort x, ushort z)
+        => MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
+
+    protected static FDTrigCreateFix MakeTrigFix(TR4Level level, short room, ushort x, ushort z)
         => MakeTrigFix(level.Rooms[room].GetSector(x, z, TRUnit.Sector), level.FloorData);
 
     protected static FDTrigCreateFix MakeTrigFix(TRRoomSector sector, FDControl floorData)

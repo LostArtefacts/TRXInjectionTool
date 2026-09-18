@@ -14,6 +14,7 @@ public class TR4AngkorRaceFDBuilder : FDBuilder
         CreateDefaultTests(data, $"TR4/{TR4LevelNames.IRIS_RACE}");
         var level = _control4.Read($"Resources/TR4/{TR4LevelNames.IRIS_RACE}");
         data.FloorEdits.Add(FixSwitch39(level));
+        data.FloorEdits.Add(FixDoor84(level));
 
         return [data];
     }
@@ -34,5 +35,14 @@ public class TR4AngkorRaceFDBuilder : FDBuilder
                 new FDSectorOverwrite { Sector = sector },
             ],
         };
+    }
+
+    private static TRFloorDataEdit FixDoor84(TR4Level level)
+    {
+        var trigger = GetTrigger(level, 27, 11, 3);
+        trigger.Actions
+            .First(a => a.Action == FDTrigAction.Object && a.Parameter == 85)
+            .Parameter = 84;
+        return MakeTrigger(level, 27, 11, 3, trigger);
     }
 }

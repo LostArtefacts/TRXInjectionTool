@@ -16,6 +16,7 @@ public class TR4AngkorRaceTextureBuilder : TextureBuilder
         data.RoomEdits.AddRange(FixRoom31(level));
         data.RoomEdits.AddRange(FixRoom99_103(level));
         data.RoomEdits.Add(FixRoom4(level));
+        data.RoomEdits.AddRange(FixRoom27(level));
         data.RoomEdits.AddRange(FixSwitch57(level));
         data.StaticMeshEdits.AddRange(FixStaticBoxes(level));
 
@@ -167,7 +168,39 @@ public class TR4AngkorRaceTextureBuilder : TextureBuilder
     {
         var tex = level.Rooms[4].Mesh.Triangles[50].Texture;
         return Reface(level, 4, TRMeshFaceType.TexturedTriangle, TRMeshFaceType.TexturedTriangle, tex, 52);
-    }    
+    }
+
+    private static IEnumerable<TRRoomTextureEdit> FixRoom27(TR4Level level)
+    {
+        const short roomIdx = 27;
+        var room = level.Rooms[roomIdx];
+        var vtxPos = new List<ushort>();
+
+        TRRoomVertexCreate MakeVertex(int faceIdx, int vertIdx, short x = 0, short z = 0)
+        {
+            var vtx = room.Mesh.Vertices[room.Mesh.Rectangles[faceIdx].Vertices[vertIdx]];
+            vtxPos.Add((ushort)room.Mesh.Vertices.Count);
+            var vertex = CreateVertex(roomIdx, room, vtx, shift: 0);
+            vertex.Vertex.Vertex.X += x;
+            vertex.Vertex.Vertex.Z += z;
+            return vertex;
+        }
+
+        yield return MakeVertex(49, 1, z: -500);
+        yield return MakeVertex(76, 3, x: -200, z: -200);
+        yield return CreateFace(roomIdx, 48, 6, TRMeshFaceType.TexturedTriangle,
+        [
+            vtxPos[0],
+            room.Mesh.Rectangles[49].Vertices[1],
+            room.Mesh.Rectangles[57].Vertices[1],
+        ]);
+        yield return CreateFace(roomIdx, 48, 6, TRMeshFaceType.TexturedTriangle,
+        [
+            room.Mesh.Rectangles[76].Vertices[3],
+            vtxPos[1],
+            room.Mesh.Rectangles[77].Vertices[0],
+        ]);
+    }
 
     private static IEnumerable<TRRoomTextureEdit> FixSwitch57(TR4Level level)
     {
@@ -192,7 +225,6 @@ public class TR4AngkorRaceTextureBuilder : TextureBuilder
             vtxPos[0],
             vtxPos[1],
             room.Mesh.Rectangles[21].Vertices[3],
-            
         ]);
     }
 
