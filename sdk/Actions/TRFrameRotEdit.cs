@@ -80,6 +80,18 @@ public class TRFrameReplacement
         }
     }
 
+    public static IEnumerable<TRFrameReplacement> CreateFrom(TR4Level level, IEnumerable<TR4Type> types)
+    {
+        var tempData = InjectionData.Create(level, InjectionType.General, string.Empty);
+        foreach (var type in types)
+        {
+            if (level.Models.TryGetValue(type, out TRModel model))
+            {
+                yield return Create(tempData, model, (uint)type);
+            }
+        }
+    }
+
     private static TRFrameReplacement Create(InjectionData tempData, TRModel model, uint type)
     {
         var replacer = new TRFrameReplacement
