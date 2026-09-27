@@ -683,6 +683,14 @@ public class InjectionExporter : IInjectionExporter
             RoomID = f.RoomID,
         }).ToList());
 
+        if (data.DemoData.Count > 0)
+        {
+            using var ms = new MemoryStream();
+            using var sub = new BinaryWriter(ms);
+            data.DemoData.ForEach(sub.Write);
+            blockCount += WriteRawBlock(writer, 43, data.DemoData.Count, ms.ToArray());
+        }
+
         return blockCount;
     }
 

@@ -75,4 +75,5 @@ public enum BlockType
     Symbols          = 40,
     NamedSampleInfos = 41,
     AnimTextureAdds  = 42,
+    DemoData         = 43,
 }

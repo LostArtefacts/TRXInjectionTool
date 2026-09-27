@@ -323,3 +323,11 @@ public sealed class FlybyCamera
     public ushort Flags;
     public uint RoomID;
 }
+
+[FormatRecord(Doc = "Replaces the level's demo, word for word as a level file stores it.")]
+[Block(Container.CameraData, 43, "DEMO_DATA")]
+public sealed class DemoData
+{
+    [ImpliedLength("elementCount entries")]
+    public uint[] Words;
+}

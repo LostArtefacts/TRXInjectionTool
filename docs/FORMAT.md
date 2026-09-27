@@ -426,6 +426,7 @@ Converters apply per-game volume scaling and drop pitch/range for games without 
 |---|---|---|---|
 | 30 | CINEMATIC_FRAMES | CinematicFrame |  |
 | 38 | FLYBY_CAMERAS | FlybyCamera |  |
+| 43 | DEMO_DATA | DemoData |  |
 
 #### CinematicFrame
 
@@ -458,6 +459,14 @@ Converters apply per-game volume scaling and drop pitch/range for games without 
 | speed | `u16` |  |
 | flags | `u16` |  |
 | roomID | `u32` |  |
+
+#### DemoData
+
+Replaces the level's demo, word for word as a level file stores it.
+
+| Field | Type | Notes |
+|---|---|---|
+| words | `u32[] — elementCount entries` |  |
 
 ### Chunk 6: DATA_EDITS (version 1)
 

@@ -139,7 +139,7 @@ public class TR3LaraAnimBuilder : LaraBuilder
         return ExportLaraWAD(level, extraLevel);
     }
 
-    private TR3Level CreateLevel(bool useSkin = false)
+    internal TR3Level CreateLevel(bool useSkin = false)
     {
         var jungle = _control3.Read($"Resources/{TR3LevelNames.JUNGLE}");
         if (useSkin)
