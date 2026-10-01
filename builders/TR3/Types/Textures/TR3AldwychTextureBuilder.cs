@@ -1,4 +1,5 @@
-﻿using TRLevelControl.Helpers;
+﻿using TRLevelControl;
+using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
@@ -86,6 +87,20 @@ public class TR3AldwychTextureBuilder : TextureBuilder
                 Index = (short)i,
                 Change = new() { Z = -shift },
             })],
+        });
+
+        var barrier57 = level.Rooms[57].StaticMeshes[0];
+        data.RoomEdits.Add(new TRRoomStatic3DEdit
+        {
+            RoomIndex = 57,
+            StaticMesh = new()
+            {
+                X = barrier57.X - TRConsts.Step4,
+                Y = barrier57.Y,
+                Z = barrier57.Z,
+                Angle = (short)(barrier57.Angle - 32768),
+                Intensity = barrier57.Colour,
+            },
         });
     }
 }
