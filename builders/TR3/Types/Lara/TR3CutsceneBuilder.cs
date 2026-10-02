@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using TRImageControl;
+using TRImageControl.Packing;
 using TRLevelControl.Helpers;
 using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
@@ -32,7 +33,6 @@ public class TR3CutsceneBuilder : InjectionBuilder
         return
         [
             .. _setups.Select(s => s.CreateData()),
-            CreateCut3ShellData(),
             CreateHSCCineData(),
         ];
     }
@@ -104,13 +104,39 @@ public class TR3CutsceneBuilder : InjectionBuilder
         data.Animations[0].NumAnimCommands = 0;
     }
 
-    private static InjectionData CreateCut3ShellData()
+    // The scene carries the gun flash mesh, but neither the shells the guns
+    // eject nor the glow drawn over the flash. The shell comes from the Jungle
+    // and the glow from Antarctica, which is the level the scene opens.
+    private static TR3Level CreateAntarcticaGunLevel()
     {
-        var jungle = _control3.Read($"Resources/TR3/{TR3LevelNames.JUNGLE}");
-        var palette = jungle.Palette16.Select(c => c.ToColor()).ToList();
-        CreateModelLevel(jungle, TR3Type.YellowShellCasing_H);
-        TRFaceConverter.ConvertFlatFaces(jungle, palette);
-        return InjectionData.Create(jungle, InjectionType.General, "cut3_shell");
+        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.JUNGLE}");
+        var palette16 = level.Palette16.Select(c => c.ToColor()).ToList();
+        CreateModelLevel(level, TR3Type.YellowShellCasing_H);
+        TRFaceConverter.ConvertFlatFaces(level, palette16);
+
+        var antarc = _control3.Read($"Resources/TR3/{TR3LevelNames.ANTARC}");
+        var glow = antarc.Sprites[TR3Type.Glow_S_H];
+        var regions = new TR3TexturePacker(antarc).GetSpriteRegions(glow)
+            .Values.SelectMany(v => v).ToList();
+
+        var packer = new TR3TexturePacker(level);
+        packer.AddRectangles(regions);
+        packer.Pack(true);
+
+        level.Sprites[TR3Type.Glow_S_H] = glow;
+        GenerateImages8(level, [.. level.Palette.Select(c => c.ToTR1Color())]);
+        return level;
+    }
+
+    private static void AddAntarcticaGunEffects(TR3Level level)
+    {
+        var guns = CreateAntarcticaGunLevel();
+        level.Images16 = guns.Images16;
+        level.Images8 = guns.Images8;
+        level.Palette = guns.Palette;
+        level.ObjectTextures = guns.ObjectTextures;
+        level.Models[TR3Type.YellowShellCasing_H] = guns.Models[TR3Type.YellowShellCasing_H];
+        level.Sprites[TR3Type.Glow_S_H] = guns.Sprites[TR3Type.Glow_S_H];
     }
 
     private static InjectionData CreateHSCCineData()
@@ -141,6 +167,7 @@ public class TR3CutsceneBuilder : InjectionBuilder
             {
                 FixBriefcaseFrames(level.Models[TR3Type.CutsceneActor8], level.Models[TR3Type.CutsceneActor2]);
                 HideAntarcticaWillard(level.Models[TR3Type.CutsceneActor2]);
+                AddAntarcticaLaraShot(level.Models[TR3Type.Lara]);
             }
 
             var actors = _actors.Where(level.Models.ContainsKey).ToArray();
@@ -170,6 +197,11 @@ public class TR3CutsceneBuilder : InjectionBuilder
             level.SoundEffects.Clear();
             level.Images16.Clear();
             level.Images8.Clear();
+
+            if (levelName == TR3LevelNames.ANTARC_CUT)
+            {
+                AddAntarcticaGunEffects(level);
+            }
 
             var data = InjectionData.Create(level, InjectionType.General,
                 $"{Path.GetFileNameWithoutExtension(levelName).ToLower()}_setup");
@@ -330,6 +362,21 @@ public class TR3CutsceneBuilder : InjectionBuilder
             {
                 EffectID = (short)TR3FX.ShowItem,
             });
+        }
+
+        private static void AddAntarcticaLaraShot(TRModel lara)
+        {
+            // The soundtrack has a second pistol shot 18 frames after the one
+            // the animation fires at frame 682, but the animation has no
+            // recoil for it.
+            foreach (var fx in new[] { TR3FX.ShootRightGun, TR3FX.ShootLeftGun })
+            {
+                lara.Animations[1].Commands.Add(new TRFXCommand
+                {
+                    EffectID = (short)fx,
+                    FrameNumber = 700,
+                });
+            }
         }
     }
 }
