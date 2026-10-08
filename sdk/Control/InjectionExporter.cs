@@ -175,6 +175,7 @@ public class InjectionExporter : IInjectionExporter
             W.Container.SfxData => WriteSfxData(data, body),
             W.Container.CameraData => WriteCameraData(data, body),
             W.Container.DataEdits => WriteEdits(data, body),
+            W.Container.PathingData => WritePathingData(data, body),
             _ => throw new InvalidDataException($"unhandled chunk {chunkType}"),
         };
 
@@ -692,6 +693,21 @@ public class InjectionExporter : IInjectionExporter
         }
 
         return blockCount;
+    }
+
+    // --- Pathing data ---
+
+    private static int WritePathingData(InjectionData data, BinaryWriter writer)
+    {
+        if (data.OverlapIndices.Count == 0)
+        {
+            return 0;
+        }
+
+        using var ms = new MemoryStream();
+        using var sub = new BinaryWriter(ms);
+        data.OverlapIndices.ForEach(sub.Write);
+        return WriteRawBlock(writer, 44, data.OverlapIndices.Count, ms.ToArray());
     }
 
     // --- Data edits ---

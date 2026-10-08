@@ -16,6 +16,7 @@ public static class Container
     public const int DataEdits = 6;
     public const int CameraData = 7;
     public const int Symbols = 8;
+    public const int PathingData = 9;
 
     // Write order; SYMBOLS first so later records may reference the table.
     // Each chunk type carries its own layout version, starting at 1.
@@ -30,6 +31,7 @@ public static class Container
         (SfxData, "SFX_DATA", 1),
         (CameraData, "CAMERA_DATA", 1),
         (DataEdits, "DATA_EDITS", 1),
+        (PathingData, "PATHING_DATA", 1),
     ];
 
     public static readonly (int Value, string Name, string Note)[] FileTypes =

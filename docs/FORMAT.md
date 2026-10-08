@@ -834,6 +834,20 @@ Derived allocation counts so the engine can size arrays in its pre-pass.
 |---|---|---|
 | textures | `s32 count, u16[count]` |  |
 
+### Chunk 9: PATHING_DATA (version 1)
+
+| Block | Name | Payload record | Notes |
+|---|---|---|---|
+| 44 | OVERLAP_INDICES | OverlapIndices |  |
+
+#### OverlapIndices
+
+Replaces each box's overlap index, in box order, without the 14-bit limit of a level file. The box keeps its blocking flags.
+
+| Field | Type | Notes |
+|---|---|---|
+| indices | `u32[] — elementCount entries, 30 bits used` |  |
+
 ## Unions
 
 A union writes its discriminator first, then the base's common fields,
