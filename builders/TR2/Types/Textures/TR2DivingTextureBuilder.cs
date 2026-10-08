@@ -24,6 +24,7 @@ public partial class TR2DivingTextureBuilder : TextureBuilder
         FixPushButton(data);
         FixWheelDoor(data, TR2LevelNames.DA);
         FixSlidingOffshoreDoor(data, TR2LevelNames.DA);
+        FixSubBounds(data, level);
 
         return new() { data };
     }
@@ -109,5 +110,33 @@ public partial class TR2DivingTextureBuilder : TextureBuilder
         });
 
         return data;
+    }
+
+    private static void FixSubBounds(InjectionData data, TR2Level level)
+    {
+        const short shift = 3837;
+        var sub = level.StaticMeshes[TR2Type.Furniture0];
+
+        sub.CollisionBox.MinY += shift;
+        sub.CollisionBox.MaxY += shift;
+        sub.VisibilityBox.MinY += shift;
+        sub.VisibilityBox.MaxY += shift;
+        data.StaticMeshEdits.Add(new()
+        {
+            TypeID = 10,
+            Mesh = sub,
+        });
+
+        data.MeshEdits.Add(new()
+        {
+            ModelID = (uint)TR2Type.Furniture0,
+            VertexEdits = [.. Enumerable.Range(0, sub.Mesh.Vertices.Count).Select(i => new TRVertexEdit
+            {
+                Index = (short)i,
+                Change = new() { Y = shift },
+            })],
+        });
+
+        data.RoomEdits.Add(ShiftStatic(level, new(70, 0, new() { Y = -shift })));            
     }
 }
