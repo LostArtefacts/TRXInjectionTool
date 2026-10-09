@@ -28,6 +28,7 @@ public enum ChunkType
     DataEdits     = 6,
     CameraData    = 7,
     Symbols       = 8,
+    PathingData   = 9,
 }
 
 public enum BlockType
@@ -76,4 +77,5 @@ public enum BlockType
     NamedSampleInfos = 41,
     AnimTextureAdds  = 42,
     DemoData         = 43,
+    OverlapIndices   = 44,
 }

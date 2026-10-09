@@ -331,3 +331,11 @@ public sealed class DemoData
     [ImpliedLength("elementCount entries")]
     public uint[] Words;
 }
+
+[FormatRecord(Doc = "Replaces each box's overlap index, in box order, without the 14-bit limit of a level file. The box keeps its blocking flags.")]
+[Block(Container.PathingData, 44, "OVERLAP_INDICES")]
+public sealed class OverlapIndices
+{
+    [ImpliedLength("elementCount entries, 30 bits used")]
+    public uint[] Indices;
+}
