@@ -12,6 +12,7 @@ public class TR3TinnosFDBuilder : FDBuilder
         var data = InjectionData.Create(TRGameVersion.TR3, InjectionType.General, "tinnos_fd");
         CreateDefaultTests(data, $"TR3/{TR3LevelNames.TINNOS}");
         data.FloorEdits.AddRange(FixMaskCameras());
+        data.FloorEdits.AddRange(RemoveFireheadTimers());
 
         return [data];
     }
@@ -49,6 +50,19 @@ public class TR3TinnosFDBuilder : FDBuilder
                 trigger.Actions.RemoveAll(a => a.Action != FDTrigAction.Camera);
                 yield return MakeTrigger(level, room.AlternateRoom, x, z, trigger);
             }
+        }
+    }
+
+    private static IEnumerable<TRFloorDataEdit> RemoveFireheadTimers()
+    {
+        // OG used the timer to indicate the blow time; TRX uses a property so the timer
+        // is free again for normal use.
+        var level = _control3.Read($"Resources/TR3/{TR3LevelNames.TINNOS}");
+        for (ushort z = 1; z < 5; z++)
+        {
+            var trigger = GetTrigger(level, 114, 1, z).Clone() as FDTriggerEntry;
+            trigger.Timer = 0;
+            yield return MakeTrigger(level, 114, 1, z, trigger);
         }
     }
 }
