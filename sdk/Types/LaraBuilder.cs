@@ -601,6 +601,7 @@ public abstract class LaraBuilder : InjectionBuilder
         }
 
         FixPoleReleaseState(lara);
+        FixPoleToStandEnd(lara);
         FixInteractiveHandsFreeAnims(lara);
         AlignTR4CrouchTurn(lara);
         _completeTR4Lara = lara;
@@ -1859,6 +1860,13 @@ public abstract class LaraBuilder : InjectionBuilder
         anim.Commands.Add(new TREmptyHandsCommand());
     }
 
+    protected static void FixPoleToStandEnd(TRModel lara)
+    {
+        // Nudge Lara back from the pole to avoid object collision throwing her to the side.
+        var anim = lara.Animations[(int)TR4LaraAnim.PoleToStand];
+        anim.Commands.Add(new TRSetPositionCommand { Z = anim.Frames[^1].OffsetZ });
+    }
+
     protected static void AddCrowbarPickupChange(TRModel lara, bool isTR4)
     {
         // OG manually switches to the anim, but every other pickup transition uses a state
@@ -2105,7 +2113,6 @@ public abstract class LaraBuilder : InjectionBuilder
         AddChange(lara, monkeyIdleAnim, LaraState.FastPullUp, 0, 48, animIdx, 0);
         AddChange(lara, monkeyShimmyLeftEndAnim, LaraState.FastPullUp, 0, 16, animIdx, 0);
         AddChange(lara, monkeyShimmyRightEndAnim, LaraState.FastPullUp, 0, 16, animIdx, 0);
-
     }
 
     private static readonly Dictionary<TR4LaraAnim, int> _tr4AnimSyncMap = new()
