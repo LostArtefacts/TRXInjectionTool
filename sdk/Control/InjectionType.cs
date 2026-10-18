@@ -12,6 +12,7 @@ public enum InjectionType
     AlterAnimSprite,
     Skybox,
     PSCrystal,
+    PS1Blend,
 }
 
 public enum TRObjectType

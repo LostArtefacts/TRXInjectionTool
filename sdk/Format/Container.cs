@@ -47,6 +47,7 @@ public static class Container
         (8, "ALTER_ANIM_SPRITE", "sprite fixes option"),
         (9, "SKYBOX", "skybox option"),
         (10, "PS1_CRYSTAL", "PS1 crystal option"),
+        (11, "PS1_BLEND", "always on; acts with the PS1 blending option"),
     ];
 
     public static readonly (int Value, string Name)[] FaceTypes =

@@ -984,6 +984,11 @@ public class InjectionExporter : IInjectionExporter
                 TargetIndex = e.TargetIndex,
                 DoubleSided = (byte)(e.DoubleSided ? 1 : 0),
             },
+            TRRoomTexturePS1SemiTransparent e => new W.RoomSetPS1SemiTransparent
+            {
+                TargetIndex = e.TargetIndex,
+                SemiTransparent = (byte)(e.SemiTransparent ? 1 : 0),
+            },
             _ => throw new InvalidDataException($"unmapped room edit {edit.GetType().Name}"),
         };
 

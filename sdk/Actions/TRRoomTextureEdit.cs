@@ -19,6 +19,7 @@ public abstract class TRRoomTextureEdit : IRoomMeta
         EditStatic3D,
         SetVertexFlags,
         SetDoubleSidedFace,
+        SetPS1SemiTransparentFace,
     }
 
     public abstract TRRoomTextureFixType FixType { get; }
@@ -237,5 +238,18 @@ public class TRRoomTextureDoubleSided : TRRoomTextureEdit
     {
         writer.Write(TargetIndex);
         writer.Write(DoubleSided);
+    }
+}
+
+public class TRRoomTexturePS1SemiTransparent : TRRoomTextureEdit
+{
+    public override TRRoomTextureFixType FixType => TRRoomTextureFixType.SetPS1SemiTransparentFace;
+    public short TargetIndex { get; set; }
+    public bool SemiTransparent { get; set; }
+
+    protected override void SerializeImpl(TRLevelWriter writer)
+    {
+        writer.Write(TargetIndex);
+        writer.Write(SemiTransparent);
     }
 }

@@ -57,6 +57,7 @@ Per-chunk compression would compress worse and buy nothing.
 | 8 | ALTER_ANIM_SPRITE | sprite fixes option |
 | 9 | SKYBOX | skybox option |
 | 10 | PS1_CRYSTAL | PS1 crystal option |
+| 11 | PS1_BLEND | always on; acts with the PS1 blending option |
 
 ## Payload
 
@@ -489,6 +490,7 @@ Replaces the level's demo, word for word as a level file stores it.
 | 22 | ROOM_EDITS | RoomEditStatic3D |  |
 | 22 | ROOM_EDITS | RoomSetVertexFlags |  |
 | 22 | ROOM_EDITS | RoomSetDoubleSided |  |
+| 22 | ROOM_EDITS | RoomSetPS1SemiTransparent |  |
 | 23 | VIS_PORTAL_EDITS | VisPortalEdit |  |
 | 24 | CAMERA_EDITS | CameraEdit |  |
 | 25 | FRAME_EDITS | FrameEdit |  |
@@ -690,6 +692,13 @@ Derived allocation counts so the engine can size arrays in its pre-pass.
 |---|---|---|
 | targetIndex | `s16` |  |
 | doubleSided | `u8` |  |
+
+#### RoomSetPS1SemiTransparent
+
+| Field | Type | Notes |
+|---|---|---|
+| targetIndex | `s16` |  |
+| semiTransparent | `u8` |  |
 
 #### VisPortalEdit
 
@@ -1147,6 +1156,13 @@ Common header (after the discriminator):
 |---|---|---|
 | targetIndex | `s16` |  |
 | doubleSided | `u8` |  |
+
+#### Case 11: RoomSetPS1SemiTransparent
+
+| Field | Type | Notes |
+|---|---|---|
+| targetIndex | `s16` |  |
+| semiTransparent | `u8` |  |
 
 ### SfxSample (discriminator: `u8`)
 

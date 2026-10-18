@@ -347,6 +347,13 @@ public sealed class RoomSetDoubleSided : RoomEdit
     public byte DoubleSided;
 }
 
+[Case(11)]
+public sealed class RoomSetPS1SemiTransparent : RoomEdit
+{
+    public short TargetIndex;
+    public byte SemiTransparent;
+}
+
 // --- Floor data edits ---
 
 [Union(typeof(uint))]
