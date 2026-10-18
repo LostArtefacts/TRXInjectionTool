@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using TRImageControl;
+﻿using TRImageControl;
 using TRImageControl.Packing;
 using TRLevelControl;
 using TRLevelControl.Helpers;
@@ -108,52 +107,10 @@ public class TR4InventoryBuilder : InjectionBuilder, IPublisher
         var pose = compass.Animations[0].Frames[0];
         pose.Rotations[0] = new() { X = _compassCasePitch, Y = _compassCaseYaw };
         pose.OffsetX = pose.OffsetY = pose.OffsetZ = 0;
-        var bounds = ComputeBounds(new() { Meshes = [compass.Meshes[0]] }, pose);
+        var bounds = TRAnimBoundsCalculator.ComputeFrameBounds(new() { Meshes = [compass.Meshes[0]] }, pose);
         pose.OffsetX = (short)-((bounds.MinX + bounds.MaxX) / 2);
         pose.OffsetY = (short)-((bounds.MinY + bounds.MaxY) / 2);
         pose.OffsetZ = (short)-((bounds.MinZ + bounds.MaxZ) / 2);
-    }
-
-    // Returns the box a frame of the model fills, with each mesh turned in
-    // the order the engine applies the turns: yaw, pitch, then roll.
-    private static TRBoundingBox ComputeBounds(TRModel model, TRAnimFrame frame)
-    {
-        static Matrix4x4 Turn(TRAnimFrameRotation rot)
-            => Matrix4x4.CreateRotationZ(float.DegreesToRadians(rot.Z))
-                * Matrix4x4.CreateRotationX(float.DegreesToRadians(rot.X))
-                * Matrix4x4.CreateRotationY(-float.DegreesToRadians(rot.Y));
-
-        var stack = new Stack<Matrix4x4>();
-        var matrix = Matrix4x4.CreateTranslation(frame.OffsetX, frame.OffsetY, frame.OffsetZ);
-        var points = new List<Vector3>();
-        for (int i = 0; i < model.Meshes.Count; i++)
-        {
-            if (i > 0)
-            {
-                var node = model.MeshTrees[i - 1];
-                if ((node.Flags & 1) != 0 && stack.Count > 0)
-                {
-                    matrix = stack.Pop();
-                }
-                if ((node.Flags & 2) != 0)
-                {
-                    stack.Push(matrix);
-                }
-                matrix = Matrix4x4.CreateTranslation(node.OffsetX, node.OffsetY, node.OffsetZ) * matrix;
-            }
-            matrix = Turn(frame.Rotations[i]) * matrix;
-            points.AddRange(model.Meshes[i].Vertices.Select(v => Vector3.Transform(new(v.X, v.Y, v.Z), matrix)));
-        }
-
-        return new()
-        {
-            MinX = (short)Math.Floor(points.Min(p => p.X)),
-            MinY = (short)Math.Floor(points.Min(p => p.Y)),
-            MinZ = (short)Math.Floor(points.Min(p => p.Z)),
-            MaxX = (short)Math.Ceiling(points.Max(p => p.X)),
-            MaxY = (short)Math.Ceiling(points.Max(p => p.Y)),
-            MaxZ = (short)Math.Ceiling(points.Max(p => p.Z)),
-        };
     }
 
     private static void Keep(TRMesh mesh, int start, int count)
@@ -192,7 +149,7 @@ public class TR4InventoryBuilder : InjectionBuilder, IPublisher
             {
                 X = _compassClosedAngle * (1 - f.Rotations[2].X / openAngle),
             });
-            frame.Bounds = ComputeBounds(compass, frame);
+            frame.Bounds = TRAnimBoundsCalculator.ComputeFrameBounds(compass, frame);
             return frame;
         })];
         anim.FrameRate = source.FrameRate;
