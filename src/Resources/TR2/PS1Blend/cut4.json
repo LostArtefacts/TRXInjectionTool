@@ -1,0 +1,20 @@
+{
+  "rooms": {},
+  "objects": {
+    "128": {
+      "10": {
+        "textured_triangle": [
+          20
+        ]
+      }
+    },
+    "129": {
+      "10": {
+        "textured_triangle": [
+          20
+        ]
+      }
+    }
+  },
+  "statics": {}
+}
