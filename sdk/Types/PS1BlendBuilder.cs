@@ -1,4 +1,4 @@
-using TRLevelControl.Model;
+﻿using TRLevelControl.Model;
 using TRXInjectionTool.Actions;
 using TRXInjectionTool.Control;
 using TRXInjectionTool.Util;
@@ -15,9 +15,9 @@ public abstract class PS1BlendBuilder : InjectionBuilder
 
     protected abstract TRGameVersion GameVersion { get; }
 
-    // The levels, by the stem of their file, with the name the injection
-    // files of each level start with.
-    protected abstract Dictionary<string, (string FileName, string Prefix)> Levels { get; }
+    // The level files, with the name the injection files of each level start
+    // with. The face list of a level is named after the stem of its file.
+    protected abstract IEnumerable<KeyValuePair<string, string>> Levels { get; }
 
     private sealed class FaceList
     {
@@ -29,8 +29,9 @@ public abstract class PS1BlendBuilder : InjectionBuilder
     {
         string folder = $"Resources/{GameVersion}/PS1Blend";
         List<InjectionData> result = [];
-        foreach (var (stem, (fileName, prefix)) in Levels)
+        foreach (var (fileName, prefix) in Levels)
         {
+            string stem = Path.GetFileNameWithoutExtension(fileName).ToLowerInvariant();
             string path = Path.Combine(folder, $"{stem}.json");
             if (!File.Exists(path))
             {

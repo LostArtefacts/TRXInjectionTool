@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using TRDataControl;
 using TRImageControl;
 using TRImageControl.Packing;
@@ -659,6 +659,22 @@ public abstract class InjectionBuilder
         [TR2LevelNames.FURNACE] = "furnace",
         [TR2LevelNames.KINGDOM] = "kingdom",
         [TR2LevelNames.VEGAS] = "vegas",
+    };
+
+    protected static readonly Dictionary<string, string> _tr1CutNameMap = new()
+    {
+        [TR1LevelNames.QUALOPEC_CUT] = "cut1",
+        [TR1LevelNames.TIHOCAN_CUT] = "cut2",
+        [TR1LevelNames.MINES_CUT] = "cut3",
+        [TR1LevelNames.ATLANTIS_CUT] = "cut4",
+    };
+
+    protected static readonly Dictionary<string, string> _tr2CutNameMap = new()
+    {
+        [TR2LevelNames.GW_CUT] = "cut1",
+        [TR2LevelNames.OPERA_CUT] = "cut2",
+        [TR2LevelNames.DA_CUT] = "cut3",
+        [TR2LevelNames.XIAN_CUT] = "cut4",
     };
 
     protected static readonly Dictionary<string, string> _tr3NameMap = new()
