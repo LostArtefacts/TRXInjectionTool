@@ -11,6 +11,7 @@ public class TR2MusicTrackBuilder : InjectionBuilder
 
     private static readonly Dictionary<string, List<short>> _exclusions = new()
     {
+        [TR2LevelNames.ASSAULT] = [67], // see TR2GymFDBuilder.ReplaceVeniceMusicTrigger
         [TR2LevelNames.DORIA] = [70], // see TR2WreckFDBuilder.FixCollapsibleTileTriggers
     };
 

@@ -16,6 +16,7 @@ public class TR2GymFDBuilder : FDBuilder
         CreateDefaultTests(data, TR2LevelNames.ASSAULT);
         data.FloorEdits.AddRange(FixZipTriggers(level));
         data.FloorEdits.Add(RemoveInitialSpeechTrigger(level));
+        data.FloorEdits.Add(ReplaceVeniceMusicTrigger(level));
 
         return new() { data };
     }
@@ -44,5 +45,17 @@ public class TR2GymFDBuilder : FDBuilder
         {
             yield return MakeTrigger(level, 42, 3, z, trigger);
         }
+    }
+
+    private static TRFloorDataEdit ReplaceVeniceMusicTrigger(TR2Level level)
+    {
+        var trigger = GetTrigger(level, 67, 8, 2);
+        trigger.Actions.Clear();
+        trigger.Actions.Add(new()
+        {
+            Action = FDTrigAction.Flipeffect,
+            Parameter = 200,
+        });
+        return MakeTrigger(level, 67, 8, 2, trigger);
     }
 }
