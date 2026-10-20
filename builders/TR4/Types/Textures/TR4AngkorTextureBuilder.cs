@@ -12,6 +12,7 @@ public class TR4AngkorTextureBuilder : TextureBuilder
         var data = InjectionData.Create(TRGameVersion.TR4, InjectionType.TextureFix, "angkor_textures");
         CreateDefaultTests(data, $"TR4/{TR4LevelNames.ANGKOR}");
         data.RoomEdits.Add(FixRoom60Portal());
+        data.RoomEdits.AddRange(CreateRotations());
 
         return [data];
     }
@@ -25,5 +26,10 @@ public class TR4AngkorTextureBuilder : TextureBuilder
             TargetIndex = 12,
             DoubleSided = true,
         };
+    }
+
+    private static IEnumerable<TRRoomTextureRotate> CreateRotations()
+    {
+        yield return Rotate(3, TRMeshFaceType.TexturedQuad, 50, 3);
     }
 }
