@@ -19,6 +19,10 @@ public abstract class PS1BlendBuilder : InjectionBuilder
     // with. The face list of a level is named after the stem of its file.
     protected abstract IEnumerable<KeyValuePair<string, string>> Levels { get; }
 
+    // Objects whose faces stay solid in a level, named by the stem of its
+    // file, although the PlayStation draws some of them semi-transparent.
+    protected virtual IEnumerable<(string Level, uint ObjectID)> SolidObjects => [];
+
     private sealed class FaceList
     {
         public Dictionary<string, Dictionary<string, List<short>>> Rooms { get; set; } = [];
@@ -61,6 +65,11 @@ public abstract class PS1BlendBuilder : InjectionBuilder
 
             foreach (var (objectID, meshes) in faces.Objects)
             {
+                if (SolidObjects.Contains((stem, uint.Parse(objectID))))
+                {
+                    continue;
+                }
+
                 foreach (var (meshIndex, groups) in meshes)
                 {
                     TRMeshEdit edit = new()
@@ -84,7 +93,10 @@ public abstract class PS1BlendBuilder : InjectionBuilder
                 }
             }
 
-            result.Add(data);
+            if (data.RoomEdits.Count > 0 || data.MeshEdits.Count > 0)
+            {
+                result.Add(data);
+            }
         }
         return result;
     }
