@@ -82,11 +82,10 @@ public static class TRAnimBoundsCalculator
         float z = float.DegreesToRadians(rotation.Z);
 
         Matrix4x4 rx = Matrix4x4.CreateRotationX(x);
-        Matrix4x4 ry = Matrix4x4.CreateRotationY(-y);
+        Matrix4x4 ry = Matrix4x4.CreateRotationY(y);
         Matrix4x4 rz = Matrix4x4.CreateRotationZ(z);
 
-        // The engine turns a mesh by yaw, then pitch, then roll, and its yaw
-        // turns the other way to that of Matrix4x4.CreateRotationY.
+        // The engine turns a mesh by yaw, then pitch, then roll.
         return rz * rx * ry;
     }
 
