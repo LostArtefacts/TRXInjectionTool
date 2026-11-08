@@ -11,6 +11,7 @@ public class TR4AnimatingBoundsBuilder : InjectionBuilder
     private static readonly Dictionary<string, List<TR4Type>> _targets = new()
     {
         [TR4LevelNames.BURIAL] = [TR4Type.Plough],
+        [TR4LevelNames.GUARDIAN] = [TR4Type.Animating2],
     };
 
     public override List<InjectionData> Build()
