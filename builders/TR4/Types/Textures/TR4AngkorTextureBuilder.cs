@@ -31,5 +31,7 @@ public class TR4AngkorTextureBuilder : TextureBuilder
     private static IEnumerable<TRRoomTextureRotate> CreateRotations()
     {
         yield return Rotate(3, TRMeshFaceType.TexturedQuad, 50, 3);
+        yield return Rotate(59, TRMeshFaceType.TexturedQuad, 48, 2);
+        yield return Rotate(59, TRMeshFaceType.TexturedQuad, 54, 2);
     }
 }
