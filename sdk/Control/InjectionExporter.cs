@@ -769,6 +769,8 @@ public class InjectionExporter : IInjectionExporter
             })],
         }).ToList());
 
+        blockCount += WriteBlock(writer, 45, data.MeshEdits.SelectMany(m => MapMeshFaceEdits(m, version)).ToList());
+
         blockCount += WriteBlock(writer, 26, data.StaticMeshEdits.Select(s => new W.Object3DEdit
         {
             TypeID = s.TypeID,
@@ -903,6 +905,41 @@ public class InjectionExporter : IInjectionExporter
             FaceIndex = f.FaceIndex,
             TargetFaceIndices = [.. f.TargetFaceIndices],
         };
+
+    private static IEnumerable<W.MeshFaceEdit> MapMeshFaceEdits(TRMeshEdit edit, TRGameVersion version)
+    {
+        var modelID = Ref((int)edit.ModelID, MeshEditType(edit, version), version);
+        foreach (var r in edit.FaceRotations)
+        {
+            yield return new W.MeshRotateFace
+            {
+                ModelID = modelID,
+                MeshIndex = edit.MeshIndex,
+                FaceType = (uint)r.FaceType,
+                TargetIndex = r.FaceIndex,
+                Rotations = r.Rotations,
+            };
+        }
+
+        foreach (var a in edit.FaceAdditions)
+        {
+            bool quad = a.FaceType == TRMeshFaceType.TexturedQuad || a.FaceType == TRMeshFaceType.ColouredQuad;
+            if (a.Vertices.Count != (quad ? 4 : 3))
+            {
+                throw new InvalidDataException($"A {a.FaceType} face needs {(quad ? 4 : 3)} vertices, not {a.Vertices.Count}");
+            }
+
+            yield return new W.MeshAddFace
+            {
+                ModelID = modelID,
+                MeshIndex = edit.MeshIndex,
+                FaceType = (uint)a.FaceType,
+                Texture = (ushort)((a.Texture & 0x7FFF) | (a.DoubleSided ? 0x8000 : 0)),
+                Effects = a.Effects,
+                Vertices = [.. a.Vertices],
+            };
+        }
+    }
 
     private static W.RoomEdit MapRoomEdit(TRRoomTextureEdit edit)
     {

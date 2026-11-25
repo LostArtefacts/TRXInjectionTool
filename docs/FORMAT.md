@@ -508,6 +508,9 @@ Replaces the level's demo, word for word as a level file stores it.
 | 39 | PROPERTY_EDITS | ObjectPropertyEdit |  |
 | 39 | PROPERTY_EDITS | ItemPropertyEdit |  |
 | 42 | ANIM_TEXTURE_ADDS | AnimTextureAdd |  |
+| 45 | MESH_FACE_EDITS | union MeshFaceEdit |  |
+| 45 | MESH_FACE_EDITS | MeshRotateFace |  |
+| 45 | MESH_FACE_EDITS | MeshAddFace |  |
 
 #### FloorDataEdit
 
@@ -843,6 +846,21 @@ Derived allocation counts so the engine can size arrays in its pre-pass.
 |---|---|---|
 | textures | `s32 count, u16[count]` |  |
 
+#### MeshRotateFace
+
+| Field | Type | Notes |
+|---|---|---|
+| targetIndex | `s16` |  |
+| rotations | `u8` |  |
+
+#### MeshAddFace
+
+| Field | Type | Notes |
+|---|---|---|
+| texture | `u16` | texture or palette index; bit 15 = double-sided |
+| effects | `u16` |  |
+| vertices | `u16[] — 4 for quads, 3 for triangles, by FaceType` |  |
+
 ### Chunk 9: PATHING_DATA (version 1)
 
 | Block | Name | Payload record | Notes |
@@ -997,6 +1015,31 @@ then the payload of the matching case.
 | actionType | `u8` |  |
 | oldParam | `s16` |  |
 | symbol | `symbol` | in place of a raw param |
+
+### MeshFaceEdit (discriminator: `u32`)
+
+Common header (after the discriminator):
+
+| Field | Type | Notes |
+|---|---|---|
+| modelID | `objref` |  |
+| meshIndex | `s16` |  |
+| faceType | `u32` | FACE_TYPE |
+
+#### Case 0: MeshRotateFace
+
+| Field | Type | Notes |
+|---|---|---|
+| targetIndex | `s16` |  |
+| rotations | `u8` |  |
+
+#### Case 1: MeshAddFace
+
+| Field | Type | Notes |
+|---|---|---|
+| texture | `u16` | texture or palette index; bit 15 = double-sided |
+| effects | `u16` |  |
+| vertices | `u16[] — 4 for quads, 3 for triangles, by FaceType` |  |
 
 ### PropertyEdit (discriminator: `s32`)
 

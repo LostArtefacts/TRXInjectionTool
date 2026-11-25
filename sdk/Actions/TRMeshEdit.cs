@@ -15,6 +15,8 @@ public class TRMeshEdit
     public List<TRFaceTextureEdit> FaceEdits { get; set; } = [];
     public List<TRFaceEffectsEdit> FaceEffects { get; set; } = [];
     public List<TRVertexEdit> VertexEdits { get; set; } = [];
+    public List<TRMeshFaceRotation> FaceRotations { get; set; } = [];
+    public List<TRMeshFaceAddition> FaceAdditions { get; set; } = [];
 
     public void Serialize(TRLevelWriter writer, TRGameVersion version)
     {
@@ -43,4 +45,20 @@ public class TRMeshEdit
         writer.Write((uint)FaceEffects.Count);
         FaceEffects.ForEach(f => f.Serialize(writer));
     }
+}
+
+public class TRMeshFaceRotation
+{
+    public TRMeshFaceType FaceType { get; set; }
+    public short FaceIndex { get; set; }
+    public byte Rotations { get; set; }
+}
+
+public class TRMeshFaceAddition
+{
+    public TRMeshFaceType FaceType { get; set; }
+    public ushort Texture { get; set; }
+    public bool DoubleSided { get; set; }
+    public ushort Effects { get; set; }
+    public List<ushort> Vertices { get; set; } = [];
 }

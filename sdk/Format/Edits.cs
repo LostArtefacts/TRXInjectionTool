@@ -196,6 +196,33 @@ public sealed class MeshEdit
     public FaceEffectEdit[] FaceEffects;
 }
 
+[Union(typeof(uint))]
+[Block(Container.DataEdits, 45, "MESH_FACE_EDITS")]
+public abstract class MeshFaceEdit
+{
+    public FormatObjRef ModelID;
+    public short MeshIndex;
+    [Doc("FACE_TYPE")]
+    public uint FaceType;
+}
+
+[Case(0)]
+public sealed class MeshRotateFace : MeshFaceEdit
+{
+    public short TargetIndex;
+    public byte Rotations;
+}
+
+[Case(1)]
+public sealed class MeshAddFace : MeshFaceEdit
+{
+    [Doc("texture or palette index; bit 15 = double-sided")]
+    public ushort Texture;
+    public ushort Effects;
+    [ImpliedLength("4 for quads, 3 for triangles, by FaceType")]
+    public ushort[] Vertices;
+}
+
 [FormatRecord]
 [Block(Container.DataEdits, 23, "VIS_PORTAL_EDITS")]
 public sealed class VisPortalEdit
