@@ -46,6 +46,10 @@ public class TR4KV5TextureBuilder : TextureBuilder
                 yield return Rotate(4, TRMeshFaceType.TexturedQuad, (short)face, (byte)rot);
             }
         }
+
+        yield return Rotate(65, TRMeshFaceType.TexturedQuad, 23, 2);
+        yield return Rotate(65, TRMeshFaceType.TexturedQuad, 27, 2);
+        yield return Rotate(65, TRMeshFaceType.TexturedQuad, 43, 3);
     }
 
     private static IEnumerable<TRRoomTextureEdit> CreateFillers(TR4Level level)
