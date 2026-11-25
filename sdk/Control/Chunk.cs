@@ -78,4 +78,5 @@ public enum BlockType
     AnimTextureAdds  = 42,
     DemoData         = 43,
     OverlapIndices   = 44,
+    MeshFaceEdits    = 45,
 }
