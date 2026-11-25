@@ -13,16 +13,19 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install SSH client
-      run: sudo apt-get install -y sshpass
-
     - name: Upload via SFTP
       env:
         SFTP_USER: ${{ secrets.SFTP_USER }}
-        SFTP_PASS: ${{ secrets.SFTP_PASS }}
+        SFTP_SSH_KEY: ${{ secrets.SFTP_SSH_KEY }}
+        SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
       run: |
+        umask 077
+        printf '%s\n' "$SFTP_SSH_KEY" > "$RUNNER_TEMP/key"
+        printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$RUNNER_TEMP/known_hosts"
         cd src/Resources/Published
-        sshpass -p "$SFTP_PASS" sftp -o StrictHostKeyChecking=no $SFTP_USER@lostartefacts.dev <<EOF
+        sftp -b - -i "$RUNNER_TEMP/key" -o IdentitiesOnly=yes \
+          -o UserKnownHostsFile="$RUNNER_TEMP/known_hosts" \
+          "$SFTP_USER@lostartefacts.dev" <<EOF
         cd pub
         put tr1-assets.zip
         put tr2-assets.zip
